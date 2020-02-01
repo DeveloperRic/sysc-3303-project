@@ -44,3 +44,15 @@ Test Instruction:
 
 1. After imported the project, open TesterClass.java and run it as java application
 
+Responsibility Breakdown:
+
+Each team member was responsible for respective test cases and commenting of each class.
+
+ElevatorSubsystem - Zeen, Victor Elevator.java TesterClass.java
+
+Scheduler - Kevin, Ralton MainScheduler.java Scheduler.java SchedulerElevator.java SchedulerFloors.java
+
+FloorSubsystem - Austin FloorSubsystem.java Task.java
+
+README - Zeen UML - Everyone
+
