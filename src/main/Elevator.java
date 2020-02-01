@@ -12,9 +12,10 @@ public class Elevator {
 	private PriorityQueue<Integer> workDoing;
 	private PriorityQueue<Integer> workToDo;
 	private Scheduler scheduler = null;
+	private SchedulerElevator SchedulerElevator;
 
-	public Elevator(Scheduler scheduler) {
-		this.scheduler = scheduler;
+	public Elevator(SchedulerElevator scheduler) {
+		this.SchedulerElevator = SchedulerElevator;
 		state = new ElevatorState();
 		doors = new Doors();
 		workDoing = new PriorityQueue<Integer>(new Comparator<Integer>() {
