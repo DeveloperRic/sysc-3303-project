@@ -1,6 +1,5 @@
 package main;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.PriorityQueue;
 
 public class Elevator {
@@ -12,8 +11,10 @@ public class Elevator {
 	private Doors doors;
 	private PriorityQueue<Integer> workDoing;
 	private PriorityQueue<Integer> workToDo;
+	private Scheduler scheduler = null;
 
-	public Elevator() {
+	public Elevator(Scheduler scheduler) {
+		this.scheduler = scheduler;
 		state = new ElevatorState();
 		doors = new Doors();
 		workDoing = new PriorityQueue<Integer>(new Comparator<Integer>() {
@@ -97,24 +98,34 @@ public class Elevator {
 
 	public static void main(String arg[]) {
 		System.out.println("=== Testing Elevator Class ===");
-		Elevator elevator = new Elevator();
-		elevator.powerOn();
+		//Elevator elevator = new Elevator();
+		//elevator.powerOn();
 	}
 
 	private class TaskGetter implements Runnable {
 
 		@Override
 		public void run() {
-			System.out.println("\nAssigning a task");
-			state.assignTask(new Task(new Date(), 5, 17));
-			System.out.println("\nAssigning a task");
-			state.assignTask(new Task(new Date(), 1, 3));
-			System.out.println("\nAssigning a task");
-			state.assignTask(new Task(new Date(), 4, 20));
-			System.out.println("\nAssigning a task");
-			state.assignTask(new Task(new Date(), 13, 3));
-			System.out.println("\nAssigning a task");
-			state.assignTask(new Task(new Date(), 0, 1));
+			//System.out.println("\nAssigning a task");
+			//state.assignTask(new Task(new Date(), 5, 17));
+			//System.out.println("\nAssigning a task");
+			//state.assignTask(new Task(new Date(), 1, 3));
+			//System.out.println("\nAssigning a task");
+			//state.assignTask(new Task(new Date(), 4, 20));
+			//System.out.println("\nAssigning a task");
+			//state.assignTask(new Task(new Date(), 13, 3));
+			//System.out.println("\nAssigning a task");
+			//state.assignTask(new Task(new Date(), 0, 1));
+			int i = 0;
+			while(true) {
+			
+				Task o = (Task)scheduler.get(); 
+				System.out.println("ELEVATOR SUBSYSYTEM: Elevator received task " + i + " from Scheduler\n Task Information : " + o.toString() + "\n");
+				state.assignTask(o);
+				System.out.println("ELEVATOR SUBSYSTEM: Elevator sending confirmation message to Scheduler: Task " + i + " received. Moving...\n");
+				scheduler.put("Task " + i + " received. Moving...");
+				i++;
+			}
 		}
 
 	}
@@ -185,32 +196,33 @@ public class Elevator {
 		}
 
 		public synchronized void assignTask(Task task) {
-			if (canStopAtFloor(task.startFloor)) {
+			//System.out.println("Elevator Received Task");
+			if (canStopAtFloor(task.getStartFloor())) {
 
-				if (currentFloor != task.startFloor && !workDoing.contains(task.startFloor)) {
-					workDoing.add(task.startFloor);
+				if (currentFloor != task.getStartFloor() && !workDoing.contains(task.getStartFloor())) {
+					workDoing.add(task.getStartFloor());
 				}
-				if (currentFloor != task.endFloor && !workDoing.contains(task.endFloor)) {
-					workDoing.add(task.endFloor);
+				if (currentFloor != task.getDestinationFloor() && !workDoing.contains(task.getDestinationFloor())) {
+					workDoing.add(task.getDestinationFloor());
 				}
 
-				System.out.println("Added task to workDoing (" + task.startFloor + " -> " + task.endFloor + ")");
+				//System.out.println("Added task to workDoing (" + task.getStartFloor() + " -> " + task.getDestinationFloor() + ")");
 
-				System.out.println("\nelev: " + state.currentFloor + "\ndoing: " + workDoing + "\ntodo: " + workToDo);
+				//System.out.println("\nelev: " + state.currentFloor + "\ndoing: " + workDoing + "\ntodo: " + workToDo);
 
 				if (!isAlive())
 					wakeup();
 			} else {
-				if (currentFloor != task.startFloor && !workToDo.contains(task.startFloor)) {
-					workToDo.add(task.startFloor);
+				if (currentFloor != task.getStartFloor() && !workToDo.contains(task.getStartFloor())) {
+					workToDo.add(task.getStartFloor());
 				}
-				if (currentFloor != task.endFloor && !workToDo.contains(task.endFloor)) {
-					workToDo.add(task.endFloor);
+				if (currentFloor != task.getDestinationFloor() && !workToDo.contains(task.getDestinationFloor())) {
+					workToDo.add(task.getDestinationFloor());
 				}
 
-				System.out.println("Added task to workToDo (" + task.startFloor + " -> " + task.endFloor + ")");
+				//System.out.println("Added task to workToDo (" + task.getStartFloor() + " -> " + task.getDestinationFloor() + ")");
 
-				System.out.println("\nelev: " + state.currentFloor + "\ndoing: " + workDoing + "\ntodo: " + workToDo);
+				//System.out.println("\nelev: " + state.currentFloor + "\ndoing: " + workDoing + "\ntodo: " + workToDo);
 			}
 		}
 
@@ -223,7 +235,7 @@ public class Elevator {
 				return;
 
 			Thread motionThread = new Thread(motion, "ElevatorMotion");
-			System.out.println("Waking up elevator");
+			//System.out.println("Waking up elevator");
 			motion.running = true;
 			motionThread.start();
 		}
@@ -247,7 +259,7 @@ public class Elevator {
 					direction = targetFloor > currentFloor ? 1 : -1;
 
 					if (!taskAssigned) {
-						System.out.println("Starting a task (-> " + targetFloor + ")");
+						//System.out.println("Starting a task (-> " + targetFloor + ")");
 					}
 					taskAssigned = true;
 
@@ -258,7 +270,7 @@ public class Elevator {
 
 					if (secondsToFloor - 1 < state.secondsToStop()) {
 						if (state.currentFloor == targetFloor) {
-							System.out.println("\nArrived at floor " + targetFloor);
+							//System.out.println("\nArrived at floor " + targetFloor);
 
 							velocity = ACCELERATION;
 							metresTravelled = 0;
@@ -273,14 +285,14 @@ public class Elevator {
 								workDoing.poll();
 							}
 
-							System.out.println(
-									"\nelev: " + state.currentFloor + "\ndoing: " + workDoing + "\ntodo: " + workToDo);
+							//System.out.println(
+									//"\nelev: " + state.currentFloor + "\ndoing: " + workDoing + "\ntodo: " + workToDo);
 
 							if ((targetFloor = workDoing.peek()) == null) {
 								targetFloor = workToDo.peek();
 							}
 
-							System.out.println("Moving towards floor " + targetFloor);
+							//System.out.println("Moving towards floor " + targetFloor);
 						} else {
 							if (velocity == TERMINAL_VELOCITY) {
 								System.out.print(".");// + currentFloor
@@ -315,13 +327,14 @@ public class Elevator {
 		private final float DOOR_MOVE_TIME = 6.74f;
 
 		private boolean doorsOpen;
-		private int movingDirection; // 1 for opening, -1 for closing
+		//private int movingDirection; // 1 for opening, -1 for closing
 
 		private void openDoors() {
 			if (doorsOpen)
 				return;
 			System.out.println("Opening doors");
-			movingDirection = 1;
+			
+			//movingDirection = 1;
 			try {
 				Thread.sleep((long) (DOOR_MOVE_TIME * 1000));
 			} catch (InterruptedException e) {
@@ -333,7 +346,7 @@ public class Elevator {
 			if (!doorsOpen)
 				return;
 			System.out.println("Closing doors");
-			movingDirection = -1;
+			//movingDirection = -1;
 			try {
 				Thread.sleep((long) (DOOR_MOVE_TIME * 1000));
 			} catch (InterruptedException e) {
@@ -360,18 +373,5 @@ public class Elevator {
 //	}
 
 	// This is a model of the Task class, not the real thing
-	public class Task {
-		private Date timeOfRequest;
-		private int startFloor;
-		private int endFloor;
-		private int direction;
-
-		public Task(Date timeOfRequest, int startFloor, int endFloor) {
-			this.timeOfRequest = timeOfRequest;
-			this.startFloor = startFloor;
-			this.endFloor = endFloor;
-			direction = startFloor > endFloor ? -1 : 1;
-		}
-	}
-
+	
 }

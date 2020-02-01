@@ -4,7 +4,7 @@ import java.util.*;
 
 public class FloorSubsystem implements Runnable{
 
-	static LinkedList<Task> floor1Up = new LinkedList<Task>();
+	/*static LinkedList<Task> floor1Up = new LinkedList<Task>();
 	static LinkedList<Task> floor1Down = new LinkedList<Task>();
 	static ArrayList<LinkedList<Task>> floor1 = new ArrayList<LinkedList<Task>>(
 			Arrays.asList(floor1Up, floor1Down)); 
@@ -25,7 +25,15 @@ public class FloorSubsystem implements Runnable{
 			Arrays.asList(floor4Up, floor4Down));  
 	
 	static ArrayList<ArrayList<LinkedList<Task>>> taskMatrix = new ArrayList<ArrayList<LinkedList<Task>>>(
-			Arrays.asList(floor1, floor2, floor3, floor4));
+			Arrays.asList(floor1, floor2, floor3, floor4));*/
+	
+	static ArrayList<Task> tasks = new ArrayList<Task>();
+	
+	private Scheduler scheduler = null;
+	
+	public FloorSubsystem(Scheduler scheduler) {
+		this.scheduler = scheduler;
+	}
 	
 	public static void main(String[] args) throws IOException {
 		getInputs();
@@ -39,10 +47,14 @@ public class FloorSubsystem implements Runnable{
 			e.printStackTrace();
 		}
 		
-//		for (;;) {
-//			scheduler.sendToElevatorSS
-//			scheduler.notifyElevatorSS
-//		}
+		for (int i=0; i<tasks.size(); i++) {
+			System.out.println("FLOOR SUBSYSTEM: Task " + i + " being sent to Scheduler : \n Task Information : " + tasks.get(i) + "\n");
+			scheduler.put(tasks.get(i));
+		}
+		
+		while(true) {
+			System.out.println("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get() + "\n");
+		}
 	}
 
 	//reads from the input file and calls parseAdd on each line 
@@ -62,35 +74,10 @@ public class FloorSubsystem implements Runnable{
 	
 		try {
 			Task task = new Task(inputs[0], inputs[1], inputs[2], inputs[3]);
-			taskMatrix.get(task.getStartFloor()-1).get(task.getDirection()).add(task);
+			tasks.add(task);
+			//taskMatrix.get(task.getStartFloor()-1).get(task.getDirection()).add(task);
 		} catch (Exception e) {
 			System.out.println("Invalid Input: " + e);
 		}
-	}
-	
-//	NOT NEEDED OOPS
-	//checks if the input makes sense *different from input being valid*
-	//i.e. if the direction doesn't make sense in conjunction with the floor inputs
-//	private static boolean yeetThatShitOut(InputInfo i) {
-//		switch (i.getDirection()) {
-//		case 0:
-//			if (i.getStartFloor() < i.getDestinationFloor()) return false;
-//			break;
-//		case 1:
-//			if (i.getStartFloor() > i.getDestinationFloor()) return false;
-//			break;
-//		default: return false;
-//		}
-//		taskQueue.add(i);
-//		return true;
-//	}
-	
-	private synchronized Object[] getTasks(int currentFloor, int direction) {
-		Object[] tasks = taskMatrix.get(currentFloor-1).get(direction).toArray();
-		return tasks;
-	}
-	
-	private synchronized void taskCompleted(Task i) {
-		taskMatrix.get(i.getStartFloor()-1).get(i.getDirection()).remove(i);
 	}
 }

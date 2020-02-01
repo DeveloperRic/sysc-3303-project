@@ -2,7 +2,6 @@
  * 
  */
 package main;
-
 import java.util.ArrayList;
 
 /**
@@ -29,11 +28,13 @@ public class MainScheduler {
 			}
 		}
 		
+		System.out.println("SCHEDULER SUBSYSTEM: Scheduler SENDING confirmation message to Floor\n Task Information : " + ((floorMessageQueue.get(0))).toString() + "\n");
 		notifyAll();
 		return floorMessageQueue.remove(0);
 	}
 
 	public synchronized boolean floorPut(Object o) {
+		System.out.println("SCHEDULER SUBSYSTEM: Scheduler RECEIVED task from Floor\n Task Information : " + ((Task)(o)).toString() + "\n");
 		notifyAll();
 		return elevatorMessageQueue.add(o);
 	}
@@ -48,11 +49,13 @@ public class MainScheduler {
 			}
 		}
 		
+		System.out.println("SCHEDULER SUBSYSTEM: Scheduler SENDING task to Elevator\n Task Information : " + ((Task)(elevatorMessageQueue.get(0))).toString() + "\n");
 		notifyAll();
 		return elevatorMessageQueue.remove(0);
 	}
 
 	public synchronized boolean elevatorPut(Object o) {
+		System.out.println("SCHEDULER SUBSYSTEM: Scheduler RECEIVED confirmation message from Elevator\n Task Information : " + o.toString() + "\n");
 		notifyAll();
 		return floorMessageQueue.add(o);
 	}

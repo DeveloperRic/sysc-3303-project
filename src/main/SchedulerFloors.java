@@ -1,12 +1,8 @@
 /**
- * 
- */
-package main;
-
-/**
  * @author Kevin
  *
  */
+package main;
 public class SchedulerFloors implements Scheduler{
 
 	private MainScheduler s;

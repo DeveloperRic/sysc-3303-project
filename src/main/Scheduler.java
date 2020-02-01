@@ -1,12 +1,8 @@
 /**
- * 
- */
-package main;
-
-/**
  * @author Kevin
  *
  */
+package main;
 public interface Scheduler {
 
 	public Object get();
