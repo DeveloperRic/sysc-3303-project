@@ -27,16 +27,13 @@ public class FloorSubsystem implements Runnable{
 	static ArrayList<ArrayList<LinkedList<Task>>> taskMatrix = new ArrayList<ArrayList<LinkedList<Task>>>(
 			Arrays.asList(floor1, floor2, floor3, floor4));*/
 	
-	static ArrayList<Task> tasks = new ArrayList<Task>();
+	//Arraylist to hold the tasks
+	public static ArrayList<Task> tasks = new ArrayList<Task>();
 	
-	private Scheduler scheduler = null;
+	public Scheduler scheduler = null;
 	
 	public FloorSubsystem(Scheduler scheduler) {
 		this.scheduler = scheduler;
-	}
-	
-	public static void main(String[] args) throws IOException {
-		getInputs();
 	}
 	
 	@Override
@@ -47,6 +44,7 @@ public class FloorSubsystem implements Runnable{
 			e.printStackTrace();
 		}
 		
+		//puts each task into the taskQueue in the scheduler
 		for (int i=0; i<tasks.size(); i++) {
 			System.out.println("FLOOR SUBSYSTEM: Task " + i + " being sent to Scheduler : \n Task Information : " + tasks.get(i) + "\n");
 			scheduler.put(tasks.get(i));
@@ -58,8 +56,7 @@ public class FloorSubsystem implements Runnable{
 	}
 
 	//reads from the input file and calls parseAdd on each line 
-	private static void getInputs() throws IOException {
-		//is this how u do relative paths in java
+	public static void getInputs() throws IOException {
 		String localDir = System.getProperty("user.dir");
 		BufferedReader in = new BufferedReader(new FileReader(localDir + "\\src\\assets\\Inputs.txt"));
 		String ln;
@@ -69,7 +66,7 @@ public class FloorSubsystem implements Runnable{
 	}
 	
 	//splits each string by whitespace and creates a Task object and puts it into the matrix
-	private static void parseAdd(String ln) {      
+	public static void parseAdd(String ln) {      
 		String[] inputs = ln.split(" ");
 	
 		try {
