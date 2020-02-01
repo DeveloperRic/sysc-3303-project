@@ -13,9 +13,13 @@ public class Elevator {
 	private PriorityQueue<Integer> workToDo;
 	private Scheduler scheduler = null;
 	private SchedulerElevator SchedulerElevator;
+	
+	public ElevatorState getState(){
+		return state;
+	}
 
 	public Elevator(SchedulerElevator scheduler) {
-		this.SchedulerElevator = SchedulerElevator;
+		this.SchedulerElevator = scheduler;
 		state = new ElevatorState();
 		doors = new Doors();
 		workDoing = new PriorityQueue<Integer>(new Comparator<Integer>() {
@@ -114,11 +118,11 @@ public class Elevator {
 			int i = 0;
 			while(true) {
 			
-				Task o = (Task)scheduler.get(); 
+				Task o = (Task)SchedulerElevator.get(); 
 				System.out.println("ELEVATOR SUBSYSYTEM: Elevator received task " + i + " from Scheduler\n Task Information : " + o.toString() + "\n");
 				state.assignTask(o);
 				System.out.println("ELEVATOR SUBSYSTEM: Elevator sending confirmation message to Scheduler: Task " + i + " received. Moving...\n");
-				scheduler.put("Task " + i + " received. Moving...");
+				SchedulerElevator.put("Task " + i + " received. Moving...");
 				i++;
 			}
 		}

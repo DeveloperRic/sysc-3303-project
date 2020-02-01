@@ -1,23 +1,48 @@
 package test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
-import org.junit.jupiter.api.Test;
+import java.util.Date;
 
-class ElevatorTest {
+import main.Elevator;
+import main.Elevator.ElevatorState;
+import main.MainScheduler;
+import main.Scheduler;
+import main.SchedulerElevator;
+import main.Task;
 
+import org.junit.Test;
+
+public class ElevatorTest {
+	
+	static MainScheduler m = new MainScheduler();
+	static SchedulerElevator s = new SchedulerElevator(m);
+	
+	
 	@Test
-	void test() {
+	public void test() {
+		//fail("Not yet implemented");
+
+		Elevator e = new Elevator(s);
+		e.powerOn();
+		
+		
+
+		ElevatorState state = e.getState();
+		
+		
 		System.out.println("\nAssigning a task");
-		state.assignTask(new Task(new Date(), 5, 17));
+		state.assignTask(new Task("14:05:15.0", "2", "1", "4"));
 		System.out.println("\nAssigning a task");
-		state.assignTask(new Task(new Date(), 1, 3));
+		state.assignTask(new Task("14:13:56.04", "1", "-1", "3"));
 		System.out.println("\nAssigning a task");
-		state.assignTask(new Task(new Date(), 4, 20));
-		System.out.println("\nAssigning a task");
-		state.assignTask(new Task(new Date(), 13, 3));
-		System.out.println("\nAssigning a task");
-		state.assignTask(new Task(new Date(), 0, 1));
+		state.assignTask(new Task("14:13:56.06", "1", "-1", "3"));
+		
+		while(true){
+			
+			
+		}
+		
 	}
 
 }
