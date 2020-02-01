@@ -45,10 +45,6 @@ public class Elevator {
 	public void powerOff() {
 		poweredOn = false;
 	}
-	
-	public ElevatorState getState() {
-		return state;
-	}
 
 	// ========= Zeen's work ================
 
