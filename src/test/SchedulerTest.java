@@ -1,5 +1,7 @@
 package test;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.TestCase;
@@ -31,6 +33,25 @@ public class SchedulerTest extends TestCase {
 	
 	/**
 	 * Tests the main scheduler
+	 * elevator put and floor get methods
+	 * with a float array
+	 */
+	public void testMainElevatorPutFloorGetFloats() {
+		float[] s = {1, 2, 1};
+		MainScheduler m = new MainScheduler();
+		assertEquals(0,m.currentElevatorDirection);
+		assertEquals(0,m.currentElevatorVelocity, 0);
+		assertEquals(0,m.currentElevatorFloor);
+		
+		m.elevatorPut(s);
+		
+		assertEquals(1,m.currentElevatorDirection);
+		assertEquals(2,m.currentElevatorVelocity, 0);
+		assertEquals(1,m.currentElevatorFloor);
+	}
+	
+	/**
+	 * Tests the main scheduler
 	 * floor put and elevator get methods
 	 * with a string
 	 */
@@ -39,6 +60,21 @@ public class SchedulerTest extends TestCase {
 		MainScheduler m = new MainScheduler();
 		m.floorPut(s);
 		assertEquals(s, m.elevatorGet());
+	}
+	
+	/**
+	 * Tests the main scheduler
+	 * floor put and elevator get methods
+	 * with a string
+	 */
+	public void testMainFloorPutElevatorGetStuff() {
+		Task t = new Task("14:05:15.0", "2", "Up", "4");
+		MainScheduler m = new MainScheduler();
+		assertEquals(0,m.elevatorWorkDoing.size());
+		assertEquals(0,m.floorMessageQueue.size());
+		m.floorPut(t);
+		assertEquals(1,m.elevatorWorkDoing.size());
+		assertEquals(1,m.floorMessageQueue.size());
 	}
 	
 	/**
@@ -100,7 +136,7 @@ public class SchedulerTest extends TestCase {
 	 *  One thread passes strings to the second thread
 	 *  and the second thread passes integers to the second thread
 	 */
-	public void test() {
+public void test() {
 		
 		MainScheduler m = new MainScheduler();
 		
@@ -156,6 +192,63 @@ public class SchedulerTest extends TestCase {
 			
 		}
 	}
+
+public void test2() {
+	
+	MainScheduler m = new MainScheduler();
+	
+	Task t1 = new Task("14:05:15.0", "2", "Up", "4");
+	Task t2 = new Task("14:05:15.0", "2", "Up", "4");
+	Task t3 = new Task("14:05:15.0", "2", "Up", "4");
+	Task t4 = new Task("14:05:15.0", "2", "Up", "4");
+	Task t5 = new Task("14:05:15.0", "2", "Up", "4");
+	
+	
+	AtomicBoolean b1 = new AtomicBoolean(false);
+	AtomicBoolean b2 = new AtomicBoolean(false);
+	
+	//thread one
+	new Thread(new Runnable() {
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			Scheduler se = new SchedulerElevator(m);
+			
+			for(int i = 0; i < 5; i++) {
+				System.out.println("HERE1");
+				se.get();
+				System.out.println("HERE2");
+			}
+			
+			b1.set(true);
+		}
+	}).start();
+
+	//thread two
+	new Thread(new Runnable() {
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			Scheduler sf = new SchedulerFloors(m);
+				
+				//sends an integer to the other thread
+				sf.put(t1);
+				sf.put(t2);
+				sf.put(t3);
+				sf.put(t4);
+				sf.put(t5);
+				
+			b2.set(true);
+		}
+	}).start();
+	
+	//Waits until both threads finished executing
+	while(!b1.get() || !b2.get()) {
+		
+	}
+}
 	
 	
 
