@@ -62,6 +62,12 @@ public class ElevatorSubsystem {
 		if (!elevator.isAwake())
 			elevator.wakeup();
 	}
+	
+	void notifyStatus(int floor, float velocity, int direction) {
+		// send message to Scheduler
+		// saying "elevator's current status"
+		scheduler.put(new float[] {floor, velocity, direction});
+	}
 
 	void notifyArrivedAtFloor(int floor) {
 		System.out.println("\nArrived at floor " + floor);

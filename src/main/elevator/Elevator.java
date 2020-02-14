@@ -37,21 +37,21 @@ public class Elevator {
 		return velocity <= ACCELERATION ? 0 : velocity / ACCELERATION;
 	}
 
-//	public boolean canStopAtFloor(int floor) {
-//		if (direction == 0)
-//			return true;
-//		if ((this.direction == -1 && floor > this.currentFloor)
-//				|| (this.direction == 1 && floor < this.currentFloor)) {
-//			return false;
-//		}
-//		if (!this.isMoving() || this.currentFloor == floor)
-//			return true;
-//
-//		float distanceToFloor = Math.abs(floor - this.currentFloor) * FLOOR_HEIGHT;
-//		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / this.velocity;
-//		return secondsToFloor >= this.secondsToStop();
-//	}
-//
+	public boolean canStopAtFloor(int floor) {
+		if (direction == 0)
+			return true;
+		if ((this.direction == -1 && floor > this.currentFloor)
+				|| (this.direction == 1 && floor < this.currentFloor)) {
+			return false;
+		}
+		if (!this.isMoving() || this.currentFloor == floor)
+			return true;
+
+		float distanceToFloor = Math.abs(floor - this.currentFloor) * FLOOR_HEIGHT;
+		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / this.velocity;
+		return secondsToFloor >= this.secondsToStop();
+	}
+
 //	public synchronized void assignTask(Task task) {
 //		// System.out.println("Elevator Received Task");
 //		if (canStopAtFloor(task.getStartFloor())) {
@@ -101,5 +101,9 @@ public class Elevator {
 		// System.out.println("Waking up elevator");
 		motor.running = true;
 		motionThread.start();
+	}
+	
+	void notifyStatus() {
+		subsystem.notifyStatus(currentFloor, velocity, direction);
 	}
 }
