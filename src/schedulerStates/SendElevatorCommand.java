@@ -2,6 +2,12 @@ package schedulerStates;
 
 import main.MainScheduler;
 
+/**
+ * This class is the send elevator command state
+ * 
+ * @author Kevin
+ *
+ */
 public class SendElevatorCommand implements SchedulerState {
 
 	@Override

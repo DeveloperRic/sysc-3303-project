@@ -2,6 +2,12 @@ package schedulerStates;
 
 import main.MainScheduler;
 
+/**
+ * This class is the seending update to floor state
+ * 
+ * @author Kevin
+ *
+ */
 public class SendUpdateToFloor implements SchedulerState {
 
 	@Override

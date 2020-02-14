@@ -2,6 +2,12 @@ package schedulerStates;
 
 import main.MainScheduler;
 
+/**
+ * This class is the receive update from elevator state
+ * 
+ * @author Kevin
+ *
+ */
 public class ReceiveUpdateFromElevator implements SchedulerState {
 
 	@Override

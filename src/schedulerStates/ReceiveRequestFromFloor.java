@@ -2,6 +2,12 @@ package schedulerStates;
 
 import main.MainScheduler;
 
+/**
+ * This class is the receive request from floor state
+ * 
+ * @author Kevin
+ *
+ */
 public class ReceiveRequestFromFloor implements SchedulerState {
 
 	@Override

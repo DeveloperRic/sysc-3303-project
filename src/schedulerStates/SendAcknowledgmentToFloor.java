@@ -2,6 +2,12 @@ package schedulerStates;
 
 import main.MainScheduler;
 
+/**
+ * This class is the send acknowledgement to floor state
+ * 
+ * @author Kevin
+ *
+ */
 public class SendAcknowledgmentToFloor implements SchedulerState {
 
 	@Override

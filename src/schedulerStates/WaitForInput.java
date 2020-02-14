@@ -2,6 +2,12 @@ package schedulerStates;
 
 import main.MainScheduler;
 
+/**
+ * This class is the state waiting for some kind of input
+ * 
+ * @author Kevin
+ *
+ */
 public class WaitForInput implements SchedulerState {
 
 	@Override

@@ -3,6 +3,12 @@ package schedulerStates;
 import main.MainScheduler;
 import main.Task;
 
+/**
+ * This class is the sending request to elevator state
+ * 
+ * @author Kevin
+ *
+ */
 public class SendRequestToElevator implements SchedulerState {
 
 	@Override
