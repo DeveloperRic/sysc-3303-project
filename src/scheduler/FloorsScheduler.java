@@ -42,7 +42,7 @@ public class FloorsScheduler implements SchedulerType{
 	 */
 	@Override
 	public synchronized boolean put(Object o) {
-		return s.floorPut(o);
+		return s.floorPut((Integer[]) o);
 		
 	}
 

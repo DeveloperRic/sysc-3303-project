@@ -1,8 +1,11 @@
 package scheduler;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import main.Task;
+import scheduler.ElevatorScheduler.ElevatorMessage;
+import scheduler.ElevatorScheduler.ElevatorStatusUpdate;
+import util.DblEndedPQ;
 
 /**
  * Main Scheduler class that communicates from the floor subsystem to the
@@ -22,35 +25,16 @@ public class MainScheduler {
 	// The value for an elevator going down
 	private static final int DOWN = -1;
 
-	// Keeps track of the elevator's work to do (not assigned)
-	public ArrayList<Task> elevatorWorkToDo;
-
-	// Keeps track of the elevator's work doing (assigned)
-	public ArrayList<Task> elevatorWorkDoing;
-
-	// Holds the floor numbers the scheduler wants to send to the elevator
-	public ArrayList<Integer> floorsToSendToElevator;
-
-	// Holds the current floors the elevator is taking
-	public ArrayList<Integer> elevatorPath;
-
-	// Holds the current elevator direction
-	public int currentElevatorDirection;
-
-	// Holds the current Elevatoor floor
-	public int currentElevatorFloor;
-
-	// Holds the current elevator velocity
-	public float currentElevatorVelocity;
-
-	// The messages from floor to elevator
-	public ArrayList<Object> elevatorMessageQueue;
-
-	// The messages from elevator to floor
-	public ArrayList<Object> floorMessageQueue;
+	Communication<Integer[], String> floorCommunication;
+	Communication<Integer[], ElevatorMessage> elevatorCommunication;
+	List<Integer[]> pendingRequests;
+	ElevatorStatusUpdate elevatorStatusUpdate;
+	String elevatorAcknowledgement;
 
 	// Holds the current state of the elevator
 	public SchedulerState currentState;
+
+	ElevatorStatus elevatorStatus;
 
 	// Holds whether or not the message received is an update message
 	private boolean isElevatorUpdate;
@@ -65,19 +49,10 @@ public class MainScheduler {
 	 * Constructor class that instantiates the message lists
 	 */
 	public MainScheduler() {
-		elevatorWorkToDo = new ArrayList<>();
-		elevatorWorkDoing = new ArrayList<>();
-		floorsToSendToElevator = new ArrayList<>();
-		elevatorMessageQueue = new ArrayList<>();
-		floorMessageQueue = new ArrayList<>();
-		elevatorPath = new ArrayList<>();
+		floorCommunication = new Communication<>("Floor", "Scheduler");
+		elevatorCommunication = new Communication<>("Scheduler", "Elevator");
+		pendingRequests = new ArrayList<>();
 		currentState = SchedulerState.WAIT_FOR_INPUT;
-		isElevatorAck = false;
-		isElevatorUpdate = false;
-		isFloorRequest = false;
-		currentElevatorDirection = 0;
-		currentElevatorFloor = 0;
-		currentElevatorVelocity = 0;
 	}
 
 	/**
@@ -117,94 +92,6 @@ public class MainScheduler {
 	}
 
 	/**
-	 * This function should be the brains behind what floors it wants the elevator
-	 * to go to
-	 * 
-	 * @return true if adding work to elevator
-	 */
-	public boolean doMath() {
-
-		// given the elevator direction, elevator floors to visit, requested floor,
-		// requested direction
-		// find out whether the current floor to be visited fits in the elevator's path
-		// this step involves using the elevator velocity, elevator
-		// deceleration/acceleration,
-		// elevator direction, requested direction, requested floor
-		// if it's not on the way, keep it in a work to be done queue
-		// if it is on the way, send the command for the elevator to go to the floor and
-		// add that to the elevator work list
-		// update appropriate things
-
-		// The last received message should be the task
-		Task t = (Task) elevatorMessageQueue.remove(elevatorMessageQueue.size() - 1);
-
-		// whether or not to add to the work doing queue (assign to elevator)
-		boolean addToWorkDoing = false;
-
-		// TODO: if floor already exists, addToWorkDoing = false;
-
-		// If directions are different
-		if (t.getDirection() != currentElevatorDirection) {
-			addToWorkDoing = false;
-		}
-
-		// If start floor lower than elevator while elevator going up
-		if (t.getStartFloor() < currentElevatorFloor && currentElevatorDirection == UP) {
-			addToWorkDoing = false;
-		}
-
-		// If start floor higher than elevator while elevator going down
-		if (t.getStartFloor() > currentElevatorFloor && currentElevatorDirection == DOWN) {
-			addToWorkDoing = false;
-		}
-
-		// TODO: if velocity is too fast to slow down, return false;
-		// (currentfloor - startfloor) * heightOfFloor...
-
-		// If elevator has not been assigned anything yet
-		if (currentElevatorDirection == 0) {
-			addToWorkDoing = true;
-		}
-
-		// If adding it to the work doing queue
-		if (addToWorkDoing) {
-			floorsToSendToElevator.add(t.getStartFloor());
-			elevatorWorkDoing.add(t);
-		} else {
-			elevatorWorkToDo.add(t);
-		}
-
-		return addToWorkDoing;
-	}
-
-	/**
-	 * Updates the elevator values
-	 */
-	public void updateElevatorVals() {
-		float[] stuff = (float[]) floorMessageQueue.remove(floorMessageQueue.size() - 1);
-		currentElevatorFloor = (int) stuff[0];
-		currentElevatorVelocity = stuff[1];
-		currentElevatorDirection = (int) stuff[2];
-
-		// if the elevator has reached a start floor, remove task, add destination floor
-		for (int i = 0; i < elevatorWorkDoing.size(); i++) {
-			if (currentElevatorFloor == elevatorWorkDoing.get(i).getStartFloor()) {
-				floorsToSendToElevator.add(elevatorWorkDoing.get(i).getDestinationFloor());
-				elevatorWorkDoing.remove(i);
-			}
-		}
-
-		// If current floor is on elevator path, remove it
-		for (int i = 0; i < elevatorPath.size(); i++) {
-			if (currentElevatorFloor == elevatorPath.get(i)) {
-				elevatorPath.remove(i);
-			}
-		}
-
-		// TODO: if no more work to be done, send work to the elevator
-	}
-
-	/**
 	 * Returns the first object in the floor queue.
 	 * 
 	 * If the floor queue is empty, wait. If floor queue is not empty, return the
@@ -212,23 +99,8 @@ public class MainScheduler {
 	 * 
 	 * @return the first object of the floor queue
 	 */
-	public synchronized Object floorGet() {
-
-		// this won't be needed once switch to UPD
-
-		while (floorMessageQueue.size() == 0) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		System.out.println("SCHEDULER SUBSYSTEM: Scheduler SENDING confirmation message to Floor\n Task Information : "
-				+ floorMessageQueue.get(0).toString() + "\n");
-		notifyAll();
-		return floorMessageQueue.remove(0);
+	public synchronized String floorGet() {
+		return floorCommunication.aGet();
 	}
 
 	/**
@@ -239,7 +111,7 @@ public class MainScheduler {
 	 * @param o The object to be put in the elevator queue
 	 * @return true if successful, false otherwise
 	 */
-	public synchronized boolean floorPut(Object o) {
+	public synchronized boolean floorPut(Integer[] o) {
 
 		// parse request
 		// set state to ReceivedRequestFromFloor
@@ -250,13 +122,13 @@ public class MainScheduler {
 		isElevatorUpdate = false;
 		isFloorRequest = true;
 
-		elevatorMessageQueue.add(o);
-
+		pendingRequests.add(o);
 		// Current state should be waiting
 		currentState.doWork(this);
 
 		System.out.println(
 				"SCHEDULER SUBSYSTEM: Scheduler RECEIVED task from Floor\n Task Information : " + o.toString() + "\n");
+		
 		notifyAll();
 		return true;
 	}
@@ -269,23 +141,8 @@ public class MainScheduler {
 	 * 
 	 * @return the first object of the elevator queue
 	 */
-	public synchronized Object elevatorGet() {
-
-		// this won't be needed once switch to UPD
-
-		while (elevatorMessageQueue.size() == 0) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		System.out.println("SCHEDULER SUBSYSTEM: Scheduler SENDING task to Elevator\n Task Information : "
-				+ elevatorMessageQueue.get(0).toString() + "\n");
-		notifyAll();
-		return elevatorMessageQueue.remove(0);
+	public synchronized Integer[] elevatorGet() {
+		return elevatorCommunication.bGet();
 	}
 
 	/**
@@ -296,7 +153,7 @@ public class MainScheduler {
 	 * @param o The object to be put in the floor queue
 	 * @return true if successful, false otherwise
 	 */
-	public synchronized boolean elevatorPut(Object o) {
+	public synchronized boolean elevatorPut(ElevatorMessage o) {
 		// parse request
 		// set state to ReceivedAcknowledgementFromElevator
 		// or
@@ -304,11 +161,23 @@ public class MainScheduler {
 
 		// currently, these booleans are set to the message
 		// being an elevator update message
-		isElevatorAck = false;
-		isElevatorUpdate = true;
-		isFloorRequest = false;
 
-		floorMessageQueue.add(o);
+		if (o.getFloorRequest() != null) {
+			isElevatorAck = false;
+			isElevatorUpdate = false;
+			isFloorRequest = true;
+			pendingRequests.add(new Integer[] {o.getFloorRequest(), elevatorStatus.direction});
+		} else if (o.getStatusUpdate() != null) {
+			isElevatorAck = false;
+			isElevatorUpdate = true;
+			isFloorRequest = false;
+			elevatorStatusUpdate = o.getStatusUpdate();
+		} else if (o.getAcknowledgement() != null) {
+			isElevatorAck = true;
+			isElevatorUpdate = false;
+			isFloorRequest = false;
+			elevatorAcknowledgement = o.getAcknowledgement();
+		}
 
 		// Current state should be waiting
 		currentState.doWork(this);
@@ -317,6 +186,153 @@ public class MainScheduler {
 						+ o.toString() + "\n");
 		notifyAll();
 		return true;
+	}
+
+	class ElevatorStatus {
+
+		private static final float ACCELERATION = 0.68f;
+		private static final float FLOOR_HEIGHT = 3.23f;
+
+		// Keeps track of the elevator's work to do (not assigned)
+		ArrayList<Integer[]> workToDo;
+		// Keeps track of the elevator's work doing (assigned)
+		// in a Double-ended Priority Queue
+		DblEndedPQ<Integer> workDoing;
+		// Holds the current floors the elevator is taking
+		private ArrayList<Integer> path;
+		// Holds the current elevator direction
+		private int direction;
+		// Holds the current Elevator floor
+		int currentFloor;
+		Integer previousFloor;
+		// Holds the current elevator velocity
+		private float velocity;
+
+		// Holds the max & min allowable floors e.g.)
+		// elev >>> 9 (max floor)
+		// on fl 3 someone says "i want to go up"
+		// on fl 10 someone says "i want to go down"
+		// scheduler should queue the 2nd request
+		// elev <<< 3
+		// elev >=< ? go to some requested floor
+		// elev >>> 10
+		// elev >=< ? go to some requested floor
+		private int[] floorRequestBoundary = new int[2];
+
+		private ElevatorStatus() {
+			direction = 0;
+			currentFloor = 0;
+			velocity = 0;
+			path = new ArrayList<>();
+			workToDo = new ArrayList<>();
+			workDoing = new DblEndedPQ<Integer>();
+		}
+
+		void update(ElevatorStatusUpdate update) {
+			direction = update.direction();
+			currentFloor = update.currentFloor();
+			velocity = update.velocity();
+		}
+
+		/**
+		 * This function should be the brains behind what floors it wants the elevator
+		 * to go to
+		 * 
+		 * @param mainScheduler TODO
+		 * @return true if adding work to elevator
+		 */
+		boolean addToQueue(Integer[] movementRequest) {
+
+			// given the elevator direction, elevator floors to visit, requested floor,
+			// requested direction
+			// find out whether the current floor to be visited fits in the elevator's path
+			// this step involves using the elevator velocity, elevator
+			// deceleration/acceleration,
+			// elevator direction, requested direction, requested floor
+			// if it's not on the way, keep it in a work to be done queue
+			// if it is on the way, send the command for the elevator to go to the floor and
+			// add that to the elevator work list
+			// update appropriate things
+
+			// The last received message should be the task
+//			Task t = (Task) elevatorMessageQueue.remove(elevatorMessageQueue.size() - 1);
+
+			int sourceOrTargetFloor = movementRequest[0];
+			int targetDirection = movementRequest[1];
+
+			// whether or not to add to the work doing queue (assign to elevator)
+			boolean addToWorkDoing = canStopAtFloor(sourceOrTargetFloor, targetDirection);
+
+			// If adding it to the work doing queue
+			if (addToWorkDoing) {
+				workDoing.insert(sourceOrTargetFloor);
+			} else {
+				workToDo.add(movementRequest);
+			}
+
+			return addToWorkDoing;
+		}
+
+		private boolean canStopAtFloor(int floor, int direction) {
+			// TODO: if floor already exists, addToWorkDoing = false;
+
+			// If directions are different
+			if (direction != this.direction) {
+				return false;
+			}
+
+			// If start floor lower than elevator while elevator going up
+			if (floor < currentFloor && direction == UP) {
+				return false;
+			}
+
+			// If start floor higher than elevator while elevator going down
+			if (floor > currentFloor && direction == DOWN) {
+				return false;
+			}
+
+			if (floor < floorRequestBoundary[0] || floor > floorRequestBoundary[1]) {
+				return false;
+			}
+
+			// If elevator has not been assigned anything yet
+			if (velocity == 0 || currentFloor == floor || direction == 0) {
+				return true;
+			}
+
+			// if velocity is too fast to slow down, return false;
+			float distanceToFloor = Math.abs(floor - currentFloor) * FLOOR_HEIGHT;
+			float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / velocity;
+			return secondsToFloor >= secondsToStop();
+		}
+
+		private float secondsToStop() {
+			return velocity <= ACCELERATION ? 0 : velocity / ACCELERATION;
+		}
+
+		public void onElevatorIdle() {
+			floorRequestBoundary[0] = -1; // min floor
+			floorRequestBoundary[1] = -1; // max floor
+		}
+
+		public void onElevatorAssignedFirstTask(int floor, int direction) {
+			if (direction == UP) {
+				floorRequestBoundary[0] = floor; // min floor
+				floorRequestBoundary[1] = -1; // max floor
+			} else if (direction == DOWN) {
+				floorRequestBoundary[0] = -1; // min floor
+				floorRequestBoundary[1] = floor; // max floor
+			}
+		}
+
+		public void onOutOfBoundsTaskQueued() {
+			if (direction == UP) {
+				floorRequestBoundary[1] = workDoing.getMax(); // max floor
+			} else if (direction == DOWN) {
+				floorRequestBoundary[0] = workDoing.getMin(); // min floor
+			}
+		}
+
 	}
 
 }

@@ -1,5 +1,7 @@
 package scheduler;
 
+import java.io.ObjectInputStream.GetField;
+
 /**
  * This class limits the access of the MainScheduler to 
  * only the elevator put and get functions
@@ -38,7 +40,26 @@ public class ElevatorScheduler implements SchedulerType{
 	 */
 	@Override
 	public synchronized boolean put(Object o) {
-		return s.elevatorPut(o);
+		return s.elevatorPut((ElevatorMessage) o);
+	}
+	
+	public interface ElevatorMessage {
+		default ElevatorStatusUpdate getStatusUpdate() {
+			return null;
+		}
+		default Integer getFloorRequest() {
+			return null;
+		}
+		default String getAcknowledgement() {
+			return null;
+		}
+	}
+
+	public interface ElevatorStatusUpdate {
+		int direction();
+		int currentFloor();
+		float velocity();
+		boolean isSleeping();
 	}
 
 }
