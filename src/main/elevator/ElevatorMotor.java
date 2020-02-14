@@ -2,26 +2,27 @@ package main.elevator;
 
 final class ElevatorMotor implements Runnable {
 
-	private final ElevatorState elevatorState;
+	private final Elevator elevatorState;
 	boolean running;
 	private boolean taskAssigned;
 
-	ElevatorMotor(ElevatorState elevatorState) {
+	ElevatorMotor(Elevator elevatorState) {
 		this.elevatorState = elevatorState;
 	}
 
 	@Override
 	public void run() {
-		this.elevatorState.velocity = ElevatorState.ACCELERATION;
+		this.elevatorState.velocity = Elevator.ACCELERATION;
 		this.elevatorState.metresTravelled = 0;
-		while (this.elevatorState.elevator.poweredOn && (!this.elevatorState.elevator.workDoing.isEmpty()
-				|| !this.elevatorState.elevator.workToDo.isEmpty())) {
+		while (this.elevatorState.subsystem.poweredOn && (!this.elevatorState.subsystem.workDoing.isEmpty())) {
+//				|| !this.elevatorState.subsystem.workToDo.isEmpty())) {
 
 			Integer targetFloor;
 			boolean isWorkToDo = false;
-			if ((targetFloor = this.elevatorState.elevator.workDoing.peek()) == null) {
-				targetFloor = this.elevatorState.elevator.workToDo.peek();
-				isWorkToDo = true;
+			if ((targetFloor = this.elevatorState.subsystem.workDoing.peek()) == null) {
+//				targetFloor = this.elevatorState.subsystem.workToDo.peek();
+//				isWorkToDo = true;
+				break;
 			}
 			this.elevatorState.direction = targetFloor > this.elevatorState.currentFloor ? 1 : -1;
 
@@ -30,56 +31,54 @@ final class ElevatorMotor implements Runnable {
 			}
 			taskAssigned = true;
 
-			float distanceToFloor = Math.abs(targetFloor - this.elevatorState.elevator.state.currentFloor)
-					* ElevatorState.FLOOR_HEIGHT;
-			float secondsToFloor = distanceToFloor == 0 ? 0
-					: distanceToFloor / this.elevatorState.elevator.state.velocity;
+			float distanceToFloor = Math.abs(targetFloor - this.elevatorState.currentFloor) * Elevator.FLOOR_HEIGHT;
+			float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / this.elevatorState.velocity;
 
 //					System.out.print(nextFloor + ", " + distanceToFloor + ", " + secondsToFloor + " {} ");
 
-			if (secondsToFloor - 1 < this.elevatorState.elevator.state.secondsToStop()) {
-				if (this.elevatorState.elevator.state.currentFloor == targetFloor) {
+			if (secondsToFloor - 1 < this.elevatorState.secondsToStop()) {
+				if (this.elevatorState.currentFloor == targetFloor) {
 					// System.out.println("\nArrived at floor " + targetFloor);
 
-					this.elevatorState.velocity = ElevatorState.ACCELERATION;
+					this.elevatorState.velocity = Elevator.ACCELERATION;
 					this.elevatorState.metresTravelled = 0;
 
-					this.elevatorState.elevator.doors.openDoors();
+					this.elevatorState.doors.openDoors();
 					// TODO allow people to press button just in time and open doors again
-					this.elevatorState.elevator.doors.closeDoors();
+					this.elevatorState.doors.closeDoors();
 
 					if (isWorkToDo) {
-						this.elevatorState.elevator.workToDo.poll();
+//						this.elevatorState.subsystem.workToDo.poll();
 					} else {
-						this.elevatorState.elevator.workDoing.poll();
+						this.elevatorState.subsystem.workDoing.poll();
 					}
 
 					// System.out.println(
 					// "\nelev: " + state.currentFloor + "\ndoing: " + workDoing + "\ntodo: " +
 					// workToDo);
 
-					if ((targetFloor = this.elevatorState.elevator.workDoing.peek()) == null) {
-						targetFloor = this.elevatorState.elevator.workToDo.peek();
-					}
+//					if ((targetFloor = this.elevatorState.subsystem.workDoing.peek()) == null) {
+//						targetFloor = this.elevatorState.subsystem.workToDo.peek();
+//					}
 
 					// System.out.println("Moving towards floor " + targetFloor);
 				} else {
-					if (this.elevatorState.velocity == ElevatorState.TERMINAL_VELOCITY) {
+					if (this.elevatorState.velocity == Elevator.MAX_VELOCITY) {
 						System.out.print(".");// + currentFloor
 					} else {
 						System.out.print("-");
 					}
 
-					this.elevatorState.decelerate();
+					this.decelerate(this.elevatorState);
 				}
 			} else {
-				if (this.elevatorState.velocity == ElevatorState.TERMINAL_VELOCITY) {
+				if (this.elevatorState.velocity == Elevator.MAX_VELOCITY) {
 					System.out.print(".");
 				} else {
 					System.out.print("+");
 				}
 
-				this.elevatorState.accelerate();
+				this.accelerate(this.elevatorState);
 			}
 
 			try {
@@ -89,5 +88,28 @@ final class ElevatorMotor implements Runnable {
 		}
 		running = false;
 		System.out.println("\nElevator is sleeping");
+	}
+
+	void accelerate(Elevator elevator) {
+		if (!elevator.isMoving())
+			return;
+		doMovement(elevator,
+				elevator.velocity = Math.min(elevator.velocity + Elevator.ACCELERATION, Elevator.MAX_VELOCITY));
+	}
+
+	void decelerate(Elevator elevator) {
+		if (!elevator.isMoving())
+			return;
+		doMovement(elevator, elevator.velocity = Math.max(elevator.velocity - Elevator.ACCELERATION, 0));
+	}
+
+	void doMovement(Elevator elevator, float velocity) {
+		elevator.metresTravelled += velocity;
+
+		if (elevator.metresTravelled >= Elevator.FLOOR_HEIGHT) {
+			elevator.currentFloor += elevator.direction;
+			elevator.metresTravelled = 0;
+			System.out.print("|");
+		}
 	}
 }
