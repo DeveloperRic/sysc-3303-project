@@ -13,10 +13,6 @@ public class Elevator {
 	private PriorityQueue<Integer> workToDo;
 	private Scheduler scheduler = null;
 	private SchedulerElevator SchedulerElevator;
-	
-	public ElevatorState getState(){
-		return state;
-	}
 
 	public Elevator(SchedulerElevator scheduler) {
 		this.SchedulerElevator = scheduler;

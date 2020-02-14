@@ -4,6 +4,9 @@
 package main;
 import java.util.ArrayList;
 
+import schedulerStates.SchedulerState;
+import schedulerStates.WaitForInput;
+
 /**
  * Main Scheduler class that communicates from the floor
  * subsystem to the elevator subsystem.
@@ -18,10 +21,18 @@ import java.util.ArrayList;
 public class MainScheduler {
 	
 	//The messages from floor to elevator
-	ArrayList<Object> elevatorMessageQueue;
+	private ArrayList<Object> elevatorMessageQueue;
 	
 	//The messages from elevator to floor
-	ArrayList<Object> floorMessageQueue;
+	private ArrayList<Object> floorMessageQueue;
+	
+	private SchedulerState currentState;
+	
+	private boolean isElevatorUpdate;
+	
+	private boolean isElevatorAck;
+	
+	private boolean isFloorRequest;
 
 	/**
 	 * Constructor class that instantiates the message lists
@@ -29,6 +40,26 @@ public class MainScheduler {
 	public MainScheduler() {
 		elevatorMessageQueue = new ArrayList<>();
 		floorMessageQueue = new ArrayList<>();
+		currentState = new WaitForInput();
+		isElevatorAck = false;
+		isElevatorUpdate = false;
+		isFloorRequest = false;
+	}
+	
+	public void setState(SchedulerState s) {
+		currentState = s;
+	}
+	
+	public boolean isElevatorUpdate() {
+		return isElevatorUpdate;
+	}
+	
+	public boolean isElevatorAck() {
+		return isElevatorAck;
+	}
+	
+	public boolean isFloorRequest() {
+		return isFloorRequest;
 	}
 	
 	/**
@@ -40,6 +71,9 @@ public class MainScheduler {
 	 * @return the first object of the floor queue
 	 */
 	public synchronized Object floorGet() {
+		
+		//this won't be needed once switch to UPD
+		
 		while(floorMessageQueue.size() == 0) {
 			try {
 				wait();
@@ -64,6 +98,11 @@ public class MainScheduler {
 	 * @return true if successful, false otherwise
 	 */
 	public synchronized boolean floorPut(Object o) {
+		
+		//parse request
+		//set state to ReceivedRequestFromFloor
+		currentState.doWork(this);
+		
 		System.out.println("SCHEDULER SUBSYSTEM: Scheduler RECEIVED task from Floor\n Task Information : " + o.toString() + "\n");
 		notifyAll();
 		return elevatorMessageQueue.add(o);
@@ -78,6 +117,9 @@ public class MainScheduler {
 	 * @return the first object of the elevator queue
 	 */
 	public synchronized Object elevatorGet() {
+		
+		//this won't be needed once switch to UPD
+		
 		while(elevatorMessageQueue.size() == 0) {
 			try {
 				wait();
@@ -102,6 +144,11 @@ public class MainScheduler {
 	 * @return true if successful, false otherwise
 	 */
 	public synchronized boolean elevatorPut(Object o) {
+		//parse request
+		//set state to ReceivedAcknowledgementFromElevator
+		// or
+		//set state to ReceivedUpdateFromElevator
+		currentState.doWork(this);
 		System.out.println("SCHEDULER SUBSYSTEM: Scheduler RECEIVED confirmation message from Elevator\n Task Information : " + o.toString() + "\n");
 		notifyAll();
 		return floorMessageQueue.add(o);
