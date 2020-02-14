@@ -4,28 +4,28 @@ public class Elevator {
 
 	static final float ACCELERATION = 0.68f;
 	static final float MAX_VELOCITY = 4.31f;
-	static final float FLOOR_HEIGHT = 3.23f; // This should be a function call to Floor but whatever for now
+	public static final float FLOOR_HEIGHT = 3.23f; // This should be a function call to Floor but whatever for now
 
 	final ElevatorSubsystem subsystem;
 
 	ElevatorDoors doors;
 	ElevatorMotor motor;
 	ElevatorButton[] buttons;
-	int currentFloor;
-	float velocity;
-	int direction; // 1 is up, -1 is down
+	public int currentFloor;
+	public float velocity;
+	public int direction; // 1 is up, -1 is down
 	float metresTravelled; // per floor, NOT total
 
 	Elevator(ElevatorSubsystem subsystem) {
 		this.subsystem = subsystem;
-		doors = new ElevatorDoors();
+		doors = new ElevatorDoors(this);
 		motor = new ElevatorMotor(this);
 		buttons = new ElevatorButton[21]; 
 		for (int i = 1; i <= 21; ++i) {
 			buttons[i - 1] = new ElevatorButton(i);
 		}
 		currentFloor = 1;
-		velocity = 0;
+		velocity = ACCELERATION;
 		metresTravelled = 0;
 	}
 
@@ -33,7 +33,7 @@ public class Elevator {
 		return velocity > 0;
 	}
 
-	float secondsToStop() {
+	public float secondsToStop() {
 		return velocity <= ACCELERATION ? 0 : velocity / ACCELERATION;
 	}
 
@@ -93,7 +93,7 @@ public class Elevator {
 		return motor.running;
 	}
 
-	private synchronized void wakeup() {
+	synchronized void wakeup() {
 		if (isAwake())
 			return;
 
