@@ -2,7 +2,7 @@
  * @author Kevin
  *
  */
-package main;
+package scheduler;
 
 /**
  * The scheduler interface that controls the put and get functions
@@ -10,7 +10,7 @@ package main;
  * @author Kevin
  *
  */
-public interface Scheduler {
+public interface SchedulerType {
 
 	public Object get();
 	

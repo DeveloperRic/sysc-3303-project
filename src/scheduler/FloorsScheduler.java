@@ -2,7 +2,7 @@
  * @author Kevin
  *
  */
-package main;
+package scheduler;
 
 /**
  * This class limits the access of the MainScheduler to 
@@ -11,7 +11,7 @@ package main;
  * @author Kevin
  *
  */
-public class SchedulerFloors implements Scheduler{
+public class FloorsScheduler implements SchedulerType{
 
 	//The main scheduler object
 	private MainScheduler s;
@@ -21,7 +21,7 @@ public class SchedulerFloors implements Scheduler{
 	 * 
 	 * @param s the shared main scheduler
 	 */
-	public SchedulerFloors(MainScheduler s) {
+	public FloorsScheduler(MainScheduler s) {
 		this.s = s;
 	}
 	

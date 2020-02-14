@@ -5,11 +5,11 @@ import static org.junit.Assert.assertArrayEquals;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.TestCase;
-import main.MainScheduler;
-import main.Scheduler;
-import main.SchedulerElevator;
-import main.SchedulerFloors;
 import main.Task;
+import scheduler.MainScheduler;
+import scheduler.SchedulerType;
+import scheduler.ElevatorScheduler;
+import scheduler.FloorsScheduler;
 
 /**
  * Unit tests for the Scheduler classes
@@ -109,8 +109,8 @@ public class SchedulerTest extends TestCase {
 	public void testProxyElevatorPutFloorGet() {
 		String s = "Hello";
 		MainScheduler m = new MainScheduler();
-		Scheduler se = new SchedulerElevator(m);
-		Scheduler sf = new SchedulerFloors(m);
+		SchedulerType se = new ElevatorScheduler(m);
+		SchedulerType sf = new FloorsScheduler(m);
 		se.put(s);
 		assertEquals(s, sf.get());
 	}
@@ -123,8 +123,8 @@ public class SchedulerTest extends TestCase {
 	public void testProxyFloorPutGet() {
 		String s = "Hello";
 		MainScheduler m = new MainScheduler();
-		Scheduler se = new SchedulerElevator(m);
-		Scheduler sf = new SchedulerFloors(m);
+		SchedulerType se = new ElevatorScheduler(m);
+		SchedulerType sf = new FloorsScheduler(m);
 		sf.put(s);
 		assertEquals(s, se.get());
 	}
@@ -155,7 +155,7 @@ public void test() {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				Scheduler se = new SchedulerElevator(m);
+				SchedulerType se = new ElevatorScheduler(m);
 				for(int i = 0; i < elevator.length; i++) {
 					
 					//sends a string to the other thread
@@ -174,7 +174,7 @@ public void test() {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				Scheduler sf = new SchedulerFloors(m);
+				SchedulerType sf = new FloorsScheduler(m);
 				for(int i = 0; i < elevator.length; i++) {
 					
 					//sends an integer to the other thread
@@ -213,7 +213,7 @@ public void test2() {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			Scheduler se = new SchedulerElevator(m);
+			SchedulerType se = new ElevatorScheduler(m);
 			
 			for(int i = 0; i < 5; i++) {
 				System.out.println("HERE1");
@@ -231,7 +231,7 @@ public void test2() {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			Scheduler sf = new SchedulerFloors(m);
+			SchedulerType sf = new FloorsScheduler(m);
 				
 				//sends an integer to the other thread
 				sf.put(t1);

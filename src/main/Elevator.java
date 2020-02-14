@@ -2,6 +2,9 @@ package main;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+import scheduler.SchedulerType;
+import scheduler.ElevatorScheduler;
+
 public class Elevator {
 
 	// ======== Victor's work ===================
@@ -11,10 +14,10 @@ public class Elevator {
 	private Doors doors;
 	private PriorityQueue<Integer> workDoing;
 	private PriorityQueue<Integer> workToDo;
-	private Scheduler scheduler = null;
-	private SchedulerElevator SchedulerElevator;
+	private SchedulerType scheduler = null;
+	private ElevatorScheduler SchedulerElevator;
 
-	public Elevator(SchedulerElevator scheduler) {
+	public Elevator(ElevatorScheduler scheduler) {
 		this.SchedulerElevator = scheduler;
 		state = new ElevatorState();
 		doors = new Doors();
