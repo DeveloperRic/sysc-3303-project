@@ -37,13 +37,13 @@ public class MainScheduler {
 	public ElevatorStatus elevatorStatus;
 
 	// Holds whether or not the message received is an update message
-	private boolean isElevatorUpdate;
+	boolean isElevatorUpdate;
 
 	// Holds whether or not the message received was an elevator acknowledge message
-	private boolean isElevatorAck;
+	boolean isElevatorAck;
 
 	// Holds whether or not the message received was a floor request
-	private boolean isFloorRequest;
+	boolean isFloorRequest;
 
 	/**
 	 * Constructor class that instantiates the message lists
@@ -63,33 +63,6 @@ public class MainScheduler {
 	 */
 	public void setState(SchedulerState s) {
 		currentState = s;
-	}
-
-	/**
-	 * Returns whether or not the message was an elevator update message.
-	 * 
-	 * @return true if message was update message
-	 */
-	public boolean isElevatorUpdate() {
-		return isElevatorUpdate;
-	}
-
-	/**
-	 * Returns whether or not the message was an elevator acknowledge message.
-	 * 
-	 * @return true if message was acknowledge message
-	 */
-	public boolean isElevatorAck() {
-		return isElevatorAck;
-	}
-
-	/**
-	 * Returns whether or not the message was a floor request message
-	 * 
-	 * @return true if message was request message
-	 */
-	public boolean isFloorRequest() {
-		return isFloorRequest;
 	}
 
 	/**
@@ -187,7 +160,7 @@ public class MainScheduler {
 		// Current state should be waiting
 		currentState.doWork(this);
 		System.out.println(
-				"SCHEDULER SUBSYSTEM: Scheduler RECEIVED confirmation message from Elevator\n Task Information : "
+				"SCHEDULER SUBSYSTEM: Scheduler RECEIVED message from Elevator\n Task Information : "
 						+ o.toString() + "\n");
 		notifyAll();
 		return true;

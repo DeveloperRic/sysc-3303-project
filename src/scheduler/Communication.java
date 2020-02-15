@@ -18,9 +18,9 @@ public class Communication<A, B> {
 		this.bName = bName;
 	}
 
-	public synchronized void aPut(A workDoing) {
+	public synchronized void aPut(A workDoing, String paramText) {
 		System.out.println(aName.toUpperCase() + " SUBSYSTEM: " + aName + " SENDING message to " + bName
-				+ "\n Content : " + workDoing + "\n");
+				+ "\n Content : " + paramText + "\n");
 		
 		aToB.add(workDoing);
 		notifyAll();

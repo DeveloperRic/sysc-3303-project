@@ -18,17 +18,19 @@ public enum SchedulerState {
 			// go to ReceiveAcknowledgementFromElevator
 			// if input is elevator update
 			// go to ReceiveUpdateFromElevator
-			if (m.isFloorRequest()) {
-				changeTo(m, RECEIVE_REQUEST_FROM_FLOOR);
-				RECEIVE_REQUEST_FROM_FLOOR.doWork(m);
-			} else if (m.isElevatorAck()) {
-				changeTo(m, RECEIVE_ACKNOWLEDGEMENT_FROM_ELEVATOR);
-				RECEIVE_ACKNOWLEDGEMENT_FROM_ELEVATOR.doWork(m);
-			} else if (m.isElevatorUpdate()) {
-				changeTo(m, RECEIVE_UPDATE_FROM_ELEVATOR);
-				RECEIVE_UPDATE_FROM_ELEVATOR.doWork(m);
-			} else {
-				System.out.println("big problem");
+			while (true) {
+				if (m.isFloorRequest) {
+					changeTo(m, RECEIVE_REQUEST_FROM_FLOOR);
+					break;
+				} else if (m.isElevatorAck) {
+					changeTo(m, RECEIVE_ACKNOWLEDGEMENT_FROM_ELEVATOR);
+					break;
+				} else if (m.isElevatorUpdate) {
+					changeTo(m, RECEIVE_UPDATE_FROM_ELEVATOR);
+					break;
+				} else {
+//				System.out.println("big problem");
+				}
 			}
 		}
 	}),
@@ -41,12 +43,11 @@ public enum SchedulerState {
 			// receive the request
 			// do some math
 			// if the elevator can go to a requested floor, send the request
-			
+
 			Integer[] o = m.pendingRequests.get(0);
-			
+
 			if (m.elevatorStatus.addToQueue(o)) {
 				changeTo(m, SEND_REQUEST_TO_ELEVATOR);
-				SEND_REQUEST_TO_ELEVATOR.doWork(m);
 			} else {
 				changeTo(m, WAIT_FOR_INPUT);
 			}
@@ -64,23 +65,21 @@ public enum SchedulerState {
 //			while (!m.elevatorStatus.workDoing.isEmpty()) {
 //				m.elevatorCommunication.aPut(m.elevatorStatus.workDoing);
 //			}
-			
-			
+
 			if (!m.elevatorStatus.workDoing.isEmpty()) {
 				System.out.println("CHECK123: " + Arrays.toString(m.elevatorStatus.workDoing.toArray()));
-				
+
 				Integer[] arr = new Integer[m.elevatorStatus.workDoing.size()];
-				
+
 				Object[] arr2 = new Object[m.elevatorStatus.workDoing.size()];
-				
+
 				arr2 = m.elevatorStatus.workDoing.toArray();
-				
+
 				arr = Arrays.copyOf(arr2, arr2.length, Integer[].class);
 
-				
-				m.elevatorCommunication.aPut(arr);
+				m.elevatorCommunication.aPut(arr, Arrays.toString(arr));
 			}
-			
+
 			// go into waiting state
 			changeTo(m, WAIT_FOR_INPUT);
 		}
@@ -94,7 +93,6 @@ public enum SchedulerState {
 			// use the acknowledgement to update stuff
 			// go to SendAcknowledgementToFloor
 			changeTo(m, SEND_ACKNOWLEDGEMENT_TO_FLOOR);
-			SEND_ACKNOWLEDGEMENT_TO_FLOOR.doWork(m);
 		}
 	}),
 
@@ -121,8 +119,6 @@ public enum SchedulerState {
 			m.elevatorStatus.update(m.elevatorStatusUpdate);
 			changeTo(m, SEND_UPDATE_TO_FLOOR);
 			// m.setState(new SendElevatorCommand());
-			
-			SEND_UPDATE_TO_FLOOR.doWork(m);
 		}
 	}),
 
@@ -135,7 +131,8 @@ public enum SchedulerState {
 			// go to send command to elevator state
 			if (m.elevatorStatus.previousFloor != m.elevatorStatus.currentFloor) {
 				m.elevatorStatus.previousFloor = m.elevatorStatus.currentFloor;
-				m.floorCommunication.bPut("RECEIVE ACKNOWLEDGEMENT FROM SCHEDULER floor = " + m.elevatorStatus.currentFloor);
+				m.floorCommunication
+						.bPut("RECEIVE ACKNOWLEDGEMENT FROM SCHEDULER floor = " + m.elevatorStatus.currentFloor);
 			}
 			changeTo(m, WAIT_FOR_INPUT);
 		}
@@ -148,8 +145,11 @@ public enum SchedulerState {
 	}
 
 	private static void changeTo(MainScheduler m, SchedulerState nextState) {
+		m.isElevatorAck = false;
+		m.isElevatorUpdate = false;
+		m.isFloorRequest = false;
 		m.setState(nextState);
-		//nextState.doWork(m);
+		nextState.doWork(m);
 	}
 
 	private interface State {
