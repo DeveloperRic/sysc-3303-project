@@ -2,18 +2,18 @@ package main;
 
 public class Floor {
 		int floorNumber;
-		Lamp upRequestLight;
-		Lamp downRequestLight;
+		public Lamp upRequestLight;
+		public Lamp downRequestLight;
 		
-		FloorState bothRequested;
-		FloorState upRequested;
-		FloorState downRequested;
-		FloorState noRequest;
+		public FloorState bothRequested;
+		public FloorState upRequested;
+		public FloorState downRequested;
+		public FloorState noRequest;
 		
-		FloorState state;
+		public FloorState state;
 		
 		//FLOOR CONSTRUCTOR
-		Floor (int floorNumber) {
+		public Floor (int floorNumber) {
 			upRequestLight = new Lamp();
 			downRequestLight = new Lamp();
 			
@@ -26,7 +26,6 @@ public class Floor {
 			
 			state = noRequest;
 		}
-		
 		//FLOORSTATE
 		public interface FloorState {
 			void requestUp();
@@ -43,7 +42,7 @@ public class Floor {
 			
 			@Override
 			public void requestUp() {
-				System.out.println("Up requested on floor " + floorNumber);
+				System.out.println("FLOOR SUBSYSTEM: Up requested on floor " + floorNumber);
 				floor.upRequestLight.turnOn();
 				
 				if (downRequestLight.lampOn) {
@@ -62,7 +61,7 @@ public class Floor {
 			public void requestServed(int direction) {
 				switch (direction) {
 				case 1:
-					downRequestLight.turnOff();
+					upRequestLight.turnOff();
 					floor.setState(noRequest);
 					break;
 				default: 
@@ -88,7 +87,7 @@ public class Floor {
 			@Override
 			public void requestDown() {
 				// If upState already requested turn on light and then switch to bothState
-				System.out.println("Down requested on floor " + floorNumber);
+				System.out.println("FLOOR SUBSYSTEM: Down requested on floor " + floorNumber);
 				downRequestLight.turnOn();
 				
 				if (upRequestLight.lampOn) {
@@ -118,12 +117,12 @@ public class Floor {
 			
 			@Override
 			public void requestUp() {
-				System.out.println("Up requested on floor " + floorNumber);
+				System.out.println("FLOOR SUBSYSTEM: Up requested on floor " + floorNumber);
 			}
 
 			@Override
 			public void requestDown() {
-				System.out.println("Down requested on floor " + floorNumber);
+				System.out.println("FLOOR SUBSYSTEM: Down requested on floor " + floorNumber);
 			}
 
 			@Override
@@ -131,11 +130,15 @@ public class Floor {
 				switch (direction) {
 				case -1:
 					downRequestLight.turnOff();
-					floor.setState(upRequested);
+					if(upRequestLight.lampOn) {
+						floor.setState(upRequested);
+					} else { floor.setState(noRequest);}
 					break;
 				case 1: 
 					upRequestLight.turnOff();
-					floor.setState(downRequested);
+					if(downRequestLight.lampOn) {
+						floor.setState(downRequested);
+					} else { floor.setState(noRequest);}
 					break;
 				}
 			}
