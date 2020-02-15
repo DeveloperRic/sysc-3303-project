@@ -34,7 +34,7 @@ public class MainScheduler {
 	// Holds the current state of the elevator
 	public SchedulerState currentState;
 
-	ElevatorStatus elevatorStatus;
+	public ElevatorStatus elevatorStatus;
 
 	// Holds whether or not the message received is an update message
 	private boolean isElevatorUpdate;
@@ -53,6 +53,7 @@ public class MainScheduler {
 		elevatorCommunication = new Communication<>("Scheduler", "Elevator");
 		pendingRequests = new ArrayList<>();
 		currentState = SchedulerState.WAIT_FOR_INPUT;
+		elevatorStatus = new ElevatorStatus();
 	}
 
 	/**
@@ -166,6 +167,10 @@ public class MainScheduler {
 			isElevatorAck = false;
 			isElevatorUpdate = false;
 			isFloorRequest = true;
+			
+//			0215
+//			System.out.println("TEST: " + elevatorStatus.direction);
+			
 			pendingRequests.add(new Integer[] {o.getFloorRequest(), elevatorStatus.direction});
 		} else if (o.getStatusUpdate() != null) {
 			isElevatorAck = false;
@@ -188,16 +193,16 @@ public class MainScheduler {
 		return true;
 	}
 
-	class ElevatorStatus {
+	public class ElevatorStatus {
 
 		private static final float ACCELERATION = 0.68f;
 		private static final float FLOOR_HEIGHT = 3.23f;
 
 		// Keeps track of the elevator's work to do (not assigned)
-		ArrayList<Integer[]> workToDo;
+		public ArrayList<Integer[]> workToDo;
 		// Keeps track of the elevator's work doing (assigned)
 		// in a Double-ended Priority Queue
-		DblEndedPQ<Integer> workDoing;
+		public DblEndedPQ<Integer> workDoing;
 		// Holds the current floors the elevator is taking
 		private ArrayList<Integer> path;
 		// Holds the current elevator direction
@@ -263,9 +268,14 @@ public class MainScheduler {
 			// whether or not to add to the work doing queue (assign to elevator)
 			boolean addToWorkDoing = canStopAtFloor(sourceOrTargetFloor, targetDirection);
 
+//			System.out.println("Test!: " + sourceOrTargetFloor + " DSADSAD " + targetDirection);
+			
 			// If adding it to the work doing queue
 			if (addToWorkDoing) {
 				workDoing.insert(sourceOrTargetFloor);
+				
+				//0215
+				direction = targetDirection;
 			} else {
 				workToDo.add(movementRequest);
 			}
@@ -276,6 +286,13 @@ public class MainScheduler {
 		private boolean canStopAtFloor(int floor, int direction) {
 			// TODO: if floor already exists, addToWorkDoing = false;
 
+//			System.out.println("IDK: " + (this.velocity == 0));
+			
+			// If elevator has not been assigned anything yet
+			if (velocity == 0 || currentFloor == floor || direction == 0) {
+				return true;
+			}
+			
 			// If directions are different
 			if (direction != this.direction) {
 				return false;
@@ -295,10 +312,7 @@ public class MainScheduler {
 				return false;
 			}
 
-			// If elevator has not been assigned anything yet
-			if (velocity == 0 || currentFloor == floor || direction == 0) {
-				return true;
-			}
+
 
 			// if velocity is too fast to slow down, return false;
 			float distanceToFloor = Math.abs(floor - currentFloor) * FLOOR_HEIGHT;
@@ -332,6 +346,21 @@ public class MainScheduler {
 				floorRequestBoundary[0] = workDoing.getMin(); // min floor
 			}
 		}
+		
+		
+		//0215
+		public int getDirection(){
+			return direction;
+		}
+		
+		public float getVelocity(){
+			return velocity;
+		}
+		
+		public int getCurrentFloor(){
+			return currentFloor;
+		}
+		
 
 	}
 

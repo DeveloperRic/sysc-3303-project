@@ -3,6 +3,8 @@ package scheduler;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import util.DblEndedPQ;
+
 public class Communication<A, B> {
 	private BlockingQueue<A> aToB;
 	private BlockingQueue<B> bToA;
@@ -16,10 +18,11 @@ public class Communication<A, B> {
 		this.bName = bName;
 	}
 
-	public synchronized void aPut(A something) {
+	public synchronized void aPut(A workDoing) {
 		System.out.println(aName.toUpperCase() + " SUBSYSTEM: " + aName + " SENDING message to " + bName
-				+ "\n Content : " + something + "\n");
-		aToB.add(something);
+				+ "\n Content : " + workDoing + "\n");
+		
+		aToB.add(workDoing);
 		notifyAll();
 	}
 
@@ -33,6 +36,7 @@ public class Communication<A, B> {
 	public synchronized B aGet() {
 		while (bToA.isEmpty()) {
 			try {
+				System.out.println("Check");
 				wait();
 			} catch (InterruptedException e) {
 			}
@@ -54,7 +58,6 @@ public class Communication<A, B> {
 			}
 		}
 		A obj = aToB.remove();
-
 		System.out.println(bName.toUpperCase() + " SUBSYSTEM: " + bName + " RECEIVING message from " + aName
 				+ "\n Content : " + obj + "\n");
 
