@@ -76,7 +76,7 @@ public enum SchedulerState {
 				arr = Arrays.copyOf(arr2, arr2.length, Integer[].class);
 
 
-				m.elevatorCommunication.aPut(arr);
+				m.elevatorCommunication.aPut(arr, "");
 			}
 			
 			// go into waiting state
