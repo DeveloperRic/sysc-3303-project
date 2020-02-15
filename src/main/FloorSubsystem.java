@@ -2,6 +2,8 @@ package main;
 import java.io.*;
 import java.util.*;
 
+import scheduler.SchedulerType;
+
 public class FloorSubsystem implements Runnable{
 
 	/*static LinkedList<Task> floor1Up = new LinkedList<Task>();
@@ -30,9 +32,9 @@ public class FloorSubsystem implements Runnable{
 	//Arraylist to hold the tasks
 	public static ArrayList<Task> tasks = new ArrayList<Task>();
 	
-	public Scheduler scheduler = null;
+	public SchedulerType scheduler = null;
 	
-	public FloorSubsystem(Scheduler scheduler) {
+	public FloorSubsystem(SchedulerType scheduler) {
 		this.scheduler = scheduler;
 	}
 	

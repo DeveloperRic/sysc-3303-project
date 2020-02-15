@@ -1,8 +1,6 @@
-/**
- * @author Kevin
- *
- */
-package main;
+package scheduler;
+
+import java.io.ObjectInputStream.GetField;
 
 /**
  * This class limits the access of the MainScheduler to 
@@ -11,7 +9,7 @@ package main;
  * @author Kevin
  *
  */
-public class SchedulerElevator implements Scheduler{
+public class ElevatorScheduler implements SchedulerType{
 	
 	//The main scheduler object
 	private MainScheduler s;
@@ -21,7 +19,7 @@ public class SchedulerElevator implements Scheduler{
 	 * 
 	 * @param s the shared main scheduler
 	 */
-	public SchedulerElevator(MainScheduler s) {
+	public ElevatorScheduler(MainScheduler s) {
 		this.s = s;
 	}
 
@@ -42,7 +40,26 @@ public class SchedulerElevator implements Scheduler{
 	 */
 	@Override
 	public synchronized boolean put(Object o) {
-		return s.elevatorPut(o);
+		return s.elevatorPut((ElevatorMessage) o);
+	}
+	
+	public interface ElevatorMessage {
+		default ElevatorStatusUpdate getStatusUpdate() {
+			return null;
+		}
+		default Integer getFloorRequest() {
+			return null;
+		}
+		default String getAcknowledgement() {
+			return null;
+		}
+	}
+
+	public interface ElevatorStatusUpdate {
+		int direction();
+		int currentFloor();
+		float velocity();
+		boolean isSleeping();
 	}
 
 }
