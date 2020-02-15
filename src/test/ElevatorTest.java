@@ -1,14 +1,9 @@
 package test;
 
-import static org.junit.Assert.*;
-
-import java.util.Date;
-
 import main.Elevator;
 import main.Elevator.ElevatorState;
-import main.MainScheduler;
-import main.Scheduler;
-import main.SchedulerElevator;
+import scheduler.MainScheduler;
+import scheduler.ElevatorScheduler;
 import main.Task;
 
 import org.junit.Test;
@@ -16,7 +11,7 @@ import org.junit.Test;
 public class ElevatorTest {
 	
 	static MainScheduler m = new MainScheduler();
-	static SchedulerElevator s = new SchedulerElevator(m);
+	static ElevatorScheduler s = new ElevatorScheduler(m);
 	
 	
 	@Test

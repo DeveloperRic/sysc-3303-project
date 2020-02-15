@@ -61,7 +61,7 @@ public class Task implements Comparable<Task>{
 	@Override
 	public String toString() {
 	
-		return "Time of Request: " + timeOfRequest + " ,Start Floor: " + startFloor + " ,End Floor: " + endFloor + " ,Direction: " + direction;
+		return "Time of Request: " + timeOfRequest + ", Start Floor: " + startFloor + ", End Floor: " + endFloor + ", Direction: " + direction;
 	}
 	
 }
