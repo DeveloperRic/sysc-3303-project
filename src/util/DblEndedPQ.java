@@ -60,7 +60,7 @@ public final class DblEndedPQ<T> {
 
 	}
 
-	public T[] toArray() {
-		return (T[]) s.toArray();
+	public Object[] toArray() {
+		return s.toArray();
 	}
 }

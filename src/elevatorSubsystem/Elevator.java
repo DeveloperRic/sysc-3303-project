@@ -19,7 +19,6 @@ public class Elevator {
 	public Elevator(ElevatorSubsystem subsystem) {
 		this.subsystem = subsystem;
 		doors = new ElevatorDoors(this);
-		motor = new ElevatorMotor(this);
 		buttons = new ElevatorButton[21]; 
 		for (int i = 1; i <= 21; ++i) {
 			buttons[i - 1] = new ElevatorButton(i);
@@ -90,15 +89,16 @@ public class Elevator {
 //	}
 
 	public boolean isAwake() {
-		return motor.running;
+		return motor != null && motor.running;
 	}
 
 	synchronized void wakeup() {
 		if (isAwake())
 			return;
 
+		motor = new ElevatorMotor(this);
 		Thread motionThread = new Thread(motor, "ElevatorMotion");
-		// System.out.println("Waking up elevator");
+		 System.out.println("Waking up elevator");
 		motor.running = true;
 		motionThread.start();
 	}

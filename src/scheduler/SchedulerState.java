@@ -49,8 +49,11 @@ public enum SchedulerState {
 			}
 
 			if (m.elevatorStatus.addToQueue(o)) {
-				changeTo(m, SEND_REQUEST_TO_ELEVATOR);
-				SEND_REQUEST_TO_ELEVATOR.doWork(m);
+				System.out.println("[WorkDoing] size = " + m.elevatorStatus.workDoing.size());
+//				changeTo(m, SEND_REQUEST_TO_ELEVATOR);
+//				SEND_REQUEST_TO_ELEVATOR.doWork(m);
+				changeTo(m, WAIT_FOR_INPUT);
+				m.notifyAll();
 			} else {
 				changeTo(m, WAIT_FOR_INPUT);
 				m.notifyAll();

@@ -33,7 +33,12 @@ public class ElevatorScheduler implements SchedulerType{
 	 */
 	@Override
 	public synchronized Object get() {
-		return s.elevatorCommunication.bGet();
+//		return s.elevatorCommunication.bGet();
+		return s.elevatorGet();
+	}
+	
+	public synchronized void remove() {
+		s.elevatorRemove();
 	}
 
 	/**

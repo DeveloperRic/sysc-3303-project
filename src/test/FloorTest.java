@@ -6,11 +6,10 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 
-public class FloorSubsystemTest {
+public class FloorTest {
 
 //just checks for state switching functionality
 
-	@SuppressWarnings("static-access")
 	@Test
 	public void test() {
 	Floor floor = new Floor(0);

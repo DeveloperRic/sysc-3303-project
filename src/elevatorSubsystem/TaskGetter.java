@@ -4,19 +4,43 @@ import main.Task;
 
 class TaskGetter implements Runnable {
 
-	private final ElevatorSubsystem elevator;
+	private final ElevatorSubsystem subsystem;
 
 	TaskGetter(ElevatorSubsystem elevator) {
-		this.elevator = elevator;
+		this.subsystem = elevator;
 	}
 
 	@Override
 	public void run() {
 		
+		while (subsystem.poweredOn) {
+			
+			Integer task = subsystem.getTask();
+			
+			if (task != null) {
+				subsystem.workDoing.add(task);
+				
+				if (!subsystem.elevator.isAwake())
+					subsystem.elevator.wakeup();
+				
+				while (subsystem.elevator.isAwake()) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {}
+				}
+				subsystem.removeTask();
+//				System.out.println("[TaskGetter] " + subsystem.workDoing.toString());
+			}
+			
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {}
+		}
+		
 		// FOLLOWING CODE IS BROKEN NOW
 		
 		
-		this.elevator.assignTask(13);
+//		this.elevator.assignTask(13);
 		
 //		int i = 0;
 //		while (true) {

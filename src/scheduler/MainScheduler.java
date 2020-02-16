@@ -96,12 +96,12 @@ public class MainScheduler {
 		isElevatorUpdate = false;
 		isFloorRequest = true;
 
+		System.out.println(
+				"SCHEDULER SUBSYSTEM: Scheduler RECEIVED task from Floor\n Task Information : " + o.toString() + "\n");
+
 		pendingRequests.add(o);
 		// Current state should be waiting
 		currentState.doWork(this);
-
-		System.out.println(
-				"SCHEDULER SUBSYSTEM: Scheduler RECEIVED task from Floor\n Task Information : " + o.toString() + "\n");
 
 		notifyAll();
 		return true;
@@ -115,8 +115,26 @@ public class MainScheduler {
 	 * 
 	 * @return the first object of the elevator queue
 	 */
-	public synchronized Integer[] elevatorGet() {
-		return elevatorCommunication.bGet();
+	public synchronized Integer elevatorGet() {
+//		return elevatorCommunication.bGet();
+		while (elevatorStatus.workDoing.size() == 0) {
+			System.out.println("Waiting for task");
+			try {
+				wait();
+			} catch (InterruptedException e) {}
+		}
+		System.out.println("Notified and got a task");
+		try {
+			return elevatorStatus.workDoing.getMin();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public synchronized void elevatorRemove() {
+		try {
+			elevatorStatus.workDoing.deleteMin();
+		} catch (Exception e) {}
 	}
 
 	/**
@@ -218,7 +236,7 @@ public class MainScheduler {
 		 * @param mainScheduler TODO
 		 * @return true if adding work to elevator
 		 */
-		boolean addToQueue(Integer[] movementRequest) {
+		synchronized boolean addToQueue(Integer[] movementRequest) {
 
 			// given the elevator direction, elevator floors to visit, requested floor,
 			// requested direction
@@ -248,6 +266,7 @@ public class MainScheduler {
 				workToDo.add(movementRequest);
 			}
 
+			notifyAll();
 			return addToWorkDoing;
 		}
 

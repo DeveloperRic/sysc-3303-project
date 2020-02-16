@@ -59,6 +59,14 @@ public class ElevatorSubsystem {
 	public List<Integer> getWorkDoing() {
 		return workDoing;
 	}
+	
+	Integer getTask() {
+		return (Integer) scheduler.get();
+	}
+	
+	void removeTask() {
+		scheduler.remove();
+	}
 
 	public void assignTask(int floor) {
 		workDoing.add(floor);

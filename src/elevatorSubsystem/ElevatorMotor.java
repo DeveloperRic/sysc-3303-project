@@ -17,14 +17,16 @@ final class ElevatorMotor implements Runnable {
 		System.out.println("[Elevator] woken up");
 		this.elevator.velocity = Elevator.ACCELERATION;
 		this.elevator.metresTravelled = 0;
-		System.out.println("Get in");
 //		this.elevator.subsystem.notifyStatus();
+		System.out.println("Get in");
 		while (this.elevator.subsystem.poweredOn && (!this.elevator.subsystem.workDoing.isEmpty())) {
+//		while (this.elevator.subsystem.poweredOn && (this.elevator.subsystem.getTask() != null)) {
 //				|| !this.elevatorState.subsystem.workToDo.isEmpty())) {
 			
 			Integer targetFloor;
 			boolean isWorkToDo = false;
-			if ((targetFloor = this.elevator.subsystem.workDoing.get(0)) == null) {
+//			if ((targetFloor = this.elevator.subsystem.workDoing.get(0)) == null) {
+			if ((targetFloor = this.elevator.subsystem.getTask()) == null) {
 //				targetFloor = this.elevatorState.subsystem.workToDo.peek();
 //				isWorkToDo = true;
 				break;
@@ -59,6 +61,7 @@ final class ElevatorMotor implements Runnable {
 //						this.elevatorState.subsystem.workToDo.poll();
 					} else {
 						this.elevator.subsystem.workDoing.remove(0);
+//						this.elevator.subsystem.removeTask();
 					}
 
 					elevator.subsystem.notifyArrivedAtFloor(targetFloor);

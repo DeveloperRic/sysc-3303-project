@@ -46,6 +46,8 @@ public class FloorSubsystem implements Runnable{
 			e.printStackTrace();
 		}
 		
+		System.out.println(tasks.toString() + "\n\n");
+		
 		//puts each task into the taskQueue in the scheduler
 		for (int i=0; i<tasks.size(); i++) {
 			System.out.println("FLOOR SUBSYSTEM: Task " + i + " being sent to Scheduler : \n Task Information : " + tasks.get(i) + "\n");
@@ -77,6 +79,7 @@ public class FloorSubsystem implements Runnable{
 		try {
 			Task task = new Task(inputs[0], inputs[1], inputs[2], inputs[3]);
 			tasks.add(task);
+//			tasks.add(new Task(inputs[0], inputs[3], "", inputs[1]));
 			//taskMatrix.get(task.getStartFloor()-1).get(task.getDirection()).add(task);
 		} catch (Exception e) {
 			System.out.println("Invalid Input: " + e);
