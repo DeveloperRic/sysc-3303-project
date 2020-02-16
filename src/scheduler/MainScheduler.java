@@ -25,8 +25,8 @@ public class MainScheduler {
 	// The value for an elevator going down
 	private static final int DOWN = -1;
 
-	Communication<Integer[], String> floorCommunication;
-	Communication<Integer[], ElevatorMessage> elevatorCommunication;
+	public Communication<Integer[], String> floorCommunication;
+	public Communication<Integer[], ElevatorMessage> elevatorCommunication;
 	List<Integer[]> pendingRequests;
 	ElevatorStatusUpdate elevatorStatusUpdate;
 	String elevatorAcknowledgement;
@@ -66,18 +66,6 @@ public class MainScheduler {
 	}
 
 	/**
-	 * Returns the first object in the floor queue.
-	 * 
-	 * If the floor queue is empty, wait. If floor queue is not empty, return the
-	 * first element
-	 * 
-	 * @return the first object of the floor queue
-	 */
-	public synchronized String floorGet() {
-		return floorCommunication.aGet();
-	}
-
-	/**
 	 * Puts an object in the elevator queue.
 	 * 
 	 * Places an object in the elevator queue that it received from the floor.
@@ -96,27 +84,15 @@ public class MainScheduler {
 		isElevatorUpdate = false;
 		isFloorRequest = true;
 
+		System.out.println("SCHEDULER SUBSYSTEM: Scheduler RECEIVED message from Floor\n Task Information : "
+				+ o.toString() + "\n");
+
 		pendingRequests.add(o);
 		// Current state should be waiting
 		currentState.doWork(this);
 
-		System.out.println(
-				"SCHEDULER SUBSYSTEM: Scheduler RECEIVED task from Floor\n Task Information : " + o.toString() + "\n");
-
 		notifyAll();
 		return true;
-	}
-
-	/**
-	 * Returns the first object in the elevator queue.
-	 * 
-	 * If the elevator queue is empty, wait. If elevator queue is not empty, return
-	 * the first element
-	 * 
-	 * @return the first object of the elevator queue
-	 */
-	public synchronized Integer[] elevatorGet() {
-		return elevatorCommunication.bGet();
 	}
 
 	/**
@@ -136,28 +112,28 @@ public class MainScheduler {
 		// currently, these booleans are set to the message
 		// being an elevator update message
 
+		System.out.println("SCHEDULER SUBSYSTEM: Scheduler RECEIVED message from Elevator\n Message : " + o.toString());
+
 		if (o.getFloorRequest() != null) {
+			System.out.println(" is floor request \n");
+			pendingRequests.add(new Integer[] { o.getFloorRequest(), elevatorStatus.direction });
 			isElevatorAck = false;
 			isElevatorUpdate = false;
 			isFloorRequest = true;
-			pendingRequests.add(new Integer[] {o.getFloorRequest(), elevatorStatus.direction});
 		} else if (o.getStatusUpdate() != null) {
+			System.out.println(" is status update (" + (elevatorStatusUpdate = o.getStatusUpdate()) + ")\n");
 			isElevatorAck = false;
 			isElevatorUpdate = true;
 			isFloorRequest = false;
-			elevatorStatusUpdate = o.getStatusUpdate();
 		} else if (o.getAcknowledgement() != null) {
+			System.out.println(" is acknowledgement (" + (elevatorAcknowledgement = o.getAcknowledgement()) + "\n");
 			isElevatorAck = true;
 			isElevatorUpdate = false;
 			isFloorRequest = false;
-			elevatorAcknowledgement = o.getAcknowledgement();
 		}
 
 		// Current state should be waiting
 		currentState.doWork(this);
-		System.out.println(
-				"SCHEDULER SUBSYSTEM: Scheduler RECEIVED message from Elevator\n Task Information : "
-						+ o.toString() + "\n");
 		notifyAll();
 		return true;
 	}
@@ -207,6 +183,7 @@ public class MainScheduler {
 			direction = update.direction();
 			currentFloor = update.currentFloor();
 			velocity = update.velocity();
+			System.out.println("elevator status updated (v= " + velocity + ")");
 		}
 
 		/**
@@ -252,12 +229,11 @@ public class MainScheduler {
 		private boolean canStopAtFloor(int floor, int direction) {
 			// TODO: if floor already exists, addToWorkDoing = false;
 
-
 			// If elevator has not been assigned anything yet
 			if (velocity == 0 || currentFloor == floor || direction == 0) {
 				return true;
 			}
-						
+
 			// If directions are different
 			if (direction != this.direction) {
 				return false;
@@ -315,15 +291,15 @@ public class MainScheduler {
 			}
 		}
 
-		public int getDirection(){
+		public int getDirection() {
 			return direction;
 		}
 
-		public float getVelocity(){
+		public float getVelocity() {
 			return velocity;
 		}
 
-		public int getCurrentFloor(){
+		public int getCurrentFloor() {
 			return currentFloor;
 		}
 

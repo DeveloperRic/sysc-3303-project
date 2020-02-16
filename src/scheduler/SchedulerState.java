@@ -1,7 +1,6 @@
 package scheduler;
 
 import java.util.Arrays;
-import util.DblEndedPQ;
 
 public enum SchedulerState {
 
@@ -42,6 +41,12 @@ public enum SchedulerState {
 			// if the elevator can go to a requested floor, send the request
 
 			Integer[] o = m.pendingRequests.get(0);
+			
+			if (o[1] == 0) {
+				System.out.println(" From inside an elevator to floor " + o[0]);
+			} else {
+				System.out.println(" From floor " + o[0] + " going " + (o[1] == 1 ? "up" : "down"));
+			}
 
 			if (m.elevatorStatus.addToQueue(o)) {
 				changeTo(m, SEND_REQUEST_TO_ELEVATOR);
@@ -75,7 +80,19 @@ public enum SchedulerState {
 				arr = Arrays.copyOf(arr2, arr2.length, Integer[].class);
 
 
-				m.elevatorCommunication.aPut(arr, "");
+				m.elevatorCommunication.aPut(arr, arr.toString());
+				
+				System.out.println("put work doing in elevCommunication");
+			} else if (!m.elevatorStatus.workToDo.isEmpty()) {
+				m.pendingRequests.add(m.elevatorStatus.workToDo.remove(0));
+				
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {}
+				
+				changeTo(m, RECEIVE_REQUEST_FROM_FLOOR);
+				RECEIVE_REQUEST_FROM_FLOOR.doWork(m);
+				return;
 			}
 			
 			// go into waiting state
@@ -126,13 +143,13 @@ public enum SchedulerState {
 
 		@Override
 		public void doWork(MainScheduler m) {
-			System.out.println("SEND UPDATE TO FLOOR STATE");
+//			System.out.println("SEND UPDATE TO FLOOR STATE");
 			// send the update to the floor that elevator has arrived
 			// go to send command to elevator state
-			System.out.println("SEND UPDATE TO FLOOR STATE" + m.elevatorStatus.currentFloor);
+			System.out.println("SEND UPDATE TO FLOOR STATE (curentFloor= " + m.elevatorStatus.currentFloor + ")");
 			if (m.elevatorStatus.previousFloor != m.elevatorStatus.currentFloor) {
 				m.elevatorStatus.previousFloor = m.elevatorStatus.currentFloor;
-				m.floorCommunication.bPut("RECEIVE ACKNOWLEDGEMENT FROM SCHEDULER floor = " + m.elevatorStatus.currentFloor);
+				m.floorCommunication.bPut("ELEVATOR ARRIVED AT/PASSED FLOOR " + m.elevatorStatus.currentFloor);
 			}
 			changeTo(m, WAIT_FOR_INPUT);
 		}

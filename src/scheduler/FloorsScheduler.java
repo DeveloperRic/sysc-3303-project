@@ -32,7 +32,7 @@ public class FloorsScheduler implements SchedulerType{
 	 */
 	@Override
 	public synchronized Object get() {
-		return s.floorGet();
+		return s.floorCommunication.aGet();
 	}
 
 	/**

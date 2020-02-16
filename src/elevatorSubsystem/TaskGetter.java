@@ -4,14 +4,24 @@ import main.Task;
 
 class TaskGetter implements Runnable {
 
-	private final ElevatorSubsystem elevator;
+	private final ElevatorSubsystem subsystem;
 
 	TaskGetter(ElevatorSubsystem elevator) {
-		this.elevator = elevator;
+		this.subsystem = elevator;
 	}
 
 	@Override
 	public void run() {
+		
+		while (subsystem.poweredOn) {
+			
+			Integer[] workDoing = (Integer[]) subsystem.scheduler.get();
+			subsystem.updateWorkDoing(workDoing);
+			
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {}
+		}
 		
 		// FOLLOWING CODE IS BROKEN NOW
 		

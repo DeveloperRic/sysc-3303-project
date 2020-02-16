@@ -4,25 +4,26 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import scheduler.ElevatorScheduler;
 import scheduler.ElevatorScheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler.ElevatorStatusUpdate;
-
 
 public class ElevatorSubsystem {
 
 	boolean poweredOn;
 	Elevator elevator;
 //	PriorityQueue<Integer> workDoing;
-	List<Integer> workDoing;
+	public BlockingQueue<Integer> workDoing;
 	ElevatorScheduler scheduler;
 	ElevatorState currentState;
 
 	public ElevatorSubsystem(ElevatorScheduler schedulerElevator) {
 		this.scheduler = schedulerElevator;
 		elevator = new Elevator(this);
-		workDoing = new ArrayList<Integer>();
+		workDoing = new LinkedBlockingQueue<>();
 //		workDoing = new PriorityQueue<Integer>(new Comparator<Integer>() {
 //			@Override
 //			public int compare(Integer o1, Integer o2) {
@@ -56,74 +57,82 @@ public class ElevatorSubsystem {
 		return elevator;
 	}
 
-	public List<Integer> getWorkDoing() {
-		return workDoing;
+	public void updateWorkDoing(Integer[] newWorkDoing) {
+		synchronized (workDoing) {
+			workDoing.clear();
+			for (Integer floor : newWorkDoing) {
+				workDoing.add(floor);
+			}
+			System.out.println("[Elevator] updated work doing (size= " + workDoing.size() + ")");
+		}
+		if (!elevator.isAwake()) {
+			elevator.wakeup();
+		} else {
+			System.out.println("[Elevator] already awake");
+		}
 	}
 
-	public void assignTask(int floor) {
-		workDoing.add(floor);
-		if (!elevator.isAwake())
-			elevator.wakeup();
-	}
-	
-	void notifyStatus(int floor, float velocity, int direction) {
+	void notifyStatus() {
 		// send message to Scheduler
 		// saying "elevator's current status"
-		
-		ElevatorStatusUpdate esu = new ElevatorStatusUpdate(){
+		System.out.println("notify status called");
 
+		ElevatorMessage em = new ElevatorMessage() {
 			@Override
-			public int direction() {
-				// TODO Auto-generated method stub
-				return direction;
+			public ElevatorStatusUpdate getStatusUpdate() {
+				ElevatorStatusUpdate update = new ElevatorStatusUpdate() {
+					@Override
+					public int direction() {
+						System.out.println("elev message direction");
+						return new Integer(elevator.direction);
+					}
+
+					@Override
+					public int currentFloor() {
+						return new Integer(elevator.currentFloor);
+					}
+
+					@Override
+					public float velocity() {
+						return new Float(elevator.velocity);
+					}
+
+					@Override
+					public boolean isSleeping() {
+						return new Boolean(!elevator.isAwake());
+					}
+				};
+				System.out.println("elev updated created");
+				return update;
 			}
 
-			@Override
-			public int currentFloor() {
-				// TODO Auto-generated method stub
-				return floor;
-			}
-
-			@Override
-			public float velocity() {
-				// TODO Auto-generated method stub
-				return velocity;
-			}
-
-			@Override
-			public boolean isSleeping() {
-				// TODO Auto-generated method stub
-				return false;
-			}
 		};
-		
-		ElevatorMessage em = new ElevatorMessage(){
-			
-			public ElevatorStatusUpdate getStatusUpdate(){
-				return esu;
-			}
-			
-		};
-		
+
 		scheduler.put(em);
 	}
 
 	void notifyArrivedAtFloor(int floor) {
-		System.out.println("\nArrived at floor " + floor);
 		// send message to Scheduler
 		// saying "elevator arrived at floor ${floor}"
-		
+		System.out.println("\nArrived at floor " + floor);
+
 		String s = "Arrived " + floor + "th floor!";
-		
-		ElevatorMessage em = new ElevatorMessage(){
-			
-			public String getAcknowledgement(){
+
+		scheduler.put(new ElevatorMessage() {
+			public String getAcknowledgement() {
 				return s;
 			}
-			
-		};
-		
-		scheduler.put(em); // some Objects to notify
+		}); // some Objects to notify
+	}
+
+	public void notifyFloorRequest(int floor) {
+		System.out.println("Someone requested floor " + floor);
+		scheduler.put(new ElevatorMessage() {
+			@Override
+			public Integer getFloorRequest() {
+				return floor;
+			}
+		});
 	}
 
 	enum ElevatorState {

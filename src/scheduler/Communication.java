@@ -1,10 +1,7 @@
 package scheduler;
 
-import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import util.DblEndedPQ;
 
 
 public class Communication<A, B> {
@@ -22,7 +19,7 @@ public class Communication<A, B> {
 
 	public synchronized void aPut(A workDoing, String paramText) {
 		System.out.println(aName.toUpperCase() + " SUBSYSTEM: " + aName + " SENDING message to " + bName
-				+ "\n Content : " + paramText + workDoing + "\n");
+				+ "\n Content : " + paramText + "\n");
 		aToB.add(workDoing);
 		notifyAll();
 	}
