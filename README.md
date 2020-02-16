@@ -12,56 +12,45 @@ Group 7
 
 ### Files
 
+ASSETS
+- Input: txt file of input strings
+
+MAIN
 - TesterClass: A class that simulate the inputs
-
-- FloorSubsystem: A subsystem that handles the input from the floor
-
 - Task: A class that contains all the information about the task
+- FloorSubsystem: A subsystem that handles the input for the floors
+- InputParser: Pares inputs for Elevator and Floor subsystems
+- Lamp: Simulates a floor lamp
+- Floor: Simulates a floor
 
-- Main Scheduler: A class that contains get and put method for floor and elevator
-
-- Scheduler: An interface that contains the get and put method
-
-- SchedulerElevator: A class that contains get and put method for the elevator
-
-- SchedulerFloors: A class that contains get and put method for Floors
-
+ELEVATORSUBSYSTEM
 - Elevator: A elevator class that contains the task queue and the power of the elevator
-
-- ElevatorState: A class that contains an elevator state
-
-- ElevatorMotion: A class that simulates the motion when an elevator has tasks
-
+- ElevatorButton: Simulates an elevator button
+- ElevatorDoors: Simulates elevator doors
+- ElevatorLamp: Simulates an elevator lamp
+- ElevatorMotor: Controls elevator movement logic
+- ElevatorSubsystem:A subsystem that handles the input for the elevators
 - TaskGetter: A class that get all the tasks from scheduler assigned to the elevator
 
-- Doors: A class that simulate Open doors and close doors
+SCHEDULER
+- Communication: Object used to pass messages between classes
+- ElevatorScheduler: A class that contains get and put method for the elevator
+- FloorsScheduler: A class that contains get and put method for Floors
+- MainScheduler: A class that contains get and put method for floor and elevator
+- SchedulerState: States for the scheduler state machine
+- SchedulerType: An interface that contains the get and put method
 
 ### Set-Up Instruction
 
 1. Unzip the file and open eclipse
 
-2. import project by selecting the General>Existing Projects into Workspace and select root directory(file location) and the project below
+2. Import project by selecting the General>Existing Projects into Workspace and select root directory(file location) and the project below
 
 ### Test Instruction
 
-1. After imported the project, open TesterClass.java and run it as java application
+1. After project is imported, open TesterClass.java and run it as java application
 
 ### Responsibility Breakdown
-Each team member was responsible for respective test cases and commenting of each class.
-
-ElevatorSubsystem - Zeen, Victor
-  Elevator.java
-  TesterClass.java
-
-Scheduler - Kevin, Ralton
-  MainScheduler.java
-  Scheduler.java
-  SchedulerElevator.java
-  SchedulerFloors.java
-  
-FloorSubsystem - Austin
-  FloorSubsystem.java
-  Task.java
-
-README - Zeen
-UML - Everyone
+Elevator Classes: Zeen, Victor
+Scheduler Classes: Ralton, Kevin
+Floor Classes: Austin
