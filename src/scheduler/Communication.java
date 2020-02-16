@@ -1,7 +1,9 @@
 package scheduler;
 
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import util.DblEndedPQ;
 
 
@@ -35,7 +37,6 @@ public class Communication<A, B> {
 	public synchronized B aGet() {
 		while (bToA.isEmpty()) {
 			try {
-				System.out.println("Check");
 				wait();
 			} catch (InterruptedException e) {
 			}
@@ -44,6 +45,7 @@ public class Communication<A, B> {
 
 		System.out.println(aName.toUpperCase() + " SUBSYSTEM: " + aName + " RECEIVING message from " + bName
 				+ "\n Content : " + obj + "\n");
+		
 
 		notifyAll();
 		return obj;
@@ -60,7 +62,7 @@ public class Communication<A, B> {
 
 		System.out.println(bName.toUpperCase() + " SUBSYSTEM: " + bName + " RECEIVING message from " + aName
 				+ "\n Content : " + obj + "\n");
-
+		
 		notifyAll();
 		return obj;
 	}

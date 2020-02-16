@@ -1,11 +1,14 @@
-package main.elevator;
+package elevatorSubsystem;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import main.SchedulerElevator;
+import scheduler.ElevatorScheduler;
+import scheduler.ElevatorScheduler.ElevatorMessage;
+import scheduler.ElevatorScheduler.ElevatorStatusUpdate;
+
 
 public class ElevatorSubsystem {
 
@@ -13,10 +16,10 @@ public class ElevatorSubsystem {
 	Elevator elevator;
 //	PriorityQueue<Integer> workDoing;
 	List<Integer> workDoing;
-	SchedulerElevator scheduler;
+	ElevatorScheduler scheduler;
 	ElevatorState currentState;
 
-	public ElevatorSubsystem(SchedulerElevator schedulerElevator) {
+	public ElevatorSubsystem(ElevatorScheduler schedulerElevator) {
 		this.scheduler = schedulerElevator;
 		elevator = new Elevator(this);
 		workDoing = new ArrayList<Integer>();
@@ -66,14 +69,61 @@ public class ElevatorSubsystem {
 	void notifyStatus(int floor, float velocity, int direction) {
 		// send message to Scheduler
 		// saying "elevator's current status"
-		scheduler.put(new float[] {floor, velocity, direction});
+		
+		ElevatorStatusUpdate esu = new ElevatorStatusUpdate(){
+
+			@Override
+			public int direction() {
+				// TODO Auto-generated method stub
+				return direction;
+			}
+
+			@Override
+			public int currentFloor() {
+				// TODO Auto-generated method stub
+				return floor;
+			}
+
+			@Override
+			public float velocity() {
+				// TODO Auto-generated method stub
+				return velocity;
+			}
+
+			@Override
+			public boolean isSleeping() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		};
+		
+		ElevatorMessage em = new ElevatorMessage(){
+			
+			public ElevatorStatusUpdate getStatusUpdate(){
+				return esu;
+			}
+			
+		};
+		
+		scheduler.put(em);
 	}
 
 	void notifyArrivedAtFloor(int floor) {
 		System.out.println("\nArrived at floor " + floor);
 		// send message to Scheduler
 		// saying "elevator arrived at floor ${floor}"
-		scheduler.put(floor); // some Objects to notify
+		
+		String s = "Arrived " + floor + "th floor!";
+		
+		ElevatorMessage em = new ElevatorMessage(){
+			
+			public String getAcknowledgement(){
+				return s;
+			}
+			
+		};
+		
+		scheduler.put(em); // some Objects to notify
 	}
 
 	enum ElevatorState {

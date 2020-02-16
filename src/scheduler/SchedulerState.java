@@ -65,7 +65,6 @@ public enum SchedulerState {
 //			}
 			
 			if (!m.elevatorStatus.workDoing.isEmpty()) {
-				System.out.println("CHECK123: " + Arrays.toString(m.elevatorStatus.workDoing.toArray()));
 
 				Integer[] arr = new Integer[m.elevatorStatus.workDoing.size()];
 
@@ -130,6 +129,7 @@ public enum SchedulerState {
 			System.out.println("SEND UPDATE TO FLOOR STATE");
 			// send the update to the floor that elevator has arrived
 			// go to send command to elevator state
+			System.out.println("SEND UPDATE TO FLOOR STATE" + m.elevatorStatus.currentFloor);
 			if (m.elevatorStatus.previousFloor != m.elevatorStatus.currentFloor) {
 				m.elevatorStatus.previousFloor = m.elevatorStatus.currentFloor;
 				m.floorCommunication.bPut("RECEIVE ACKNOWLEDGEMENT FROM SCHEDULER floor = " + m.elevatorStatus.currentFloor);

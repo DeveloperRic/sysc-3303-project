@@ -1,5 +1,7 @@
 package main;
 
+import elevatorSubsystem.Elevator;
+import elevatorSubsystem.ElevatorSubsystem;
 import scheduler.MainScheduler;
 import scheduler.ElevatorScheduler;
 import scheduler.FloorsScheduler;
@@ -19,11 +21,12 @@ public class TesterClass {
 		MainScheduler scheduler = new MainScheduler();
 		FloorsScheduler floorScheduler = new FloorsScheduler(scheduler);
 		ElevatorScheduler elevatorScheduler = new ElevatorScheduler(scheduler);
+		ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(elevatorScheduler);
 		
 		FloorSubsystem floorSS = new FloorSubsystem(floorScheduler);
-		Elevator elevator = new Elevator(elevatorScheduler);
+		Elevator elevator = new Elevator(elevatorSubsystem);
 		
 		new Thread(floorSS,"FloorSS").start();
-		elevator.powerOn();
+		//elevator.powerOn();
 	}
 }

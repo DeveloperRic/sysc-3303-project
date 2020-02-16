@@ -1,6 +1,6 @@
-package main.elevator;
+package elevatorSubsystem;
 
-import main.elevator.ElevatorSubsystem.ElevatorState;
+import elevatorSubsystem.ElevatorSubsystem.ElevatorState;
 
 final class ElevatorMotor implements Runnable {
 
@@ -43,7 +43,7 @@ final class ElevatorMotor implements Runnable {
 				if (this.elevator.currentFloor == targetFloor) {
 					// System.out.println("\nArrived at floor " + targetFloor);
 					
-					elevator.subsystem.notifyArrivedAtFloor(targetFloor);
+					
 
 					this.elevator.velocity = Elevator.ACCELERATION;
 					this.elevator.metresTravelled = 0;
@@ -58,6 +58,8 @@ final class ElevatorMotor implements Runnable {
 						this.elevator.subsystem.workDoing.remove(0);
 					}
 
+					elevator.subsystem.notifyArrivedAtFloor(targetFloor);
+					
 					// System.out.println(
 					// "\nelev: " + state.currentFloor + "\ndoing: " + workDoing + "\ntodo: " +
 					// workToDo);

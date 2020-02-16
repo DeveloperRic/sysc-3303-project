@@ -37,13 +37,13 @@ public class MainScheduler {
 	public ElevatorStatus elevatorStatus;
 
 	// Holds whether or not the message received is an update message
-	boolean isElevatorUpdate;
+	public boolean isElevatorUpdate;
 
 	// Holds whether or not the message received was an elevator acknowledge message
-	boolean isElevatorAck;
+	public boolean isElevatorAck;
 
 	// Holds whether or not the message received was a floor request
-	boolean isFloorRequest;
+	public boolean isFloorRequest;
 
 	/**
 	 * Constructor class that instantiates the message lists
@@ -195,6 +195,7 @@ public class MainScheduler {
 
 		private ElevatorStatus() {
 			direction = 0;
+			previousFloor = 0;
 			currentFloor = 0;
 			velocity = 0;
 			path = new ArrayList<>();

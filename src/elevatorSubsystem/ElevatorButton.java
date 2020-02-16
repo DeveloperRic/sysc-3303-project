@@ -1,4 +1,4 @@
-package main.elevator;
+package elevatorSubsystem;
 
 public class ElevatorButton {
 	

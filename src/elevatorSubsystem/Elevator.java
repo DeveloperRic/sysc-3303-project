@@ -1,4 +1,4 @@
-package main.elevator;
+package elevatorSubsystem;
 
 public class Elevator {
 
@@ -16,7 +16,7 @@ public class Elevator {
 	public int direction; // 1 is up, -1 is down
 	float metresTravelled; // per floor, NOT total
 
-	Elevator(ElevatorSubsystem subsystem) {
+	public Elevator(ElevatorSubsystem subsystem) {
 		this.subsystem = subsystem;
 		doors = new ElevatorDoors(this);
 		motor = new ElevatorMotor(this);

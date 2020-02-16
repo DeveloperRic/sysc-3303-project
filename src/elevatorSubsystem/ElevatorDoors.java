@@ -1,6 +1,6 @@
-package main.elevator;
+package elevatorSubsystem;
 
-import main.elevator.ElevatorSubsystem.ElevatorState;
+import elevatorSubsystem.ElevatorSubsystem.ElevatorState;
 
 class ElevatorDoors {
 	private final float DOOR_MOVE_TIME = 6.74f;
@@ -21,10 +21,10 @@ class ElevatorDoors {
 		this.elevator.subsystem.currentState = ElevatorState.DOORS_OPENING;
 
 		// movingDirection = 1;
-//		try {
-////			Thread.sleep((long) (DOOR_MOVE_TIME * 1000));
-//		} catch (InterruptedException e) {
-//		}
+		try {
+			Thread.sleep((long) (DOOR_MOVE_TIME * 1000));
+		} catch (InterruptedException e) {
+		}
 		doorsOpen = true;
 		this.elevator.subsystem.currentState = ElevatorState.DOORS_OPEN;
 	}
@@ -37,10 +37,10 @@ class ElevatorDoors {
 		this.elevator.subsystem.currentState = ElevatorState.DOORS_CLOSING;
 		
 		// movingDirection = -1;
-//		try {
-////			Thread.sleep((long) (DOOR_MOVE_TIME * 1000));
-//		} catch (InterruptedException e) {
-//		}
+		try {
+			Thread.sleep((long) (DOOR_MOVE_TIME * 1000));
+		} catch (InterruptedException e) {
+		}
 		doorsOpen = false;
 		this.elevator.subsystem.currentState = ElevatorState.DOORS_CLOSED;
 	}

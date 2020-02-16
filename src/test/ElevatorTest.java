@@ -5,35 +5,20 @@ import java.util.List;
 
 import org.junit.Test;
 
-import main.MainScheduler;
-import main.SchedulerElevator;
-import main.elevator.Elevator;
-import main.elevator.ElevatorSubsystem;
+import elevatorSubsystem.Elevator;
+import elevatorSubsystem.ElevatorSubsystem;
+import scheduler.ElevatorScheduler;
+import scheduler.MainScheduler;
 
 public class ElevatorTest {
 
 	MainScheduler mainScheduler = new MainScheduler();
-	SchedulerElevator schedulerElevator = new SchedulerElevator(mainScheduler);
+	ElevatorScheduler schedulerElevator = new ElevatorScheduler(mainScheduler);
 	
 	int[][] elevatorsFloorRequestBoundary = new int[1][2];
 
 	@Test
 	public void test() {
-
-		// FOLLOWING CODE IS BROKEN NOW
-
-//		ElevatorSubsystem elevator = new ElevatorSubsystem(s);
-//		elevator.powerOn();
-//
-//		Elevator state = elevator.getElevator();
-//
-//		System.out.println("\nAssigning a task");
-//		state.assignTask(new Task("14:05:15.0", "2", "1", "4"));
-//		System.out.println("\nAssigning a task");
-//		state.assignTask(new Task("14:13:56.04", "1", "-1", "3"));
-//		System.out.println("\nAssigning a task");
-//		state.assignTask(new Task("14:13:56.06", "1", "-1", "3"));
-//
 
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		subsystem.powerOn();
@@ -75,22 +60,22 @@ public class ElevatorTest {
 
 	}
 
-	private boolean canStopAtFloor(Elevator elevator, int floor) {
-		if (elevator.direction == 0)
-			return true;
-		if ((elevator.direction == -1 && floor > elevator.currentFloor)
-				|| (elevator.direction == 1 && floor < elevator.currentFloor)) {
-			return false;
-		}
-		if (floor < elevatorsFloorRequestBoundary[0][0] || floor > elevatorsFloorRequestBoundary[0][1]) {
-			return false;
-		}
-		if (!elevator.isMoving() || elevator.currentFloor == floor)
-			return true;
-
-		float distanceToFloor = Math.abs(floor - elevator.currentFloor) * Elevator.FLOOR_HEIGHT;
-		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / elevator.velocity;
-		return secondsToFloor >= elevator.secondsToStop();
-	}
+//	private boolean canStopAtFloor(Elevator elevator, int floor) {
+//		if (elevator.direction == 0)
+//			return true;
+//		if ((elevator.direction == -1 && floor > elevator.currentFloor)
+//				|| (elevator.direction == 1 && floor < elevator.currentFloor)) {
+//			return false;
+//		}
+//		if (floor < elevatorsFloorRequestBoundary[0][0] || floor > elevatorsFloorRequestBoundary[0][1]) {
+//			return false;
+//		}
+//		if (!elevator.isMoving() || elevator.currentFloor == floor)
+//			return true;
+//
+//		float distanceToFloor = Math.abs(floor - elevator.currentFloor) * Elevator.FLOOR_HEIGHT;
+//		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / elevator.velocity;
+//		return secondsToFloor >= elevator.secondsToStop();
+//	}
 
 }

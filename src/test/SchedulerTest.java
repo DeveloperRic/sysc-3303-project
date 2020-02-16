@@ -1,6 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertArrayEquals;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.TestCase;
@@ -9,7 +10,6 @@ import junit.framework.TestCase;
 //import main.SchedulerElevator;
 //import main.SchedulerFloors;
 import main.Task;
-
 import scheduler.ElevatorScheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler.ElevatorStatusUpdate;
 import scheduler.MainScheduler;
@@ -25,39 +25,14 @@ import scheduler.FloorsScheduler;
  *
  */
 public class SchedulerTest extends TestCase {
-
-	/**
-	 * Tests the main scheduler
-	 * elevator put and floor get methods
-	 * with a string
-	 */
-	public void testMainElevatorPutFloorGet() {
-		String s = "Hello";
-		MainScheduler m = new MainScheduler();
-		ElevatorMessage em = new ElevatorMessage(){
-
-			//Some Messages
-			public String getAcknowledgement(){
-				return s;
-			}
-
-		};
-		m.elevatorPut(em);
-		assertEquals(s, m.floorGet());
-	}
-
 	
 	/**
-	 * Tests the main scheduler elevator put and floor get methods with a float
-	 * array
+	 * Tests the main scheduler elevator put and floor get methods with an integer
+	 * 
 	 */
-	public void testMainElevatorPutFloorGetInteger() {
-//		Integer[] s = { 1, 2, 1 };
+	public void testMainElevatorPutFloorRequest() {
 		int i = 5;
 		MainScheduler m = new MainScheduler();
-		assertEquals(0, m.elevatorStatus.getDirection());
-		assertEquals(0, m.elevatorStatus.getVelocity(), 0);
-		assertEquals(0, m.elevatorStatus.getCurrentFloor());
 		
 		ElevatorMessage em = new ElevatorMessage(){
 			
@@ -69,23 +44,97 @@ public class SchedulerTest extends TestCase {
 
 		m.elevatorPut(em);
 
-//		assertEquals(1, m.currentElevatorDirection);
-//		assertEquals(2, m.currentElevatorVelocity, 0);
-//		assertEquals(1, m.currentElevatorFloor);
+		assertEquals(true, m.isFloorRequest);
+
+	}
+	
+
+	/**
+	 * Tests the main scheduler
+	 * elevator put and floor get methods
+	 * with a string
+	 */
+	public void testMainElevatorPutAcknowledgement() {
+		String s = "Arrived!";
+		MainScheduler m = new MainScheduler();
+		ElevatorMessage em = new ElevatorMessage(){
+
+			//Some Messages
+			public String getAcknowledgement(){
+				return s;
+			}
+
+		};
+		m.elevatorPut(em);
+		assertEquals(s, m.floorGet());
+		assertEquals(true, m.isElevatorAck);
 	}
 
+	/**
+	 * Tests the main scheduler
+	 * elevator put and floor get methods
+	 * with a string
+	 */
+	public void testMainElevatorPutElevatorStatusUpdate() {
+		int floor = 5;
+		float velocity = 1;
+		int direction = 1;
+		MainScheduler m = new MainScheduler();
+
+		ElevatorStatusUpdate esu = new ElevatorStatusUpdate(){
+
+			@Override
+			public int direction() {
+				// TODO Auto-generated method stub
+				return direction;
+			}
+
+			@Override
+			public int currentFloor() {
+				// TODO Auto-generated method stub
+				return floor;
+			}
+
+			@Override
+			public float velocity() {
+				// TODO Auto-generated method stub
+				return velocity;
+			}
+
+			@Override
+			public boolean isSleeping() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		};
+		
+		ElevatorMessage em = new ElevatorMessage(){
+			
+			public ElevatorStatusUpdate getStatusUpdate(){
+				return esu;
+			}
+			
+		};
+		
+		
+		m.elevatorPut(em);
+		
+		assertEquals(true, m.isElevatorUpdate);
+		//assertEquals(s, m.floorGet());
+	}
+	
 
 	/**
 	 * Tests the main scheduler
 	 * floor put and elevator get methods
-	 * with a string
+	 * with an integer array
 	 */
-//	public void testMainFloorPutElevatorGet() {
-//		String s = "Hello";
-//		MainScheduler m = new MainScheduler();
-//		m.floorPut(s);
-//		assertEquals(s, m.elevatorGet());
-//	}
+	public void testMainFloorPutElevatorGet() {
+		Integer[] i = {5 , 1};
+		MainScheduler m = new MainScheduler();
+		m.floorPut(i);
+		//assertEquals(1, m.elevatorGet().toString());
+	}
 	
 	/**
 	 * Tests the main scheduler floor put and elevator get methods with a string
@@ -134,7 +183,16 @@ public class SchedulerTest extends TestCase {
 //		MainScheduler m = new MainScheduler();
 //		SchedulerType se = new ElevatorScheduler(m);
 //		SchedulerType sf = new FloorsScheduler(m);
-//		se.put(s);
+//		
+//		ElevatorMessage em = new ElevatorMessage(){
+//			
+//			public String getAcknowledgement(){
+//				return s;
+//			}
+//			
+//		};
+//		
+//		se.put(em);
 //		assertEquals(s, sf.get());
 //	}
 	
