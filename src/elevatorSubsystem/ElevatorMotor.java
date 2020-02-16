@@ -17,7 +17,7 @@ final class ElevatorMotor implements Runnable {
 		System.out.println("[Elevator] woken up");
 		this.elevator.velocity = Elevator.ACCELERATION;
 		this.elevator.metresTravelled = 0;
-		this.elevator.subsystem.notifyStatus();
+//		this.elevator.subsystem.notifyStatus();
 		while (this.elevator.subsystem.poweredOn && (!this.elevator.subsystem.workDoing.isEmpty())) {
 //				|| !this.elevatorState.subsystem.workToDo.isEmpty())) {
 
@@ -91,7 +91,7 @@ final class ElevatorMotor implements Runnable {
 				this.elevator.subsystem.currentState = ElevatorState.ACCELERATING;
 			}
 			
-			this.elevator.subsystem.notifyStatus();
+//			this.elevator.subsystem.notifyStatus();
 
 			try {
 				Thread.sleep(1000);

@@ -53,6 +53,7 @@ public enum SchedulerState {
 				SEND_REQUEST_TO_ELEVATOR.doWork(m);
 			} else {
 				changeTo(m, WAIT_FOR_INPUT);
+				m.notifyAll();
 			}
 		}
 	}),
@@ -97,6 +98,7 @@ public enum SchedulerState {
 			
 			// go into waiting state
 			changeTo(m, WAIT_FOR_INPUT);
+			m.notifyAll();
 		}
 	}),
 
@@ -119,6 +121,7 @@ public enum SchedulerState {
 			System.out.println("SEND ACKNOWLEDGEMENT TO FLOOR STATE");
 			m.floorCommunication.bPut(m.elevatorAcknowledgement);
 			changeTo(m, WAIT_FOR_INPUT);
+			m.notifyAll();
 		}
 	}),
 
@@ -152,6 +155,7 @@ public enum SchedulerState {
 				m.floorCommunication.bPut("ELEVATOR ARRIVED AT/PASSED FLOOR " + m.elevatorStatus.currentFloor);
 			}
 			changeTo(m, WAIT_FOR_INPUT);
+			m.notifyAll();
 		}
 	});
 

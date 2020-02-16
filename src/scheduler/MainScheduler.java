@@ -89,6 +89,11 @@ public class MainScheduler {
 
 		pendingRequests.add(o);
 		// Current state should be waiting
+		while (currentState != SchedulerState.WAIT_FOR_INPUT) {
+			try {
+				wait();
+			} catch (InterruptedException e) {}
+		}
 		currentState.doWork(this);
 
 		notifyAll();
@@ -133,6 +138,11 @@ public class MainScheduler {
 		}
 
 		// Current state should be waiting
+		while (currentState != SchedulerState.WAIT_FOR_INPUT) {
+			try {
+				wait();
+			} catch (InterruptedException e) {}
+		}
 		currentState.doWork(this);
 		notifyAll();
 		return true;
