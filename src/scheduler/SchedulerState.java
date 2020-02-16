@@ -134,6 +134,7 @@ public enum SchedulerState {
 				m.elevatorStatus.previousFloor = m.elevatorStatus.currentFloor;
 				m.floorCommunication.bPut("RECEIVE ACKNOWLEDGEMENT FROM SCHEDULER floor = " + m.elevatorStatus.currentFloor);
 			}
+			System.out.println("IDKKKKKKKKKKKK");
 			changeTo(m, WAIT_FOR_INPUT);
 		}
 	});

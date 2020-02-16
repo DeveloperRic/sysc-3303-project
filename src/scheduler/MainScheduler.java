@@ -127,7 +127,7 @@ public class MainScheduler {
 	 * @param o The object to be put in the floor queue
 	 * @return true if successful, false otherwise
 	 */
-	public synchronized boolean elevatorPut(ElevatorMessage o) {
+	public boolean elevatorPut(ElevatorMessage o) {
 		// parse request
 		// set state to ReceivedAcknowledgementFromElevator
 		// or
@@ -135,6 +135,8 @@ public class MainScheduler {
 
 		// currently, these booleans are set to the message
 		// being an elevator update message
+		
+		System.out.println("Reach to ElevatorPut");
 
 		if (o.getFloorRequest() != null) {
 			isElevatorAck = false;
@@ -158,7 +160,7 @@ public class MainScheduler {
 		System.out.println(
 				"SCHEDULER SUBSYSTEM: Scheduler RECEIVED message from Elevator\n Task Information : "
 						+ o.toString() + "\n");
-		notifyAll();
+		//notifyAll();
 		return true;
 	}
 

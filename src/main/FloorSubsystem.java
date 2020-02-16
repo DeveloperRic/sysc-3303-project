@@ -49,7 +49,10 @@ public class FloorSubsystem implements Runnable{
 		//puts each task into the taskQueue in the scheduler
 		for (int i=0; i<tasks.size(); i++) {
 			System.out.println("FLOOR SUBSYSTEM: Task " + i + " being sent to Scheduler : \n Task Information : " + tasks.get(i) + "\n");
-			scheduler.put(tasks.get(i));
+			Integer[] arr = new Integer[tasks.size()+1];
+			arr[i] = tasks.get(i).getStartFloor();
+			arr[i+1] = tasks.get(i).getDirection();
+			scheduler.put(arr);
 		}
 		
 		while(true) {

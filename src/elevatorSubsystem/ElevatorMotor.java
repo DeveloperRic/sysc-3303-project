@@ -20,6 +20,8 @@ final class ElevatorMotor implements Runnable {
 		while (this.elevator.subsystem.poweredOn && (!this.elevator.subsystem.workDoing.isEmpty())) {
 //				|| !this.elevatorState.subsystem.workToDo.isEmpty())) {
 
+			
+			
 			Integer targetFloor;
 			boolean isWorkToDo = false;
 			if ((targetFloor = this.elevator.subsystem.workDoing.get(0)) == null) {
@@ -27,6 +29,7 @@ final class ElevatorMotor implements Runnable {
 //				isWorkToDo = true;
 				break;
 			}
+
 			this.elevator.direction = targetFloor > this.elevator.currentFloor ? 1 : -1;
 
 			if (!taskAssigned) {
@@ -87,11 +90,12 @@ final class ElevatorMotor implements Runnable {
 				}
 
 				this.accelerate(this.elevator);
+				
 				this.elevator.subsystem.currentState = ElevatorState.ACCELERATING;
 			}
 			
 			this.elevator.notifyStatus();
-
+			
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

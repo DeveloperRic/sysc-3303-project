@@ -24,9 +24,9 @@ public class TesterClass {
 		ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(elevatorScheduler);
 		
 		FloorSubsystem floorSS = new FloorSubsystem(floorScheduler);
-		Elevator elevator = new Elevator(elevatorSubsystem);
+//		Elevator elevator = new Elevator(elevatorSubsystem);
 		
 		new Thread(floorSS,"FloorSS").start();
-		//elevator.powerOn();
+		elevatorSubsystem.powerOn();
 	}
 }

@@ -62,11 +62,13 @@ public class ElevatorSubsystem {
 
 	public void assignTask(int floor) {
 		workDoing.add(floor);
-		if (!elevator.isAwake())
+		if (!elevator.isAwake()){
+			System.out.println("Wake Up Elevator!");
 			elevator.wakeup();
+		}
 	}
 	
-	void notifyStatus(int floor, float velocity, int direction) {
+	public void notifyStatus(int floor, float velocity, int direction) {
 		// send message to Scheduler
 		// saying "elevator's current status"
 		

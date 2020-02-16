@@ -16,6 +16,8 @@ class TaskGetter implements Runnable {
 		// FOLLOWING CODE IS BROKEN NOW
 		
 		
+		this.elevator.assignTask(13);
+		
 //		int i = 0;
 //		while (true) {
 //
