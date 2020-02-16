@@ -34,29 +34,29 @@ public class ElevatorTest {
 
 //		List<Integer> workToDo = new ArrayList<>();
 
-		subsystem.assignTask(5);
-		subsystem.assignTask(9);
-		subsystem.assignTask(3);
-		subsystem.assignTask(10);
-		subsystem.assignTask(1);
-		subsystem.assignTask(7);
-		subsystem.assignTask(9);
-		subsystem.assignTask(12);
-		subsystem.assignTask(6);
-		subsystem.assignTask(5);
-		subsystem.assignTask(1);
-		
-		System.out.println("\n*** Assigned all tasks ***");
-		
-		System.out.println(subsystem.getWorkDoing().toString() + "\n");
-		
-		// wait for elevator to return to sleep mode
-		while (subsystem.getElevator().isAwake()) {
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-			}
-		}
+//		subsystem.assignTask(5);
+//		subsystem.assignTask(9);
+//		subsystem.assignTask(3);
+//		subsystem.assignTask(10);
+//		subsystem.assignTask(1);
+//		subsystem.assignTask(7);
+//		subsystem.assignTask(9);
+//		subsystem.assignTask(12);
+//		subsystem.assignTask(6);
+//		subsystem.assignTask(5);
+//		subsystem.assignTask(1);
+//		
+//		System.out.println("\n*** Assigned all tasks ***");
+//		
+//		System.out.println(subsystem.getWorkDoing().toString() + "\n");
+//		
+//		// wait for elevator to return to sleep mode
+//		while (subsystem.getElevator().isAwake()) {
+//			try {
+//				Thread.sleep(3000);
+//			} catch (InterruptedException e) {
+//			}
+//		}
 
 	}
 

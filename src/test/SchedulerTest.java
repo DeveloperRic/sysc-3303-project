@@ -1,22 +1,14 @@
 package test;
 
-import static org.junit.Assert.assertArrayEquals;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import elevatorSubsystem.Elevator;
+import elevatorSubsystem.ElevatorSubsystem;
 import junit.framework.TestCase;
-//import main.MainScheduler;
-//import main.Scheduler;
-//import main.SchedulerElevator;
-//import main.SchedulerFloors;
-import main.Task;
+import main.FloorSubsystem;
+import scheduler.ElevatorScheduler;
+import scheduler.FloorsScheduler;
 import scheduler.ElevatorScheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler.ElevatorStatusUpdate;
 import scheduler.MainScheduler;
-import scheduler.SchedulerType;
-import scheduler.ElevatorScheduler;
-import scheduler.ElevatorScheduler.ElevatorMessage;
-import scheduler.FloorsScheduler;
 
 /**
  * Unit tests for the Scheduler classes
@@ -25,55 +17,61 @@ import scheduler.FloorsScheduler;
  *
  */
 public class SchedulerTest extends TestCase {
-	
+
 	/**
 	 * Tests the main scheduler elevator put and floor get methods with an integer
 	 * 
 	 */
 	public void testMainElevatorPutFloorRequest() {
-		int i = 5;
-		MainScheduler m = new MainScheduler();
+		MainScheduler scheduler = new MainScheduler();
+		FloorsScheduler floorScheduler = new FloorsScheduler(scheduler);
+		ElevatorScheduler elevatorScheduler = new ElevatorScheduler(scheduler);
+		ElevatorSubsystem subsystem = new ElevatorSubsystem(elevatorScheduler);
 		
-		ElevatorMessage em = new ElevatorMessage(){
-			
-			//Some Messages
-			public Integer getFloorRequest(){
-				return i;
+		subsystem.powerOn();
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("[*Test] Floor 5 request to go UP");
+				floorScheduler.put(new Integer[] {5, 1});
 			}
-		};
+		}).start();
+		
 
-		m.elevatorPut(em);
-
-		assertEquals(true, m.isFloorRequest);
+//		assertEquals(true, m.isFloorRequest);
+//		
+//		System.out.println("[*Test] Elevator workDoing = " + subsystem.workDoing.toString());
+		
+		while (subsystem.getElevator().isAwake()) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {}
+		}
 
 	}
-	
 
 	/**
-	 * Tests the main scheduler
-	 * elevator put and floor get methods
-	 * with a string
+	 * Tests the main scheduler elevator put and floor get methods with a string
 	 */
 	public void testMainElevatorPutAcknowledgement() {
 		String s = "Arrived!";
 		MainScheduler m = new MainScheduler();
-		ElevatorMessage em = new ElevatorMessage(){
+		ElevatorMessage em = new ElevatorMessage() {
 
-			//Some Messages
-			public String getAcknowledgement(){
+			// Some Messages
+			public String getAcknowledgement() {
 				return s;
 			}
 
 		};
 		m.elevatorPut(em);
-		assertEquals(s, m.floorGet());
+		//assertEquals(s, m.floorCommunication.aGet());
 		assertEquals(true, m.isElevatorAck);
 	}
 
 	/**
-	 * Tests the main scheduler
-	 * elevator put and floor get methods
-	 * with a string
+	 * Tests the main scheduler elevator put and floor get methods with a string
 	 */
 	public void testMainElevatorPutElevatorStatusUpdate() {
 		int floor = 5;
@@ -81,7 +79,7 @@ public class SchedulerTest extends TestCase {
 		int direction = 1;
 		MainScheduler m = new MainScheduler();
 
-		ElevatorStatusUpdate esu = new ElevatorStatusUpdate(){
+		ElevatorStatusUpdate esu = new ElevatorStatusUpdate() {
 
 			@Override
 			public int direction() {
@@ -107,35 +105,32 @@ public class SchedulerTest extends TestCase {
 				return false;
 			}
 		};
-		
-		ElevatorMessage em = new ElevatorMessage(){
-			
-			public ElevatorStatusUpdate getStatusUpdate(){
+
+		ElevatorMessage em = new ElevatorMessage() {
+
+			public ElevatorStatusUpdate getStatusUpdate() {
 				return esu;
 			}
-			
+
 		};
-		
-		
+
 		m.elevatorPut(em);
-		
+
 		assertEquals(true, m.isElevatorUpdate);
-		//assertEquals(s, m.floorGet());
+		// assertEquals(s, m.floorGet());
 	}
-	
 
 	/**
-	 * Tests the main scheduler
-	 * floor put and elevator get methods
-	 * with an integer array
+	 * Tests the main scheduler floor put and elevator get methods with an integer
+	 * array
 	 */
 	public void testMainFloorPutElevatorGet() {
-		Integer[] i = {5 , 1};
+		Integer[] i = { 5, 1 };
 		MainScheduler m = new MainScheduler();
 		m.floorPut(i);
-		//assertEquals(1, m.elevatorGet().toString());
+		// assertEquals(1, m.elevatorGet().toString());
 	}
-	
+
 	/**
 	 * Tests the main scheduler floor put and elevator get methods with a string
 	 */
@@ -150,9 +145,8 @@ public class SchedulerTest extends TestCase {
 //	}
 
 	/**
-	 * Tests the main scheduler
-	 * elevator put and floor get methods
-	 * with a Task object
+	 * Tests the main scheduler elevator put and floor get methods with a Task
+	 * object
 	 */
 //	public void testMainElevatorPutFloorGetTask() {
 //		Task t = new Task("14:05:15.0", "2", "Up", "4");
@@ -160,11 +154,9 @@ public class SchedulerTest extends TestCase {
 //		m.elevatorPut(t);
 //		assertEquals(t, m.floorGet());
 //	}
-	
+
 	/**
-	 * Tests the main scheduler
-	 * floor put and elevator get methods
-	 * with a Task
+	 * Tests the main scheduler floor put and elevator get methods with a Task
 	 */
 //	public void testMainFloorPutElevatorGetTask() {
 //		Task t = new Task("14:05:15.0", "2", "Up", "4");
@@ -172,11 +164,10 @@ public class SchedulerTest extends TestCase {
 //		m.floorPut(t);
 //		assertEquals(t, m.elevatorGet());
 //	}
-	
+
 	/**
-	 * Tests the proxy classes 
-	 * SchedulerElevator put and SchedulerFloor get
-	 * with a string object 
+	 * Tests the proxy classes SchedulerElevator put and SchedulerFloor get with a
+	 * string object
 	 */
 //	public void testProxyElevatorPutFloorGet() {
 //		String s = "Hello";
@@ -195,11 +186,10 @@ public class SchedulerTest extends TestCase {
 //		se.put(em);
 //		assertEquals(s, sf.get());
 //	}
-	
+
 	/**
-	 * Tests the proxy classes 
-	 * SchedulerFloor put and SchedulerElevator get
-	 * with a string object 
+	 * Tests the proxy classes SchedulerFloor put and SchedulerElevator get with a
+	 * string object
 	 */
 //	public void testProxyFloorPutGet() {
 //		String s = "Hello";
@@ -209,13 +199,12 @@ public class SchedulerTest extends TestCase {
 //		sf.put(s);
 //		assertEquals(s, se.get());
 //	}
-	
+
 	/**
-	 * Simulates two threads communicating with each other
-	 * in a shared memory space.
+	 * Simulates two threads communicating with each other in a shared memory space.
 	 * 
-	 *  One thread passes strings to the second thread
-	 *  and the second thread passes integers to the second thread
+	 * One thread passes strings to the second thread and the second thread passes
+	 * integers to the second thread
 	 */
 //	public void test() {
 //		

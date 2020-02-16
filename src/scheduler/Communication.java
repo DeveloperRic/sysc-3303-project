@@ -1,28 +1,25 @@
 package scheduler;
 
-import java.util.Arrays;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import util.DblEndedPQ;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Communication<A, B> {
-	private BlockingQueue<A> aToB;
-	private BlockingQueue<B> bToA;
+	private List<A> aToB;
+	private List<B> bToA;
 	private String aName;
 	private String bName;
 
 	public Communication(String aName, String bName) {
-		aToB = new LinkedBlockingQueue<A>();
-		bToA = new LinkedBlockingQueue<B>();
+		aToB = new ArrayList<A>();
+		bToA = new ArrayList<B>();
 		this.aName = aName;
 		this.bName = bName;
 	}
 
 	public synchronized void aPut(A workDoing, String paramText) {
 		System.out.println(aName.toUpperCase() + " SUBSYSTEM: " + aName + " SENDING message to " + bName
-				+ "\n Content : " + paramText + workDoing + "\n");
+				+ "\n Content : " + paramText + "\n");
 		aToB.add(workDoing);
 		notifyAll();
 	}
@@ -41,7 +38,7 @@ public class Communication<A, B> {
 			} catch (InterruptedException e) {
 			}
 		}
-		B obj = bToA.remove();
+		B obj = bToA.remove(0);
 
 		System.out.println(aName.toUpperCase() + " SUBSYSTEM: " + aName + " RECEIVING message from " + bName
 				+ "\n Content : " + obj + "\n");
@@ -58,7 +55,7 @@ public class Communication<A, B> {
 			} catch (InterruptedException e) {
 			}
 		}
-		A obj = aToB.remove();
+		A obj = aToB.remove(0);
 
 		System.out.println(bName.toUpperCase() + " SUBSYSTEM: " + bName + " RECEIVING message from " + aName
 				+ "\n Content : " + obj + "\n");
@@ -75,7 +72,7 @@ public class Communication<A, B> {
 			}
 		}
 		notifyAll();
-		return bToA.peek();
+		return bToA.get(0);
 	}
 
 	public synchronized A bPeek() {
@@ -86,7 +83,7 @@ public class Communication<A, B> {
 			}
 		}
 		notifyAll();
-		return aToB.peek();
+		return aToB.get(0);
 	}
 
 }

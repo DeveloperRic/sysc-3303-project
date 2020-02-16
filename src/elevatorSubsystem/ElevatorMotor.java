@@ -14,13 +14,13 @@ final class ElevatorMotor implements Runnable {
 
 	@Override
 	public void run() {
+		System.out.println("[Elevator] woken up");
 		this.elevator.velocity = Elevator.ACCELERATION;
 		this.elevator.metresTravelled = 0;
-		this.elevator.notifyStatus();
+		System.out.println("Get in");
+//		this.elevator.subsystem.notifyStatus();
 		while (this.elevator.subsystem.poweredOn && (!this.elevator.subsystem.workDoing.isEmpty())) {
 //				|| !this.elevatorState.subsystem.workToDo.isEmpty())) {
-
-			
 			
 			Integer targetFloor;
 			boolean isWorkToDo = false;
@@ -94,8 +94,10 @@ final class ElevatorMotor implements Runnable {
 				this.elevator.subsystem.currentState = ElevatorState.ACCELERATING;
 			}
 			
+
 			this.elevator.notifyStatus();
 			
+
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
