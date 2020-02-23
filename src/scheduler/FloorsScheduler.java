@@ -1,21 +1,17 @@
-/**
- * @author Kevin
- *
- */
 package scheduler;
 
+import util.Communication.Selector;
+
 /**
- * This class limits the access of the MainScheduler to 
- * only the floor put and get functions
- * 
- * @author Kevin
+ * This class limits the access of the MainScheduler to only the floor put and
+ * get functions
  *
  */
-public class FloorsScheduler implements SchedulerType{
+public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 
-	//The main scheduler object
+	// The main scheduler object
 	private MainScheduler s;
-	
+
 	/**
 	 * Instantiates the shared main scheduler
 	 * 
@@ -24,15 +20,15 @@ public class FloorsScheduler implements SchedulerType{
 	public FloorsScheduler(MainScheduler s) {
 		this.s = s;
 	}
-	
+
 	/**
 	 * Allows access to the MainScheduler.floorGet function
 	 * 
 	 * @returns an object from MainScheduler.floorGet
 	 */
 	@Override
-	public synchronized Object get() {
-		return s.floorCommunication.aGet();
+	public synchronized String get(Selector selector) {
+		return s.floorCommunication.aGet(selector).getAcknowledgement();
 	}
 
 	/**
@@ -41,9 +37,8 @@ public class FloorsScheduler implements SchedulerType{
 	 * @returns a boolean from MainScheduler.floorPut
 	 */
 	@Override
-	public synchronized boolean put(Object o) {
-		return s.floorPut((Integer[]) o);
-		
+	public synchronized void put(FloorRequest o) {
+		s.floorCommunication.aPut(o);
 	}
 
 }

@@ -1,38 +1,102 @@
 package test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 
-import elevatorSubsystem.Elevator;
-import elevatorSubsystem.ElevatorSubsystem;
+import elevator.ElevatorSubsystem;
 import scheduler.ElevatorScheduler;
+import scheduler.FloorRequest;
+import scheduler.FloorsScheduler;
 import scheduler.MainScheduler;
 
 public class ElevatorTest {
 
-	MainScheduler mainScheduler = new MainScheduler();
-	ElevatorScheduler schedulerElevator = new ElevatorScheduler(mainScheduler);
-	
-	int[][] elevatorsFloorRequestBoundary = new int[1][2];
+	private static final int UP = 1;
+	private static final int DOWN = -1;
+
+	private boolean testing;
 
 	@Test
 	public void test() {
 
-		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
+		boolean verbose = false;
+
+		MainScheduler mainScheduler = new MainScheduler();
+		mainScheduler.setVerbose(verbose); // code works now, no need for spam
+		mainScheduler.activate();
+
+		FloorsScheduler floorsScheduler = new FloorsScheduler(mainScheduler);
+
+		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler(mainScheduler));
+		subsystem.setVerbose(verbose);
 		subsystem.powerOn();
 
+		testing = true;
+
 		/*
-		 * ************************************************* if there's a way to go up, go up first
-		 * 1 | floor 5 ^ | elev 9 | floor 3 ^ | floor 10 v | elev 1 |
+		 * ************************************************* if there's a way to go up,
+		 * go up first| 1 | floor 5 ^ | elev 9 | floor 3 ^ | elev 1 | floor 10 v |
 		 * 
 		 * [ 9 ]
 		 * 
-		 * maxFloor = 9
+		 * assignment: expected [5 9 3 1 10] actual [5 9 3 1 10]
+		 * 
+		 * arrival: expected [3 5 9 10 1] actual [3 5 9 10 1]
+		 * 
+		 * The above results may look weird (you'd expect the elevator to go to 1, then
+		 * 10 because (1) asked first), however, the distance between 9<->1 is greater
+		 * than 9<->10, so in order to increase throughput, the elevator goes up first,
+		 * then down (to maximize number of passengers in the elevator at a time)
+		 * 
 		 */
 
 //		List<Integer> workToDo = new ArrayList<>();
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				floorsScheduler.put(new FloorRequest() {
+					@Override
+					public Integer[] getRequest() {
+						return new Integer[] { 5, UP };
+					}
+				});
+
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+
+				subsystem.pressButton(9);
+
+				floorsScheduler.put(new FloorRequest() {
+					@Override
+					public Integer[] getRequest() {
+						return new Integer[] { 3, UP };
+					}
+				});
+
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+
+				subsystem.pressButton(1);
+
+				floorsScheduler.put(new FloorRequest() {
+					@Override
+					public Integer[] getRequest() {
+						return new Integer[] { 10, DOWN };
+					}
+				});
+
+				if (verbose) {
+					while (testing) {
+						System.out.println("[Floor] " + floorsScheduler.get(null) + "\n");
+					}
+				}
+			}
+		}).start();
 
 //		subsystem.assignTask(5);
 //		subsystem.assignTask(9);
@@ -50,13 +114,16 @@ public class ElevatorTest {
 //		
 //		System.out.println(subsystem.getWorkDoing().toString() + "\n");
 //		
-//		// wait for elevator to return to sleep mode
-//		while (subsystem.getElevator().isAwake()) {
-//			try {
-//				Thread.sleep(3000);
-//			} catch (InterruptedException e) {
-//			}
-//		}
+
+		// wait for elevator to return to sleep mode
+		do {
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+			}
+		} while (subsystem.getElevator().isAwake());
+
+		testing = false;
 
 	}
 

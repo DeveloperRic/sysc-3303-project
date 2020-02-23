@@ -1,22 +1,17 @@
-/**
- * @author Kevin
- *
- */
 package scheduler;
-import java.io.ObjectInputStream.GetField;
+
+import util.Communication.Selector;
 
 /**
- * This class limits the access of the MainScheduler to 
- * only the elevator put and get functions
- * 
- * @author Kevin
+ * This class limits the access of the MainScheduler to only the elevator put
+ * and get functions
  *
  */
-public class ElevatorScheduler implements SchedulerType{
-	
-	//The main scheduler object
+public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRequest> {
+
+	// The main scheduler object
 	private MainScheduler s;
-	
+
 	/**
 	 * Instantiates the shared main scheduler
 	 * 
@@ -32,13 +27,8 @@ public class ElevatorScheduler implements SchedulerType{
 	 * @returns an object from MainScheduler.elevatorGet
 	 */
 	@Override
-	public synchronized Object get() {
-//		return s.elevatorCommunication.bGet();
-		return s.elevatorGet();
-	}
-	
-	public synchronized void remove() {
-		s.elevatorRemove();
+	public FloorRequest get(Selector selector) {
+		return s.elevatorCommunication.bGet(selector);
 	}
 
 	/**
@@ -47,27 +37,12 @@ public class ElevatorScheduler implements SchedulerType{
 	 * @returns a boolean from MainScheduler.elevatorPut
 	 */
 	@Override
-	public synchronized boolean put(Object o) {
-		return s.elevatorPut((ElevatorMessage) o);
+	public void put(ElevatorMessage o) {
+		s.elevatorCommunication.bPut(o);
 	}
 
-	public interface ElevatorMessage {
-		default ElevatorStatusUpdate getStatusUpdate() {
-			return null;
-		}
-		default Integer getFloorRequest() {
-			return null;
-		}
-		default String getAcknowledgement() {
-			return null;
-		}
-	}
-
-	public interface ElevatorStatusUpdate {
-		int direction();
-		int currentFloor();
-		float velocity();
-		boolean isSleeping();
+	public void delay(ElevatorMessage o) {
+		s.elevatorCommunication.delayBPut(o, (int) Math.ceil(3 / MainScheduler.getNumberOfElevators()));
 	}
 
 }

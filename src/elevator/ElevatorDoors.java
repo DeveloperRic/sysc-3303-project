@@ -1,6 +1,6 @@
-package elevatorSubsystem;
+package elevator;
 
-import elevatorSubsystem.ElevatorSubsystem.ElevatorState;
+import elevator.ElevatorSubsystem.ElevatorState;
 
 class ElevatorDoors {
 	private final float DOOR_MOVE_TIME = 6.74f;

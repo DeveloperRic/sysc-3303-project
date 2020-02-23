@@ -1,7 +1,8 @@
-package main;
+package test;
 
-import elevatorSubsystem.Elevator;
-import elevatorSubsystem.ElevatorSubsystem;
+import elevator.Elevator;
+import elevator.ElevatorSubsystem;
+import main.FloorSubsystem;
 import scheduler.MainScheduler;
 import scheduler.ElevatorScheduler;
 import scheduler.FloorsScheduler;

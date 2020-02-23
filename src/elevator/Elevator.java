@@ -1,4 +1,4 @@
-package elevatorSubsystem;
+package elevator;
 
 public class Elevator {
 
@@ -6,12 +6,15 @@ public class Elevator {
 	static final float MAX_VELOCITY = 4.31f;
 	public static final float FLOOR_HEIGHT = 3.23f; // This should be a function call to Floor but whatever for now
 
+	private static final int UP = 1;
+	private static final int DOWN = -1;
+
 	final ElevatorSubsystem subsystem;
 
 	ElevatorDoors doors;
 	ElevatorMotor motor;
 	ElevatorButton[] buttons;
-	public int currentFloor;
+	public Integer currentFloor;
 	public float velocity;
 	public int direction; // 1 is up, -1 is down
 	float metresTravelled; // per floor, NOT total
@@ -19,9 +22,9 @@ public class Elevator {
 	public Elevator(ElevatorSubsystem subsystem) {
 		this.subsystem = subsystem;
 		doors = new ElevatorDoors(this);
-		buttons = new ElevatorButton[21]; 
+		buttons = new ElevatorButton[21];
 		for (int i = 1; i <= 21; ++i) {
-			buttons[i - 1] = new ElevatorButton(i);
+			buttons[i - 1] = new ElevatorButton(subsystem, i);
 		}
 		currentFloor = 1;
 		velocity = ACCELERATION;
@@ -32,23 +35,62 @@ public class Elevator {
 		return velocity > 0;
 	}
 
-	public float secondsToStop() {
+	public synchronized float secondsToStop() {
 		return velocity <= ACCELERATION ? 0 : velocity / ACCELERATION;
 	}
 
-	public boolean canStopAtFloor(int floor) {
-		if (direction == 0)
-			return true;
-		if ((this.direction == -1 && floor > this.currentFloor)
-				|| (this.direction == 1 && floor < this.currentFloor)) {
-			return false;
-		}
-		if (!this.isMoving() || this.currentFloor == floor)
-			return true;
+	synchronized float timeToStopAtFloor(int floor, int direction) {
 
-		float distanceToFloor = Math.abs(floor - this.currentFloor) * FLOOR_HEIGHT;
-		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / this.velocity;
-		return secondsToFloor >= this.secondsToStop();
+		if (ElevatorSubsystem.verbose) {
+			System.out.println("(req = " + floor + " going " + direction + ") (cur = " + currentFloor + " going "
+					+ this.direction + ")");
+		}
+
+		// If elevator has not been assigned anything yet
+		if (velocity == 0 || currentFloor == floor || this.direction == 0) {
+			return 0;
+		}
+
+		// If directions are different
+		if (direction != 0 && direction != this.direction) {
+			if (ElevatorSubsystem.verbose) {
+				System.out.println("dif direction (req = " + floor + " going " + direction + ") (cur = " + currentFloor
+						+ " going " + this.direction + ")");
+			}
+			return -1;
+		}
+
+		// If start floor lower than elevator while elevator going up
+		if (floor < currentFloor && this.direction == UP) {
+			if (ElevatorSubsystem.verbose) {
+				System.out.println("If start floor lower than elevator while elevator going up");
+			}
+			return -1;
+		}
+
+		// If start floor higher than elevator while elevator going down
+		if (floor > currentFloor && this.direction == DOWN) {
+			if (ElevatorSubsystem.verbose) {
+				System.out.println("If start floor higher than elevator while elevator going down " + floor + " > "
+						+ currentFloor);
+				System.out.println("direction is " + direction + " for " + subsystem.workDoing);
+			}
+			return -1;
+		}
+
+//		if (floor < floorRequestBoundary[0] || floor > floorRequestBoundary[1]) {
+//			return false;
+//		}
+
+		// If elevator has not been assigned anything yet
+		if (velocity == 0 || currentFloor == floor || this.direction == 0) {
+			return 0;
+		}
+
+		// if velocity is too fast to slow down, return false;
+		float distanceToFloor = Math.abs(floor - currentFloor) * FLOOR_HEIGHT;
+		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / velocity;
+		return secondsToFloor >= secondsToStop() ? secondsToFloor : -1;
 	}
 
 //	public synchronized void assignTask(Task task) {
@@ -98,12 +140,9 @@ public class Elevator {
 
 		motor = new ElevatorMotor(this);
 		Thread motionThread = new Thread(motor, "ElevatorMotion");
-		 System.out.println("Waking up elevator");
+		System.out.println("Waking up elevator");
 		motor.running = true;
 		motionThread.start();
 	}
-	
-	void notifyStatus() {
-		subsystem.notifyStatus(currentFloor, velocity, direction);
-	}
+
 }

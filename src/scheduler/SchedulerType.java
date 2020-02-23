@@ -1,18 +1,13 @@
-/**
- * @author Kevin
- *
- */
 package scheduler;
 
-/**
- * The scheduler interface that controls the put and get functions
- * 
- * @author Kevin
- *
- */
-public interface SchedulerType {
+import util.Communication.Selector;
 
-	public Object get();
+/**
+ * The scheduler interface that controls the put and get functions *
+ */
+public interface SchedulerType<A, B> {
+
+	public B get(Selector selector);
 	
-	public boolean put(Object o);
+	public void put(A o);
 }

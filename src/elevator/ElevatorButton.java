@@ -1,12 +1,14 @@
-package elevatorSubsystem;
+package elevator;
 
 public class ElevatorButton {
-	
+
+	private ElevatorSubsystem subsystem;
 	private int floor;
 	private boolean pressed;
 	private ElevatorLamp lamp;
-	
-	public ElevatorButton(int floor) {
+
+	public ElevatorButton(ElevatorSubsystem subsystem, int floor) {
+		this.subsystem = subsystem;
 		this.floor = floor;
 		this.lamp = new ElevatorLamp();
 	}
@@ -14,16 +16,22 @@ public class ElevatorButton {
 	public void press() {
 		if (!pressed) {
 			pressed = true;
-			System.out.println("ELEVATOR BUTTON: floor " + floor + " pressed");
+			if (ElevatorSubsystem.verbose) {
+				System.out.println("ELEVATOR BUTTON: floor " + floor + " pressed");
+			}
 			// TODO send request to Scheduler
 			lamp.turnOn();
+			subsystem.notifyButtonPressed(floor);
 		}
 	}
-	
+
 	// called as a result of a message from Scheduler
 	public void unpress() {
 		if (pressed) {
 			pressed = false;
+			if (ElevatorSubsystem.verbose) {
+				System.out.println("ELEVATOR BUTTON: floor " + floor + " unpressed");
+			}
 			lamp.turnOff();
 		}
 	}

@@ -1,12 +1,12 @@
 package test;
 
-import elevatorSubsystem.Elevator;
-import elevatorSubsystem.ElevatorSubsystem;
+import elevator.Elevator;
+import elevator.ElevatorSubsystem;
 import junit.framework.TestCase;
 import main.FloorSubsystem;
+import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
 import scheduler.FloorsScheduler;
-import scheduler.ElevatorScheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler.ElevatorStatusUpdate;
 import scheduler.MainScheduler;
 
