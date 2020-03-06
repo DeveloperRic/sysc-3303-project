@@ -20,6 +20,8 @@ import java.io.*;
  */
 public final class Transport {
 
+	private static boolean verbose;
+
 	private String role;
 	private String destinationRole;
 	private InetAddress address;
@@ -97,7 +99,7 @@ public final class Transport {
 			System.exit(1);
 		}
 	}
-	
+
 	/**
 	 * Send data to a destination on localhost using this transport's default send
 	 * destination parameters
@@ -131,19 +133,23 @@ public final class Transport {
 		// Prepare a DatagramPacket and send it via sendReceiveSocket
 		// to port 5000 on the destination host.
 
-		System.out.println("\n--------------------------\n");
+		if (verbose) {
+			System.out.println("\n--------------------------\n");
 
-		System.out.println(role + ": sending a packet\n");
+			System.out.println(role + ": sending a packet\n");
+		}
 
 		int len = data.length;
 
 		DatagramPacket sendPacket = new DatagramPacket(data, len, address, destPort);
 
-		System.out.println("To " + destRole + ": " + sendPacket.getAddress());
-		System.out.println("\tPort: " + sendPacket.getPort());
-		System.out.println("Packet length:\t" + len);
-		System.out.print("Packet contents (string): ");
-		System.out.println(new String(data, 0, len)); // or could print "s"
+		if (verbose) {
+			System.out.println("To " + destRole + ": " + sendPacket.getAddress());
+			System.out.println("\tPort: " + sendPacket.getPort());
+			System.out.println("Packet length:\t" + len);
+			System.out.print("Packet contents (string): ");
+			System.out.println(new String(data, 0, len)); // or could print "s"
+		}
 
 		// Send the datagram packet to the server via the send/receive socket.
 
@@ -155,7 +161,9 @@ public final class Transport {
 			System.exit(1);
 		}
 
-		System.out.println("\n" + role + ": Packet sent.\n--------------------------\n");
+		if (verbose) {
+			System.out.println("\n" + role + ": Packet sent.\n--------------------------\n");
+		}
 	}
 
 	/**
@@ -184,19 +192,21 @@ public final class Transport {
 		for (int i = 0; i < len; ++i)
 			data[i] = longData[i];
 
-		System.out.println("\n--------------------------\n");
+		if (verbose) {
+			System.out.println("\n--------------------------\n");
 
-		// Process the received datagram.
-		System.out.println(role + ": Packet received\n");
-		System.out.println("From source: " + receivePacket.getAddress());
-		System.out.println("source port: " + receivePacket.getPort());
-		System.out.println("Packet length: " + len);
-		System.out.print("Containing (string): ");
+			// Process the received datagram.
+			System.out.println(role + ": Packet received\n");
+			System.out.println("From source: " + receivePacket.getAddress());
+			System.out.println("source port: " + receivePacket.getPort());
+			System.out.println("Packet length: " + len);
+			System.out.print("Containing (string): ");
 
-		// Form a String from the byte array.
-		System.out.println(new String(data));
+			// Form a String from the byte array.
+			System.out.println(new String(data));
 
-		System.out.println("--------------------------\n");
+			System.out.println("--------------------------\n");
+		}
 		return new Object[] { data, receivePacket.getPort() };
 	}
 
@@ -216,11 +226,11 @@ public final class Transport {
 	public int getReceivePort() {
 		return receivePort == -1 ? receiveSocket.getLocalPort() : receivePort;
 	}
-	
+
 	public int getSendPort() {
 		return sendSocket.getLocalPort();
 	}
-	
+
 	public void setDestinationRole(String destinationRole) {
 		this.destinationRole = destinationRole;
 	}
@@ -241,6 +251,10 @@ public final class Transport {
 		Transport transport = new Transport(sourceRole);
 		transport.send(data, destRole, destPort);
 		transport.close();
+	}
+
+	public static void setVerbose(boolean verbose) {
+		Transport.verbose = verbose;
 	}
 
 }

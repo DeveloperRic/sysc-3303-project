@@ -10,7 +10,7 @@ class ElevatorRuntimeTest {
 	@Test
 	void test() {
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler());
-//		ElevatorSubsystem.setVerbose(false);
+		ElevatorSubsystem.setVerbose(true);
 		subsystem.powerOn();
 
 		new Thread(new Runnable() {

@@ -1,15 +1,22 @@
 package scheduler;
 
-public interface ElevatorMessage {
-	default FloorRequest getFloorRequest() {
+public abstract class ElevatorMessage {
+	public FloorRequest getFloorRequest() {
 		return null;
 	}
 
-	default String getAcknowledgement() {
+	public String getAcknowledgement() {
 		return null;
 	}
 
-	default byte[] serialize() {
+	@Override
+	public String toString() {
+		FloorRequest req = getFloorRequest();
+		String ack = getAcknowledgement();
+		return "<ElevMsg: " + (req != null ? "(" + req + ")" : "") + (ack != null ? "(<Ack: " + ack + ")" : "") + ">";
+	}
+
+	public byte[] serialize() {
 		byte[] floorRequest = null;
 		byte[] acknowledgement = null;
 

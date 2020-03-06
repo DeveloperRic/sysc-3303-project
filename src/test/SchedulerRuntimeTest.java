@@ -10,7 +10,7 @@ class SchedulerRuntimeTest {
 	void test() {
 
 		MainScheduler mainScheduler = new MainScheduler();
-//		mainScheduler.setVerbose(false); // code works now, no need for spam
+		mainScheduler.setVerbose(true); // code works now, no need for spam
 		mainScheduler.activate();
 		
 		while (true) {

@@ -76,6 +76,7 @@ public class MainScheduler {
 		MainScheduler.verbose = verbose;
 //		floorCommunication.setVerbose(verbose);
 //		elevatorCommunication.setVerbose(verbose);
+		Transport.setVerbose(verbose);
 	}
 
 	private synchronized void switchState(SchedulerState state, Object param) {
@@ -100,7 +101,8 @@ public class MainScheduler {
 			public void run() {
 				while (active) {
 					// wait for request
-					System.out.println("waiting for a new packet");
+					if (verbose)
+						System.out.println("waiting for a new packet");
 					Object[] request = transport.receive();
 					byte[] receivedBytes = (byte[]) request[0];
 
@@ -145,7 +147,8 @@ public class MainScheduler {
 								}
 							}
 						}).start();
-						System.out.println("created thread");
+						if (verbose)
+							System.out.println("created thread");
 					}
 				}
 			}

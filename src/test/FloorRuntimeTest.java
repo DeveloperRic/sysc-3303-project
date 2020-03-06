@@ -4,11 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import scheduler.FloorRequest;
 import scheduler.FloorsScheduler;
+import util.Transport;
 
 class FloorRuntimeTest {
 
 	@Test
 	void test() {
+		Transport.setVerbose(true);
+		
 		FloorsScheduler scheduler = new FloorsScheduler();
 
 		new Thread(new Runnable() {

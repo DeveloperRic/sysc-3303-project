@@ -45,15 +45,15 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 
 				while (receivedBytes.value == null || receivedBytes.value.length == 0) {
 					if (receivedBytes.value == null) {
-						System.out.println("--->[data] Elevator receiving");
+						System.out.println("--->[data] Elevator receiving\n");
 						receivedBytes.value = (byte[]) t.receive()[0];
-						System.out.println("^^ get()");
+//						System.out.println("^^ get()");
 						receivedBytes.notifyAll();
 					}
 
 					if (receivedBytes.value.length == 0) {
 						try {
-							System.out.println("--->[data] Elevator waiting");
+							System.out.println("--->[data] Elevator waiting\n");
 							receivedBytes.wait();
 						} catch (InterruptedException e) {
 						}
@@ -61,6 +61,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 				}
 
 				FloorRequest floorRequest = FloorRequest.deserialize(receivedBytes.value);
+				System.out.println("Received " + floorRequest + "\n");
 
 				receivedBytes.value = null;
 
@@ -72,11 +73,11 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 		}
 	}
 
-	private int putBlocked;
+//	private int putBlocked;
 
 	@Override
-	public void put(ElevatorMessage o) {
-		System.out.println("put called " + (++putBlocked) + " potentially blocked");
+	public void put(ElevatorMessage message) {
+//		System.out.println("put called " + (++putBlocked) + " potentially blocked");
 		synchronized (putLock) {
 			System.out.println("got ack lock");
 
@@ -88,9 +89,9 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 //				}
 //			}
 
-			System.out.println("sending");
+			System.out.println("sending " + message + "\n");
 
-			t.send(o.serialize());
+			t.send(message.serialize());
 
 //			waitingOnAcknowledgement.value = true;
 
@@ -100,15 +101,15 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 
 				while (receivedBytes.value == null || receivedBytes.value.length > 0) {
 					if (receivedBytes.value == null) {
-						System.out.println("--->[conf] Elevator receiving");
+						System.out.println("--->[conf] Elevator receiving\n");
 						receivedBytes.value = (byte[]) t.receive()[0];
-						System.out.println("^^ put()");
+//						System.out.println("^^ put()");
 						receivedBytes.notifyAll();
 					}
 
 					if (receivedBytes.value.length > 0) {
 						try {
-							System.out.println("--->[conf] Elevator waiting");
+							System.out.println("--->[conf] Elevator waiting\n");
 							receivedBytes.wait();
 						} catch (InterruptedException e) {
 						}
@@ -122,7 +123,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 //				waitingOnAcknowledgement.notifyAll();
 			}
 		}
-		System.out.println("released put lock " + (--putBlocked) + " potentially blocked");
+//		System.out.println("released put lock " + (--putBlocked) + " potentially blocked");
 	}
 
 	public void delay(ElevatorMessage o) {
