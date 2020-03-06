@@ -13,9 +13,9 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 
 	// The main scheduler object
 	private final Transport t;
-	private final BooleanWrapper waitingOnData = BooleanWrapper.FALSE;
-	private final BooleanWrapper waitingOnAcknowledgement = BooleanWrapper.FALSE;
-	private byte[] receivedBytes = null;
+	private final Object getLock = "get lock";
+	private final Object putLock = "put lock";
+	private BytesWrapper receivedBytes = new BytesWrapper(null);
 
 	/**
 	 * Instantiates the elevator scheduler (lives in elevator-subsystem runtime)
@@ -29,35 +29,45 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 
 	@Override
 	public FloorRequest get(Selector selector) {
-		synchronized (waitingOnData) {
-			while (waitingOnData.value) {
-				try {
-					waitingOnData.wait();
-				} catch (InterruptedException e) {
-				}
-			}
+		synchronized (getLock) {
+//			while (waitingOnData.value) {
+//				try {
+//					waitingOnData.wait();
+//				} catch (InterruptedException e) {
+//				}
+//			}
 
 			t.send(new byte[0]);
 
-			waitingOnData.value = true;
+//			waitingOnData.value = true;
 
-			System.out.println("--->[data] Elevator waiting to receive");
-			receivedBytes = (byte[]) t.receive()[0];
+			synchronized (receivedBytes) {
 
-			synchronized (this) {
-				this.notifyAll();
+				while (receivedBytes.value == null || receivedBytes.value.length == 0) {
+					if (receivedBytes.value == null) {
+						System.out.println("--->[data] Elevator receiving");
+						receivedBytes.value = (byte[]) t.receive()[0];
+						System.out.println("^^ get()");
+						receivedBytes.notifyAll();
+					}
 
-				while (receivedBytes == null || receivedBytes.length == 0) {
-					try {
-						this.wait();
-					} catch (InterruptedException e) {
+					if (receivedBytes.value.length == 0) {
+						try {
+							System.out.println("--->[data] Elevator waiting");
+							receivedBytes.wait();
+						} catch (InterruptedException e) {
+						}
 					}
 				}
 
-				waitingOnData.value = false;
-				waitingOnData.notifyAll();
+				FloorRequest floorRequest = FloorRequest.deserialize(receivedBytes.value);
 
-				return FloorRequest.deserialize(receivedBytes);
+				receivedBytes.value = null;
+
+//				waitingOnData.value = false;
+//				waitingOnData.notifyAll();
+
+				return floorRequest;
 			}
 		}
 	}
@@ -67,39 +77,49 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 	@Override
 	public void put(ElevatorMessage o) {
 		System.out.println("put called " + (++putBlocked) + " potentially blocked");
-		synchronized (waitingOnAcknowledgement) {
+		synchronized (putLock) {
 			System.out.println("got ack lock");
 
-			while (waitingOnAcknowledgement.value) {
-				System.out.println("wait on ack");
-				try {
-					waitingOnAcknowledgement.wait();
-				} catch (InterruptedException e) {
-				}
-			}
+//			while (waitingOnAcknowledgement.value) {
+//				System.out.println("wait on ack");
+//				try {
+//					waitingOnAcknowledgement.wait();
+//				} catch (InterruptedException e) {
+//				}
+//			}
 
 			System.out.println("sending");
 
 			t.send(o.serialize());
 
-			waitingOnAcknowledgement.value = true;
+//			waitingOnAcknowledgement.value = true;
 
 			// receive confirmation of message received
-			System.out.println("--->[conf] Elevator waiting to receive");
-			receivedBytes = (byte[]) t.receive()[0];
 
-			synchronized (this) {
-				this.notifyAll();
+			synchronized (receivedBytes) {
 
-				while (receivedBytes == null || receivedBytes.length > 0) {
-					try {
-						this.wait();
-					} catch (InterruptedException e) {
+				while (receivedBytes.value == null || receivedBytes.value.length > 0) {
+					if (receivedBytes.value == null) {
+						System.out.println("--->[conf] Elevator receiving");
+						receivedBytes.value = (byte[]) t.receive()[0];
+						System.out.println("^^ put()");
+						receivedBytes.notifyAll();
+					}
+
+					if (receivedBytes.value.length > 0) {
+						try {
+							System.out.println("--->[conf] Elevator waiting");
+							receivedBytes.wait();
+						} catch (InterruptedException e) {
+						}
 					}
 				}
 
-				waitingOnAcknowledgement.value = false;
-				waitingOnAcknowledgement.notifyAll();
+				receivedBytes.value = null;
+				receivedBytes.notifyAll();
+
+//				waitingOnAcknowledgement.value = false;
+//				waitingOnAcknowledgement.notifyAll();
 			}
 		}
 		System.out.println("released put lock " + (--putBlocked) + " potentially blocked");
@@ -119,11 +139,10 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 //		s.elevatorCommunication.delayBPut(o, (int) Math.ceil(3 / MainScheduler.getNumberOfElevators()));
 	}
 
-	private static class BooleanWrapper {
-		private static final BooleanWrapper FALSE = new BooleanWrapper(false);
-		private boolean value;
+	private static class BytesWrapper {
+		private byte[] value;
 
-		private BooleanWrapper(boolean value) {
+		private BytesWrapper(byte[] value) {
 			this.value = value;
 		}
 	}

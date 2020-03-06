@@ -18,7 +18,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	 * Instantiates the floor scheduler (lives in floor-subsystem runtime)
 	 */
 	public FloorsScheduler() {
-		t = new Transport("Floor", FLOOR_PORT, false);
+		t = new Transport("Floor", FLOOR_PORT, true);
 		t.setDestinationRole("Scheduler");
 		t.setDestinationPort(MainScheduler.PORT_FOR_FLOOR);
 		System.out.println("Floor send/receive socket bound on port " + t.getReceivePort() + "\n");
