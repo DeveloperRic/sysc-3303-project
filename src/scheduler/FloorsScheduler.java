@@ -1,5 +1,6 @@
 package scheduler;
 
+import util.Transport;
 import util.Communication.Selector;
 
 /**
@@ -8,17 +9,19 @@ import util.Communication.Selector;
  *
  */
 public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
+	public static final int FLOOR_PORT = 63971;
 
 	// The main scheduler object
-	private MainScheduler s;
+	private Transport t;
 
 	/**
-	 * Instantiates the shared main scheduler
-	 * 
-	 * @param s the shared main scheduler
+	 * Instantiates the floor scheduler (lives in floor-subsystem runtime)
 	 */
-	public FloorsScheduler(MainScheduler s) {
-		this.s = s;
+	public FloorsScheduler() {
+		t = new Transport("Floor", FLOOR_PORT, false);
+		t.setDestinationRole("Scheduler");
+		t.setDestinationPort(MainScheduler.PORT_FOR_FLOOR);
+		System.out.println("Floor send/receive socket bound on port " + t.getReceivePort() + "\n");
 	}
 
 	/**
@@ -27,8 +30,11 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	 * @returns an object from MainScheduler.floorGet
 	 */
 	@Override
-	public synchronized String get(Selector selector) {
-		return s.floorCommunication.aGet(selector).getAcknowledgement();
+	public String get(Selector selector) {
+//		return s.floorCommunication.aGet(selector).getAcknowledgement();
+		t.send(new byte[0]);
+		System.out.println("--->[] Floor waiting to receive");
+		return ElevatorMessage.deserialize((byte[]) t.receive()[0]).getAcknowledgement();
 	}
 
 	/**
@@ -37,8 +43,12 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	 * @returns a boolean from MainScheduler.floorPut
 	 */
 	@Override
-	public synchronized void put(FloorRequest o) {
-		s.floorCommunication.aPut(o);
+	public void put(FloorRequest o) {
+//		s.floorCommunication.aPut(o);
+		t.send(o.serialize());
+		// receive confirmation of message received
+		System.out.println("--->[conf] Floor waiting to receive");
+		t.receive();
 	}
 
 }

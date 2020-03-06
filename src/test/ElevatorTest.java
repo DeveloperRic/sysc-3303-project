@@ -24,9 +24,9 @@ public class ElevatorTest {
 		mainScheduler.setVerbose(verbose); // code works now, no need for spam
 		mainScheduler.activate();
 
-		FloorsScheduler floorsScheduler = new FloorsScheduler(mainScheduler);
+		FloorsScheduler floorsScheduler = new FloorsScheduler();
 
-		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler(mainScheduler));
+		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler());
 		subsystem.setVerbose(verbose);
 		subsystem.powerOn();
 

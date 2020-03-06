@@ -1,6 +1,7 @@
 package scheduler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,12 +20,12 @@ public enum SchedulerState {
 		@Override
 		public void doWork(MainScheduler m, Object param) {
 			// receive the request from floor
-			FloorRequest request = (FloorRequest) param;
+			FloorRequest request = FloorRequest.deserialize((byte[]) param);
 			request.responses = new Float[MainScheduler.getNumberOfElevators()];
 			request.numResponses = 0;
 			// forward request to elevator
-			m.elevatorCommunication.aPut(request);
-			notifyDone(m);
+			m.elevatorsMessages.add(request.serialize());
+			notifyDone(m, m.elevatorsMessages);
 		}
 	}),
 
@@ -32,7 +33,7 @@ public enum SchedulerState {
 
 		@Override
 		public void doWork(MainScheduler m, Object param) {
-			ElevatorMessage message = (ElevatorMessage) param;
+			ElevatorMessage message = ElevatorMessage.deserialize((byte[]) param);
 			if (message.getFloorRequest() != null) {
 				FloorRequest request = message.getFloorRequest();
 				if (request.getSourceElevator() == null) {
@@ -42,7 +43,7 @@ public enum SchedulerState {
 							new Object[] { request, request.getSourceElevator() });
 				}
 			} else if (message.getAcknowledgement() != null) {
-				changeTo(m, FORWARD_ACKNOWLEDGEMENT_TO_FLOOR, message);
+				changeTo(m, FORWARD_ACKNOWLEDGEMENT_TO_FLOOR, param);
 			} else {
 				notifyDone(m);
 			}
@@ -60,6 +61,7 @@ public enum SchedulerState {
 				List<Float> responses = new ArrayList<Float>(request.responses.length);
 				// subtract 2 seconds (for processing delay)
 				for (int i = 0; i < request.responses.length; ++i) {
+					System.out.println(Arrays.toString(request.responses.clone()));
 					responses.add(request.responses[i] -= 2);
 				}
 				// pick the smallest (non-negative) eta
@@ -72,8 +74,8 @@ public enum SchedulerState {
 				// message elevator it has been picked
 				changeTo(m, SEND_ACKNOWLEDGEMENT_TO_ELEVATOR, new Object[] { request, selectedElevator });
 			} else {
-				m.elevatorCommunication.aPut(request);
-				notifyDone(m);
+				m.elevatorsMessages.add(request.serialize());
+				notifyDone(m, m.elevatorsMessages);
 			}
 		}
 	}),
@@ -91,8 +93,8 @@ public enum SchedulerState {
 				System.out.println("SCHEDULER SUBSYSTEM: Selected elevator " + request.selectedElevator + " for task\n"
 						+ " Content: " + request + "\n");
 			}
-			m.elevatorCommunication.aPut(request);
-			notifyDone(m);
+			m.elevatorsMessages.add(request.serialize());
+			notifyDone(m, m.elevatorsMessages);
 		}
 	}),
 
@@ -100,8 +102,8 @@ public enum SchedulerState {
 
 		@Override
 		public void doWork(MainScheduler m, Object param) {
-			m.floorCommunication.bPut((ElevatorMessage) param);
-			notifyDone(m);
+			m.floorsMessages.add((byte[]) param);
+			notifyDone(m, m.floorsMessages);
 		}
 	});
 
@@ -121,8 +123,17 @@ public enum SchedulerState {
 		m.currentState = nextState;
 		nextState.doWork(m, param);
 	}
-
+	
 	private static void notifyDone(MainScheduler m) {
+		notifyDone(m, null);
+	}
+
+	private static void notifyDone(MainScheduler m, Object objectToNotify) {
+		if (objectToNotify != null) {
+			synchronized (objectToNotify) {
+				objectToNotify.notifyAll();
+			}
+		}
 		m.currentState.working = false;
 		m.currentState = WAIT_FOR_INPUT;
 		m.currentState.working = false;
