@@ -64,10 +64,6 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 					}
 				}
 
-//				System.out.println("Check Byte1: " + receivedBytes.value[0] + " " + receivedBytes.value[1]);
-//				System.out.println("Check Byte2: " + receivedBytes.value[2] + " " + receivedBytes.value[3]);
-//				System.out.println("Check Byte3: " + receivedBytes.value[4] + " " + receivedBytes.value[5]);
-				System.out.println("Check Byte4: " + Arrays.toString(receivedBytes.value));
 				FloorRequest floorRequest = FloorRequest.deserialize(receivedBytes.value);
 				System.out.println("Received " + floorRequest + "\n");
 

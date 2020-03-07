@@ -144,8 +144,6 @@ public final class Transport {
 		int len = data.length;
 
 		DatagramPacket sendPacket = new DatagramPacket(data, len, address, destPort);
-		
-		System.out.println("WTF444:  " + len + " " + (Arrays.toString(sendPacket.getData())));
 
 		if (verbose) {
 			System.out.println("To " + destRole + ": " + sendPacket.getAddress());
