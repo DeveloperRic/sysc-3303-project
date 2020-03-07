@@ -40,6 +40,7 @@ public class FloorSubsystem implements Runnable{
 	
 	@Override
 	public void run(){
+		System.out.println("hello?");
 		try {
 			getInputs();
 		} catch (IOException e) {

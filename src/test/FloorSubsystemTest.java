@@ -3,6 +3,9 @@ package test;
 import main.FloorSubsystem;
 import static org.junit.Assert.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.junit.Test;
 
 
@@ -13,7 +16,12 @@ public class FloorSubsystemTest {
 	public void test() {
 	//the floor subsystem is basically just a house for the tasks
 	//the only isolated functionality is the parsing
-		
+		try {
+			System.out.println(InetAddress.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	FloorSubsystem floorSS = new FloorSubsystem(null);
 	floorSS.parseAdd("this wont work !");
 	assertTrue(floorSS.tasks.size() == 0);	

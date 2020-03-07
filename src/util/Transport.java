@@ -106,9 +106,10 @@ public final class Transport {
 	 * 
 	 * @param data
 	 * @param destRole e.g. "Host"
+	 * @return 
 	 */
-	public void send(byte[] data) {
-		send(data, destinationRole, destinationPort);
+	public Object[] send(byte[] data) {
+		return send(data, destinationRole, destinationPort);
 	}
 
 	/**
@@ -129,7 +130,7 @@ public final class Transport {
 	 * @param destRole e.g. "Host"
 	 * @param destPort e.g. 23
 	 */
-	public void send(byte[] data, String destRole, int destPort) {
+	public Object[] send(byte[] data, String destRole, int destPort) {
 		// Prepare a DatagramPacket and send it via sendReceiveSocket
 		// to port 5000 on the destination host.
 
@@ -164,6 +165,7 @@ public final class Transport {
 		if (verbose) {
 			System.out.println("\n" + role + ": Packet sent.\n--------------------------\n");
 		}
+		return new Object[] { data, sendPacket.getPort() };
 	}
 
 	/**
@@ -229,6 +231,10 @@ public final class Transport {
 
 	public int getSendPort() {
 		return sendSocket.getLocalPort();
+	}
+	
+	public int getDestinationPort() {
+		return destinationPort;
 	}
 
 	public void setDestinationRole(String destinationRole) {

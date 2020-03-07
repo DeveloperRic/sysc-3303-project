@@ -12,7 +12,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	public static final int FLOOR_PORT = 63971;
 
 	// The main scheduler object
-	private Transport t;
+	public Transport t;
 
 	/**
 	 * Instantiates the floor scheduler (lives in floor-subsystem runtime)
