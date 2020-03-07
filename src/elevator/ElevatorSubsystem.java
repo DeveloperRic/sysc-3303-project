@@ -104,6 +104,7 @@ public class ElevatorSubsystem {
 					return elevatorNumber;
 				}
 			};
+			request.sourceElevator = elevatorNumber;
 			scheduler.put(new ElevatorMessage() {
 				@Override
 				public FloorRequest getFloorRequest() {

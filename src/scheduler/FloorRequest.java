@@ -1,40 +1,40 @@
 package scheduler;
 
-import java.util.Arrays;
-
 import util.ByteUtils;
 
 public abstract class FloorRequest {
 	public Float[] responses = new Float[MainScheduler.getNumberOfElevators()];
 	public int numResponses = 0;
 	public int selectedElevator = -1;
+	public Integer sourceElevator;
 
 	public abstract Integer[] getRequest();
 
 	public Integer getSourceElevator() {
-		return null;
+		return sourceElevator;
 	}
 
 	@Override
 	public String toString() {
 		Integer[] req = getRequest();
-		return "<FlrReq: (fl " + req[0] + (req[1] != 0 ? " going " + (req[1] == 1 ? " up" : "down") : "") + ")>";
+		return "<FlrReq: (fl " + req[0] + (req[1] != 0 ? " going " + (req[1] == 1 ? " up" : "down") : "")
+				+ (getSourceElevator() != null ? "(src-elev " + getSourceElevator() + ")" : "") + ")>";
 	}
 
 	public synchronized byte[] serialize() {
 		Integer[] request = getRequest();
-		
-		byte[] bytes = new byte[2 + request.length + (responses.length * 4) + 2];
+
+		byte[] bytes = new byte[2 + request.length + (responses.length * 4) + 3];
 		int i = 0, j;
 
 		// register lengths of arrays (for deserialize)
 		bytes[i] = Integer.valueOf(request.length).byteValue();
 		bytes[++i] = Integer.valueOf(responses.length * 4).byteValue();
-		
+
 		// serialize the request
 		j = ++i;
 		for (; i - j < (request.length); ++i) {
-			//System.out.println("Check1: " + i + " " + j + " " + request.length);
+			// System.out.println("Check1: " + i + " " + j + " " + request.length);
 			bytes[i] = request[i - j].byteValue();
 		}
 
@@ -54,7 +54,10 @@ public abstract class FloorRequest {
 
 		// add selectedElevator to byte array
 		bytes[++i] = Integer.valueOf(selectedElevator).byteValue();
-		
+
+		// add sourceElevator to byte array
+		bytes[++i] = getSourceElevator() != null ? getSourceElevator().byteValue() : -1;
+
 		return bytes;
 	}
 
@@ -65,14 +68,14 @@ public abstract class FloorRequest {
 		final int responseEnd = requestEnd + ((Byte) bytes[1]).intValue();
 
 		int i = HEAD_SIZE, j;
-		
+
 		// initialize request
 		Integer[] request = new Integer[requestEnd + 1 - HEAD_SIZE];
 		j = i;
 		for (; i <= requestEnd; ++i) {
 			request[i - j] = ((Byte) bytes[i]).intValue();
 		}
-		
+
 		// initialize responses
 		Float[] responses = new Float[(responseEnd - requestEnd) / 4];
 		j = i;
@@ -96,6 +99,7 @@ public abstract class FloorRequest {
 		// initialize integers
 		int numResponses = ((Byte) bytes[i]).intValue();
 		int selectedElevator = ((Byte) bytes[++i]).intValue();
+		int sourceElevator = ((Byte) bytes[++i]).intValue();
 
 		// create floor request
 		FloorRequest floorRequest = new FloorRequest() {
@@ -104,10 +108,11 @@ public abstract class FloorRequest {
 				return request;
 			}
 		};
-		
+
 		floorRequest.responses = responses;
 		floorRequest.numResponses = numResponses;
 		floorRequest.selectedElevator = selectedElevator;
+		floorRequest.sourceElevator = sourceElevator != -1 ? selectedElevator : null;
 
 		return floorRequest;
 	}
