@@ -3,6 +3,9 @@ package test;
 import main.FloorSubsystem;
 import static org.junit.Assert.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.junit.Test;
 
 

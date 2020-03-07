@@ -52,5 +52,9 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 		System.out.println("--->[conf] Floor waiting to receive");
 		t.receive();
 	}
+	
+	public Transport getTransport() {
+		return t;
+	}
 
 }
