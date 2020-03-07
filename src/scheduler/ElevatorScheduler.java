@@ -46,7 +46,12 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 				while (receivedBytes.value == null || receivedBytes.value.length == 0) {
 					if (receivedBytes.value == null) {
 						System.out.println("--->[data] Elevator receiving\n");
-						receivedBytes.value = (byte[]) t.receive()[0];
+						try {
+							receivedBytes.value = (byte[]) t.receive()[0];
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 //						System.out.println("^^ get()");
 						receivedBytes.notifyAll();
 					}
@@ -102,7 +107,12 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 				while (receivedBytes.value == null || receivedBytes.value.length > 0) {
 					if (receivedBytes.value == null) {
 						System.out.println("--->[conf] Elevator receiving\n");
-						receivedBytes.value = (byte[]) t.receive()[0];
+						try {
+							receivedBytes.value = (byte[]) t.receive()[0];
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 //						System.out.println("^^ put()");
 						receivedBytes.notifyAll();
 					}
@@ -148,4 +158,8 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 		}
 	}
 
+	public void closeComms() {
+		t.close();
+	}
+	
 }

@@ -35,5 +35,9 @@ public class ElevatorButton {
 			lamp.turnOff();
 		}
 	}
+	
+	public boolean isPressed() {
+		return pressed;
+	}
 
 }

@@ -103,7 +103,13 @@ public class MainScheduler {
 					// wait for request
 					if (verbose)
 						System.out.println("waiting for a new packet");
-					Object[] request = transport.receive();
+					Object[] request;
+					try {
+						request = transport.receive();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						return;
+					}
 					byte[] receivedBytes = (byte[]) request[0];
 
 					// add request to messages
@@ -196,5 +202,10 @@ public class MainScheduler {
 //		}
 //
 //	}
+	
+	public void closeComms() {
+		floorTransport.close();
+		elevatorTransport.close();
+	}
 
 }

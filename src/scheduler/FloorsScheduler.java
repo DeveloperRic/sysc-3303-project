@@ -34,7 +34,14 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 //		return s.floorCommunication.aGet(selector).getAcknowledgement();
 		t.send(new byte[0]);
 		System.out.println("--->[] Floor waiting to receive");
-		return ElevatorMessage.deserialize((byte[]) t.receive()[0]).getAcknowledgement();
+		String s = "";
+		try {
+			s = ElevatorMessage.deserialize((byte[]) t.receive()[0]).getAcknowledgement();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return s;
 	}
 
 	/**
@@ -48,7 +55,12 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 		t.send(o.serialize());
 		// receive confirmation of message received
 		System.out.println("--->[conf] Floor waiting to receive");
-		t.receive();
+		try {
+			t.receive();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

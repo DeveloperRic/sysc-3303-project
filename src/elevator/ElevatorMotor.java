@@ -2,13 +2,13 @@ package elevator;
 
 import elevator.ElevatorSubsystem.ElevatorState;
 
-final class ElevatorMotor implements Runnable {
+public final class ElevatorMotor implements Runnable {
 
 	private final Elevator elevator;
 	boolean running;
 	private boolean taskAssigned;
 
-	ElevatorMotor(Elevator elevator) {
+	public ElevatorMotor(Elevator elevator) {
 		this.elevator = elevator;
 	}
 
@@ -128,7 +128,7 @@ final class ElevatorMotor implements Runnable {
 		System.out.println("\nElevator is sleeping");
 	}
 
-	void accelerate(Elevator elevator) {
+	public void accelerate(Elevator elevator) {
 		if (!elevator.isMoving())
 			return;
 		elevator.velocity = Math.min(elevator.velocity + Elevator.ACCELERATION, Elevator.MAX_VELOCITY);
@@ -138,13 +138,13 @@ final class ElevatorMotor implements Runnable {
 		doMovement(elevator, elevator.velocity);
 	}
 
-	void decelerate(Elevator elevator) {
+	public void decelerate(Elevator elevator) {
 		if (!elevator.isMoving())
 			return;
 		doMovement(elevator, elevator.velocity = Math.max(elevator.velocity - Elevator.ACCELERATION, 0));
 	}
 
-	void doMovement(Elevator elevator, float velocity) {
+	public void doMovement(Elevator elevator, float velocity) {
 		elevator.metresTravelled += velocity;
 
 		if (elevator.metresTravelled >= Elevator.FLOOR_HEIGHT) {

@@ -2,8 +2,8 @@ package elevator;
 
 public class Elevator {
 
-	static final float ACCELERATION = 0.68f;
-	static final float MAX_VELOCITY = 4.31f;
+	public static final float ACCELERATION = 0.68f;
+	public static final float MAX_VELOCITY = 4.31f;
 	public static final float FLOOR_HEIGHT = 3.23f; // This should be a function call to Floor but whatever for now
 
 	private static final int UP = 1;
@@ -34,12 +34,16 @@ public class Elevator {
 	public boolean isMoving() {
 		return velocity > 0;
 	}
+	
+	public float getMetersTravelled() {
+		return metresTravelled;
+	}
 
 	public synchronized float secondsToStop() {
 		return velocity <= ACCELERATION ? 0 : velocity / ACCELERATION;
 	}
 
-	synchronized float timeToStopAtFloor(int floor, int direction) {
+	public synchronized float timeToStopAtFloor(int floor, int direction) {
 
 		if (ElevatorSubsystem.verbose) {
 			System.out.println("(req = " + floor + " going " + direction + ") (cur = " + currentFloor + " going "
@@ -134,7 +138,7 @@ public class Elevator {
 		return motor != null && motor.running;
 	}
 
-	synchronized void wakeup() {
+	public synchronized void wakeup() {
 		if (isAwake())
 			return;
 

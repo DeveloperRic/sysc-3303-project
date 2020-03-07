@@ -39,6 +39,10 @@ public class ElevatorSubsystem {
 		currentState = ElevatorState.IDLE;
 	}
 
+	public int getFirstWorkDoing() {
+		return workDoing.peek();
+	}
+	
 	public boolean isPoweredOn() {
 		return poweredOn;
 	}
@@ -115,6 +119,10 @@ public class ElevatorSubsystem {
 
 	public void pressButton(int floor) {
 		elevator.buttons[floor - 1].press();
+	}
+	
+	public boolean isButtonPressed(int floor) {
+		return elevator.buttons[floor - 1].isPressed();
 	}
 
 	public static void setVerbose(boolean verbose) {

@@ -108,7 +108,12 @@ public final class Transport {
 	 * @param destRole e.g. "Host"
 	 */
 	public void send(byte[] data) {
-		send(data, destinationRole, destinationPort);
+		try {
+			send(data, destinationRole, destinationPort);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -119,7 +124,12 @@ public final class Transport {
 	 * @param destRole e.g. "Host"
 	 */
 	public void send(byte[] data, String destRole) {
-		send(data, destRole, destinationPort);
+		try {
+			send(data, destRole, destinationPort);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -128,8 +138,9 @@ public final class Transport {
 	 * @param data
 	 * @param destRole e.g. "Host"
 	 * @param destPort e.g. 23
+	 * @throws Exception 
 	 */
-	public void send(byte[] data, String destRole, int destPort) {
+	public void send(byte[] data, String destRole, int destPort) throws Exception {
 		// Prepare a DatagramPacket and send it via sendReceiveSocket
 		// to port 5000 on the destination host.
 
@@ -158,7 +169,8 @@ public final class Transport {
 			sendSocket.send(sendPacket);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(1);
+			throw new Exception();
+			//System.exit(1);
 		}
 
 		if (verbose) {
@@ -170,8 +182,9 @@ public final class Transport {
 	 * Waits for data on the Transport's receiveSocket
 	 * 
 	 * @return [byte[] data-received, int port-data-came-from]
+	 * @throws Exception 
 	 */
-	public Object[] receive() {
+	public Object[] receive() throws Exception {
 		// Construct a DatagramPacket for receiving packets up
 		// to 100 bytes long (the length of the byte array).
 
@@ -183,7 +196,8 @@ public final class Transport {
 			receiveSocket.receive(receivePacket);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(1);
+			throw new Exception();
+		//	System.exit(1);
 		}
 
 		int len = receivePacket.getLength();
@@ -249,7 +263,12 @@ public final class Transport {
 	 */
 	public static void SEND(byte[] data, String sourceRole, String destRole, int destPort) {
 		Transport transport = new Transport(sourceRole);
-		transport.send(data, destRole, destPort);
+		try {
+			transport.send(data, destRole, destPort);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		transport.close();
 	}
 

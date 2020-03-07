@@ -21,5 +21,9 @@ public class ElevatorLamp {
 			illuminated = false;
 		}
 	}
+	
+	public boolean isIlluminated() {
+		return illuminated;
+	}
 
 }
