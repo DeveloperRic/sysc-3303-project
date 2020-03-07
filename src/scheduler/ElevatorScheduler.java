@@ -1,5 +1,7 @@
 package scheduler;
 
+import java.util.Arrays;
+
 import util.Transport;
 import util.Communication.Selector;
 
@@ -37,6 +39,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 //				}
 //			}
 
+			
 			t.send(new byte[0]);
 
 //			waitingOnData.value = true;
@@ -47,6 +50,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 					if (receivedBytes.value == null) {
 						System.out.println("--->[data] Elevator receiving\n");
 						receivedBytes.value = (byte[]) t.receive()[0];
+//						System.out.println("CheckDATA: " + t.receive()[0]);
 //						System.out.println("^^ get()");
 						receivedBytes.notifyAll();
 					}
@@ -60,6 +64,10 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 					}
 				}
 
+//				System.out.println("Check Byte1: " + receivedBytes.value[0] + " " + receivedBytes.value[1]);
+//				System.out.println("Check Byte2: " + receivedBytes.value[2] + " " + receivedBytes.value[3]);
+//				System.out.println("Check Byte3: " + receivedBytes.value[4] + " " + receivedBytes.value[5]);
+				System.out.println("Check Byte4: " + Arrays.toString(receivedBytes.value));
 				FloorRequest floorRequest = FloorRequest.deserialize(receivedBytes.value);
 				System.out.println("Received " + floorRequest + "\n");
 

@@ -87,7 +87,7 @@ public class ElevatorSubsystem {
 
 		scheduler.put(em);
 
-		elevator.buttons[floor - 1].unpress();
+		elevator.buttons[floor+1].unpress();
 	}
 
 	void notifyButtonPressed(int destFloor) {

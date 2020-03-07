@@ -1,13 +1,13 @@
 package test;
 
-import org.junit.jupiter.api.Test;
-
 import scheduler.MainScheduler;
 
-class SchedulerRuntimeTest {
+import org.junit.Test;
+
+public class SchedulerRuntimeTest {
 
 	@Test
-	void test() {
+	public void test() {
 
 		MainScheduler mainScheduler = new MainScheduler();
 		mainScheduler.setVerbose(true); // code works now, no need for spam

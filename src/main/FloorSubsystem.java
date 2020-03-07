@@ -2,6 +2,7 @@ package main;
 import java.io.*;
 import java.util.*;
 
+import scheduler.FloorRequest;
 import scheduler.SchedulerType;
 
 public class FloorSubsystem implements Runnable{
@@ -51,14 +52,19 @@ public class FloorSubsystem implements Runnable{
 		//puts each task into the taskQueue in the scheduler
 		for (int i=0; i<tasks.size(); i++) {
 			System.out.println("FLOOR SUBSYSTEM: Task " + i + " being sent to Scheduler : \n Task Information : " + tasks.get(i) + "\n");
-			Integer[] arr = new Integer[tasks.size()+1];
-			arr[i] = tasks.get(i).getStartFloor();
-			arr[i+1] = tasks.get(i).getDirection();
-			scheduler.put(arr);
+			Integer[] arr = new Integer[2];
+			arr[0] = tasks.get(i).getStartFloor();
+			arr[1] = tasks.get(i).getDirection();
+			scheduler.put(new FloorRequest() {
+				@Override
+				public Integer[] getRequest() {
+					return arr;
+				}
+			});
 		}
 		
 		while(true) {
-			System.out.println("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get() + "\n");
+			System.out.println("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get(null) + "\n");
 		}
 	}
 
@@ -67,6 +73,7 @@ public class FloorSubsystem implements Runnable{
 		String localDir = System.getProperty("user.dir");
 		BufferedReader in = new BufferedReader(new FileReader(localDir + "\\src\\assets\\Inputs.txt"));
 		String ln;
+		
 		while ((ln = in.readLine()) != null)
 			parseAdd(ln);
 		in.close();
@@ -77,7 +84,7 @@ public class FloorSubsystem implements Runnable{
 		String[] inputs = ln.split(" ");
 	
 		try {
-			Task task = new Task(inputs[0], inputs[1], inputs[2], inputs[3]);
+			Task task = new Task(inputs[0], inputs[1], inputs[2]);
 			tasks.add(task);
 //			tasks.add(new Task(inputs[0], inputs[3], "", inputs[1]));
 			//taskMatrix.get(task.getStartFloor()-1).get(task.getDirection()).add(task);

@@ -23,17 +23,18 @@ public abstract class FloorRequest {
 
 	public synchronized byte[] serialize() {
 		Integer[] request = getRequest();
-
+		
 		byte[] bytes = new byte[2 + request.length + (responses.length * 4) + 2];
 		int i = 0, j;
 
 		// register lengths of arrays (for deserialize)
 		bytes[i] = Integer.valueOf(request.length).byteValue();
 		bytes[++i] = Integer.valueOf(responses.length * 4).byteValue();
-
+		
 		// serialize the request
 		j = ++i;
-		for (; i - j < request.length; ++i) {
+		for (; i - j < (request.length); ++i) {
+			//System.out.println("Check1: " + i + " " + j + " " + request.length);
 			bytes[i] = request[i - j].byteValue();
 		}
 
@@ -53,7 +54,7 @@ public abstract class FloorRequest {
 
 		// add selectedElevator to byte array
 		bytes[++i] = Integer.valueOf(selectedElevator).byteValue();
-
+		
 		return bytes;
 	}
 
@@ -64,14 +65,14 @@ public abstract class FloorRequest {
 		final int responseEnd = requestEnd + ((Byte) bytes[1]).intValue();
 
 		int i = HEAD_SIZE, j;
-
+		
 		// initialize request
 		Integer[] request = new Integer[requestEnd + 1 - HEAD_SIZE];
 		j = i;
 		for (; i <= requestEnd; ++i) {
 			request[i - j] = ((Byte) bytes[i]).intValue();
 		}
-
+		
 		// initialize responses
 		Float[] responses = new Float[(responseEnd - requestEnd) / 4];
 		j = i;
@@ -103,6 +104,7 @@ public abstract class FloorRequest {
 				return request;
 			}
 		};
+		
 		floorRequest.responses = responses;
 		floorRequest.numResponses = numResponses;
 		floorRequest.selectedElevator = selectedElevator;

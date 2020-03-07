@@ -1,6 +1,7 @@
 package util;
 
 import java.net.*;
+import java.util.Arrays;
 import java.io.*;
 
 /**
@@ -142,13 +143,15 @@ public final class Transport {
 		int len = data.length;
 
 		DatagramPacket sendPacket = new DatagramPacket(data, len, address, destPort);
+		
+		System.out.println("WTF444:  " + len + " " + (Arrays.toString(sendPacket.getData())));
 
 		if (verbose) {
 			System.out.println("To " + destRole + ": " + sendPacket.getAddress());
 			System.out.println("\tPort: " + sendPacket.getPort());
 			System.out.println("Packet length:\t" + len);
 			System.out.print("Packet contents (string): ");
-			System.out.println(new String(data, 0, len)); // or could print "s"
+			System.out.println(Arrays.toString(data)); // or could print "s"
 		}
 
 		// Send the datagram packet to the server via the send/receive socket.
@@ -203,7 +206,7 @@ public final class Transport {
 			System.out.print("Containing (string): ");
 
 			// Form a String from the byte array.
-			System.out.println(new String(data));
+			System.out.println(Arrays.toString(data));
 
 			System.out.println("--------------------------\n");
 		}

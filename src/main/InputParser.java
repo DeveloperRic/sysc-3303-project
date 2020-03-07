@@ -125,7 +125,7 @@ public class InputParser {
 		String[] inputs = input.split(" ");
 		
 		try {
-			Task task = new Task(inputs[0], inputs[1], inputs[2], inputs[3]);
+			Task task = new Task(inputs[0], inputs[1], inputs[2]);
 			tasks.put(LocalTime.parse(inputs[0]).toString(),task);
 		} catch (Exception e) {
 			System.out.println("Invalid Input: " + e);

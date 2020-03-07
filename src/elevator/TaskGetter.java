@@ -1,5 +1,7 @@
 package elevator;
 
+import java.util.Arrays;
+
 import scheduler.ElevatorMessage;
 import scheduler.FloorRequest;
 import util.Communication.Selector;
@@ -41,7 +43,7 @@ class TaskGetter implements Runnable {
 			// deconstruct the floor request
 			int floor = request.getRequest()[0];
 			int direction = request.getRequest()[1];
-
+			
 			// retrieve eta for this elevator to respond to the request
 			float eta = subsystem.elevator.timeToStopAtFloor(floor, direction);
 
