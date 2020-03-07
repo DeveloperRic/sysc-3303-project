@@ -12,7 +12,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	public static final int FLOOR_PORT = 63971;
 
 	// The main scheduler object
-	public Transport t;
+	private Transport t;
 
 	/**
 	 * Instantiates the floor scheduler (lives in floor-subsystem runtime)
@@ -49,6 +49,10 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 		// receive confirmation of message received
 		System.out.println("--->[conf] Floor waiting to receive");
 		t.receive();
+	}
+	
+	public Transport getTransport() {
+		return t;
 	}
 
 }

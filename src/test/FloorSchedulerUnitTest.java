@@ -16,6 +16,7 @@ class FloorSchedulerUnitTest {
 		Transport.setVerbose(true);
 		
 		FloorsScheduler scheduler = new FloorsScheduler();
+		Transport t = scheduler.getTransport();
 		
 		
 		new Thread(new Runnable() {
@@ -58,19 +59,19 @@ class FloorSchedulerUnitTest {
 					}
 				}.serialize();
 				
-				assertTrue(scheduler.FLOOR_PORT == scheduler.t.getSendPort() && scheduler.FLOOR_PORT == scheduler.t.getReceivePort());
+				assertTrue(scheduler.FLOOR_PORT == t.getSendPort() && scheduler.FLOOR_PORT == t.getReceivePort());
 				
 				//same as scheduler.put(request)
-				Object[] send = scheduler.t.send(data);
+				Object[] send = t.send(data);
 				
 				//checking if packet is being sent to the right place
 				assertTrue(((byte[])send[0]).length > 0);
-				assertTrue((int)send[1] == scheduler.t.getDestinationPort());
+				assertTrue((int)send[1] == t.getDestinationPort());
 				
 				// receive confirmation of message received
 				System.out.println("--->[conf] Floor waiting to receive");
 				
-				Object[] receive = scheduler.t.receive();
+				Object[] receive = t.receive();
 				
 				assertTrue(receive[1].toString() != null);
 				
