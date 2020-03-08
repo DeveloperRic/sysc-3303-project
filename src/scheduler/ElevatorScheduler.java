@@ -56,12 +56,6 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						try {
-							receivedBytes.value = (byte[]) t.receive()[0];
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 //						Printer.print("CheckDATA: " + t.receive()[0]);
 //						Printer.print("^^ get()");
 						receivedBytes.notifyAll();
