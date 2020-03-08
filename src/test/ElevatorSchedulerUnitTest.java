@@ -2,7 +2,7 @@ package test;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
@@ -10,10 +10,10 @@ import scheduler.FloorRequest;
 import scheduler.MainScheduler;
 import util.Transport;
 
-class ElevatorSchedulerUnitTest {
+public class ElevatorSchedulerUnitTest {
 
 	@Test
-	void test() {
+	public void test() {
 		ElevatorScheduler scheduler = new ElevatorScheduler();
 		Transport t = scheduler.getTransport();
 		int startFloor = 5;

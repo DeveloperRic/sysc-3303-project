@@ -56,6 +56,8 @@ final class ElevatorMotor implements Runnable {
 
 //					System.out.print(nextFloor + ", " + distanceToFloor + ", " + secondsToFloor + " {} ");
 
+					System.out.println("Current Floor: " + this.elevator.currentFloor);
+					
 					if (secondsToFloor - 1 < this.elevator.secondsToStop()) {
 						if (this.elevator.currentFloor == targetFloor) {
 							// System.out.println("\nArrived at floor " + targetFloor);
@@ -91,9 +93,11 @@ final class ElevatorMotor implements Runnable {
 
 						} else {
 							if (this.elevator.velocity == Elevator.MAX_VELOCITY) {
-								System.out.print(".");// + currentFloor
+								//System.out.print(".");// + currentFloor
+								System.out.println("Reached To Max Speed...   ");
 							} else {
-								System.out.print("-");
+								//System.out.print("-");
+								System.out.println("Decelerating...   ");
 							}
 
 							this.decelerate(this.elevator);
@@ -101,9 +105,11 @@ final class ElevatorMotor implements Runnable {
 						}
 					} else {
 						if (this.elevator.velocity == Elevator.MAX_VELOCITY) {
-							System.out.print(".");
+							//System.out.print(".");
+							System.out.println("Reached To Max Speed...   ");
 						} else {
-							System.out.print("+");
+							//System.out.print("+");
+							System.out.println("Accerlating...   ");
 						}
 
 						this.accelerate(this.elevator);
@@ -150,7 +156,7 @@ final class ElevatorMotor implements Runnable {
 		if (elevator.metresTravelled >= Elevator.FLOOR_HEIGHT) {
 			elevator.currentFloor += elevator.direction;
 			elevator.metresTravelled = 0;
-			System.out.print("|");
+			//System.out.print("|");
 		}
 	}
 }
