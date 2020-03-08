@@ -72,6 +72,11 @@ public class MainScheduler {
 	public static int getNumberOfElevators() {
 		return NUMBER_OF_ELEVATORS;
 	}
+	
+	public SchedulerState getState() { return currentState; }
+	public List<byte[]> getElevatorMessages() { return elevatorsMessages;}
+	public List<byte[]> getFloorMessages() {return floorsMessages;}
+	public void setState(SchedulerState state) { currentState = state; };
 
 	public void setVerbose(boolean verbose) {
 		MainScheduler.verbose = verbose;
@@ -80,7 +85,7 @@ public class MainScheduler {
 		Transport.setVerbose(verbose);
 	}
 
-	private synchronized void switchState(SchedulerState state, Object param) {
+	public synchronized void switchState(SchedulerState state, Object param) {
 		while (currentState != null && state.working) {
 			try {
 				wait();
