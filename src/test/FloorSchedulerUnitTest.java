@@ -51,6 +51,8 @@ class FloorSchedulerUnitTest {
 			
 			private void send(Integer[] r) {
 				
+				//simulates a put from floor scheduler
+				
 				//serialize request
 				byte[] data = new FloorRequest() {
 					@Override
@@ -71,9 +73,9 @@ class FloorSchedulerUnitTest {
 				// receive confirmation of message received
 				System.out.println("--->[conf] Floor waiting to receive");
 				
+				//just check to see if floor sched can receive packets 
 				Object[] receive = t.receive();
-				
-				assertTrue(receive[1].toString() != null);
+				assertTrue(receive[1] != null);
 				
 				System.out.println(scheduler.get(null));
 				

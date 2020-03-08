@@ -147,5 +147,8 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 			this.value = value;
 		}
 	}
-
+	
+	public Transport getTransport() {
+		return t;
+	}
 }
