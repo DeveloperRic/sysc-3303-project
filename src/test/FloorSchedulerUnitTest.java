@@ -1,18 +1,18 @@
 package test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import scheduler.FloorRequest;
 import scheduler.FloorsScheduler;
 import util.Transport;
+import static org.junit.Assert.assertTrue;
 
-class FloorSchedulerUnitTest {
+public class FloorSchedulerUnitTest {
 
 	//have other schedulers running first
 	@Test
-	void test() {
+	public void test() {
 		Transport.setVerbose(true);
 		
 		FloorsScheduler scheduler = new FloorsScheduler();

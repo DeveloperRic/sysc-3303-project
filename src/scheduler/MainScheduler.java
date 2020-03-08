@@ -120,6 +120,7 @@ public class MainScheduler {
 //
 							// send reply
 							transport.send(DEFAULT_REPLY, sourceName);
+							
 //
 //							// notify waiting threads that something's been added
 //							putList.notifyAll();

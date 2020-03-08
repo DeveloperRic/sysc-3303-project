@@ -1,18 +1,19 @@
 package test;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import main.InputParser;
 import main.Task;
 
-class InputParserTest {
+public class InputParserTest {
 
 	@Test
-	void test() {
+	public void test() {
 		InputParser parser = new InputParser("\\src\\assets\\Inputs.txt");
 		HashMap<String,Task> tasks = parser.getTasks();
 		parser.printTasks();

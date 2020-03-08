@@ -1,5 +1,7 @@
 package scheduler;
 
+import java.util.Arrays;
+
 public abstract class ElevatorMessage {
 	public FloorRequest getFloorRequest() {
 		return null;
@@ -56,6 +58,8 @@ public abstract class ElevatorMessage {
 			}
 		}
 
+		System.out.println("Elevator Messages Test: " + Arrays.toString(bytes));
+		
 		return bytes;
 	}
 
