@@ -1,11 +1,10 @@
 package test;
 
-import scheduler.FloorRequest;
+import org.junit.Test;
+
+import main.FloorSubsystem;
 import scheduler.FloorsScheduler;
 import util.Transport;
-import main.FloorSubsystem;
-
-import org.junit.Test;
 
 public class FloorRuntimeTest {
 

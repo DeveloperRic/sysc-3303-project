@@ -54,14 +54,14 @@ public class MainScheduler {
 		// create 2 threads for both directions in the intermediate host
 		// (they do the exact same thing, but with different sources/sinks)
 
-		Thread clientThread = new Thread(makeRunnable("Floor", floorTransport, elevatorsMessages, floorsMessages,
-				SchedulerState.FORWARD_REQUEST_TO_ELEVATOR));
+		Thread floorThread = new Thread(makeRunnable("Floor", floorTransport, elevatorsMessages, floorsMessages,
+				SchedulerState.FORWARD_REQUEST_TO_ELEVATOR, true));
 
-		Thread serverThread = new Thread(makeRunnable("Elevator", elevatorTransport, floorsMessages, elevatorsMessages,
-				SchedulerState.RECEIVE_MESSAGE_FROM_ELEVATOR));
+		Thread elevatorThread = new Thread(makeRunnable("Elevator", elevatorTransport, floorsMessages,
+				elevatorsMessages, SchedulerState.RECEIVE_MESSAGE_FROM_ELEVATOR, false));
 
-		clientThread.start();
-		serverThread.start();
+		floorThread.start();
+		elevatorThread.start();
 	}
 
 	public void deactivate() {
@@ -95,7 +95,7 @@ public class MainScheduler {
 	}
 
 	private Runnable makeRunnable(String sourceName, Transport transport, List<byte[]> putList, List<byte[]> getList,
-			SchedulerState nextState) {
+			SchedulerState nextState, boolean isForFloor) {
 		return new Runnable() {
 			@Override
 			public void run() {
@@ -107,7 +107,7 @@ public class MainScheduler {
 					byte[] receivedBytes = (byte[]) request[0];
 
 					// add request to messages
-					if (receivedBytes.length > 0) {
+					if (receivedBytes.length > 1) {
 						synchronized (putList) {
 							if (verbose) {
 								System.out.println("[" + sourceName + "->Scheduler] Received bytes: "
@@ -120,24 +120,61 @@ public class MainScheduler {
 //
 							// send reply
 							transport.send(DEFAULT_REPLY, sourceName);
-							
+
 //
 //							// notify waiting threads that something's been added
 //							putList.notifyAll();
 						}
 					} else {
+						Integer subsystemNumber;
+						if (receivedBytes.length == 1) {
+							subsystemNumber = ((Byte) receivedBytes[0]).intValue();
+						} else {
+							subsystemNumber = null;
+						}
 						new Thread(new Runnable() {
 							@Override
 							public void run() {
 								synchronized (getList) {
 									// wait for list to be non-empty
-									while (getList.isEmpty()) {
+									// also wait for the elevator to need to do something
+									boolean actionNeeded = false;
+									while (getList.isEmpty() || !actionNeeded) {
+
+										if (!getList.isEmpty() && subsystemNumber != null) {
+
+											// check if (elevator) action is needed
+											if (!isForFloor) {
+												// go through all messages to try and find at least 1
+												// request for which action is needed
+												for (byte[] reqBytes : getList) {
+													FloorRequest req = FloorRequest.deserialize(reqBytes);
+
+													// if request is needing elevator's input OR
+													// if request is assigned to the elevator
+													if (req.selectedElevator == subsystemNumber
+															|| req.responses[subsystemNumber - 1] == null) {
+														actionNeeded = true;
+														break;
+													}
+												}
+											}
+
+											if (isForFloor) {
+												// TODO check if (floor) has message
+											}
+										}
+
 										if (verbose) {
 											System.out.println("[]---> " + sourceName + " waiting");
 										}
-										try {
-											getList.wait();
-										} catch (InterruptedException e) {
+
+										// if there's still nothing to do, wait
+										if (getList.isEmpty() || !actionNeeded) {
+											try {
+												getList.wait();
+											} catch (InterruptedException e) {
+											}
 										}
 									}
 									if (verbose) {

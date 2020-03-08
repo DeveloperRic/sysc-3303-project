@@ -1,9 +1,7 @@
 package scheduler;
 
-import java.util.Arrays;
-
-import util.Transport;
 import util.Communication.Selector;
+import util.Transport;
 
 /**
  * This class limits the access of the MainScheduler to only the elevator put
@@ -14,6 +12,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 	public static final int ELEVATOR_PORT = 63974;
 
 	// The main scheduler object
+	private final byte elevatorNumber;
 	private final Transport t;
 	private final Object getLock = "get lock";
 	private final Object putLock = "put lock";
@@ -22,7 +21,8 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 	/**
 	 * Instantiates the elevator scheduler (lives in elevator-subsystem runtime)
 	 */
-	public ElevatorScheduler() {
+	public ElevatorScheduler(Integer elevatorNumber) {
+		this.elevatorNumber = elevatorNumber.byteValue();
 		t = new Transport("Elevator", ELEVATOR_PORT, false);
 		t.setDestinationRole("Scheduler");
 		t.setDestinationPort(MainScheduler.PORT_FOR_ELEVATOR);
@@ -40,7 +40,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 //			}
 
 			
-			t.send(new byte[0]);
+			t.send(new byte[] {elevatorNumber});
 
 //			waitingOnData.value = true;
 
@@ -150,6 +150,10 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 		private BytesWrapper(byte[] value) {
 			this.value = value;
 		}
+	}
+	
+	public byte getElevatorNumber() {
+		return elevatorNumber;
 	}
 	
 	public Transport getTransport() {

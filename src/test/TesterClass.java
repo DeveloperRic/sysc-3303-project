@@ -39,7 +39,7 @@ public class TesterClass {
 		
 		
 		//Power on elevator subsystem
-		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler());
+		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler(1));
 		ElevatorSubsystem.setVerbose(true);
 		subsystem.powerOn();
 		

@@ -1,9 +1,7 @@
 package scheduler;
 
-import java.util.Arrays;
-
-import util.Transport;
 import util.Communication.Selector;
+import util.Transport;
 
 /**
  * This class limits the access of the MainScheduler to only the floor put and

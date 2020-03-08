@@ -25,7 +25,7 @@ public class SchedulerTest extends TestCase {
 	public void testMainElevatorPutFloorRequest() {
 		MainScheduler scheduler = new MainScheduler();
 		FloorsScheduler floorScheduler = new FloorsScheduler();
-		ElevatorScheduler elevatorScheduler = new ElevatorScheduler();
+		ElevatorScheduler elevatorScheduler = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(elevatorScheduler);
 		
 		subsystem.powerOn();

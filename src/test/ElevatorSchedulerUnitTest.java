@@ -14,7 +14,7 @@ public class ElevatorSchedulerUnitTest {
 
 	@Test
 	public void test() {
-		ElevatorScheduler scheduler = new ElevatorScheduler();
+		ElevatorScheduler scheduler = new ElevatorScheduler(1);
 		Transport t = scheduler.getTransport();
 		int startFloor = 5;
 		

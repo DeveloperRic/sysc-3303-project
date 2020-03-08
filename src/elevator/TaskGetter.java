@@ -1,7 +1,5 @@
 package elevator;
 
-import java.util.Arrays;
-
 import scheduler.ElevatorMessage;
 import scheduler.FloorRequest;
 import util.Communication.Selector;

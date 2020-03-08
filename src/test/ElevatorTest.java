@@ -26,8 +26,8 @@ public class ElevatorTest {
 
 		FloorsScheduler floorsScheduler = new FloorsScheduler();
 
-		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler());
-		subsystem.setVerbose(verbose);
+		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler(1));
+		ElevatorSubsystem.setVerbose(verbose);
 		subsystem.powerOn();
 
 		testing = true;

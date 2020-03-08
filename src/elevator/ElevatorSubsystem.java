@@ -21,7 +21,7 @@ public class ElevatorSubsystem {
 
 	public ElevatorSubsystem(ElevatorScheduler schedulerElevator) {
 		this.scheduler = schedulerElevator;
-		elevatorNumber = 1;
+		elevatorNumber = schedulerElevator.getElevatorNumber();
 		elevator = new Elevator(this);
 //		workDoing = new ArrayList<Integer>();
 		workDoing = new PriorityQueue<Integer>(new Comparator<Integer>() {
