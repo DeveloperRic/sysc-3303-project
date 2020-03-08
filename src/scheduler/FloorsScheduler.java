@@ -1,6 +1,9 @@
 package scheduler;
 
 import util.Communication.Selector;
+
+import java.nio.ByteBuffer;
+
 import util.Transport;
 
 /**
@@ -9,7 +12,7 @@ import util.Transport;
  *
  */
 public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
-	public static final int FLOOR_PORT = 63971;
+//	public static final int FLOOR_PORT = 63971;
 
 	// The main scheduler object
 	private Transport t;
@@ -18,7 +21,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	 * Instantiates the floor scheduler (lives in floor-subsystem runtime)
 	 */
 	public FloorsScheduler() {
-		t = new Transport("Floor", FLOOR_PORT, true);
+		t = new Transport("Floor", -1, true);
 		t.setDestinationRole("Scheduler");
 		t.setDestinationPort(MainScheduler.PORT_FOR_FLOOR);
 		System.out.println("Floor send/receive socket bound on port " + t.getReceivePort() + "\n");
@@ -45,12 +48,19 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	@Override
 	public void put(FloorRequest o) {
 //		s.floorCommunication.aPut(o);
-		t.send(o.serialize());
+		byte[] requestBytes = o.serialize();
+		ByteBuffer buffer = ByteBuffer.allocate(requestBytes.length + 4);
+
+		buffer.putInt(t.getReceivePort());
+		buffer.put(requestBytes);
+
+		t.send(buffer.array());
+
 		// receive confirmation of message received
 		System.out.println("--->[conf] Floor waiting to receive");
 		t.receive();
 	}
-	
+
 	public Transport getTransport() {
 		return t;
 	}

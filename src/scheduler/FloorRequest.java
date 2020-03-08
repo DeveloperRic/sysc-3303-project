@@ -1,5 +1,8 @@
 package scheduler;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
 import util.ByteUtils;
 
 public abstract class FloorRequest {
@@ -17,89 +20,124 @@ public abstract class FloorRequest {
 	@Override
 	public String toString() {
 		Integer[] req = getRequest();
-		return "<FlrReq: (fl " + req[0] + (req[1] != 0 ? " going " + (req[1] == 1 ? " up" : "down") : "")
-				+ (getSourceElevator() != null ? "(src-elev " + getSourceElevator() + ")" : "") + ")>";
+		return "<FlrReq: (fl " + req[0] + (req[1] != 0 ? " going " + (req[1] == 1 ? "up" : "down") : "")
+				+ (getSourceElevator() != null ? " (src-elev " + getSourceElevator() + ")" : "") + " (sel-elev "
+				+ selectedElevator + ")" + " (res " + Arrays.toString(responses.clone()) + ")" + ")>";
 	}
 
 	public synchronized byte[] serialize() {
 		Integer[] request = getRequest();
 
-		byte[] bytes = new byte[2 + request.length + (responses.length * 4) + 3];
-		int i = 0, j;
+//		byte[] bytes = new byte[2 + request.length + (responses.length * 4) + 3];
+//		int i = 0, j;
+//
+//		// register lengths of arrays (for deserialize)
+//		bytes[i] = Integer.valueOf(request.length).byteValue();
+//		bytes[++i] = Integer.valueOf(responses.length * 4).byteValue();
+//
+//		// serialize the request
+//		j = ++i;
+//		for (; i - j < (request.length); ++i) {
+//			// System.out.println("Check1: " + i + " " + j + " " + request.length);
+//			bytes[i] = request[i - j].byteValue();
+//		}
+//
+//		// serialize the responses array
+//		j = i;
+//		for (; i - j < responses.length; i += 4) {
+//			Float response = responses[i - j];
+//			byte[] responseBytes = ByteUtils.floatToBytes(response != null ? response : Float.NEGATIVE_INFINITY);
+//
+//			for (int k = i; k - i < 4; ++k) {
+//				bytes[k] = responseBytes[k - i];
+//			}
+//		}
+//
+//		// add numResponses to byte array
+//		bytes[i] = Integer.valueOf(numResponses).byteValue();
+//
+//		// add selectedElevator to byte array
+//		bytes[++i] = Integer.valueOf(selectedElevator).byteValue();
+//
+//		// add sourceElevator to byte array
+//		bytes[++i] = getSourceElevator() != null ? getSourceElevator().byteValue() : -1;
+//
+//		return bytes;
 
-		// register lengths of arrays (for deserialize)
-		bytes[i] = Integer.valueOf(request.length).byteValue();
-		bytes[++i] = Integer.valueOf(responses.length * 4).byteValue();
+		ByteBuffer buffer = ByteBuffer.allocate((2 + request.length + responses.length + 3) * 4);
 
-		// serialize the request
-		j = ++i;
-		for (; i - j < (request.length); ++i) {
-			// System.out.println("Check1: " + i + " " + j + " " + request.length);
-			bytes[i] = request[i - j].byteValue();
+		buffer.putInt(request.length);
+		buffer.putInt(responses.length);
+
+		for (Integer num : request) {
+			buffer.putInt(num);
+		}
+		for (Float response : responses) {
+			buffer.putFloat(response != null ? response : Float.NEGATIVE_INFINITY);
 		}
 
-		// serialize the responses array
-		j = i;
-		for (; i - j < responses.length; i += 4) {
-			Float response = responses[i - j];
-			byte[] responseBytes = ByteUtils.floatToBytes(response != null ? response : Float.NEGATIVE_INFINITY);
+		buffer.putInt(numResponses);
+		buffer.putInt(selectedElevator);
+		buffer.putInt(getSourceElevator() != null ? getSourceElevator().byteValue() : -1);
 
-			for (int k = i; k - i < 4; ++k) {
-				bytes[k] = responseBytes[k - i];
-			}
-		}
-
-		// add numResponses to byte array
-		bytes[i] = Integer.valueOf(numResponses).byteValue();
-
-		// add selectedElevator to byte array
-		bytes[++i] = Integer.valueOf(selectedElevator).byteValue();
-
-		// add sourceElevator to byte array
-		bytes[++i] = getSourceElevator() != null ? getSourceElevator().byteValue() : -1;
-
-		return bytes;
+		return buffer.array();
 	}
 
 	public static FloorRequest deserialize(byte[] bytes) {
 //		System.out.println("flr deserializing " + ByteUtils.toString(bytes));
-		final int HEAD_SIZE = 2;
-		final int requestEnd = HEAD_SIZE + ((Byte) bytes[0]).intValue() - 1;
-		final int responseEnd = requestEnd + ((Byte) bytes[1]).intValue();
+//		final int HEAD_SIZE = 2;
+//		final int requestEnd = HEAD_SIZE + ((Byte) bytes[0]).intValue() - 1;
+//		final int responseEnd = requestEnd + ((Byte) bytes[1]).intValue();
+//
+//		int i = HEAD_SIZE, j;
+//
+//		// initialize request
+//		Integer[] request = new Integer[requestEnd + 1 - HEAD_SIZE];
+//		j = i;
+//		for (; i <= requestEnd; ++i) {
+//			request[i - j] = ((Byte) bytes[i]).intValue();
+//		}
+//
+//		// initialize responses
+//		Float[] responses = new Float[(responseEnd - requestEnd) / 4];
+//		j = i;
+//		for (; i <= responseEnd; i += 4) {
+//			byte[] responseBytes = new byte[4];
+//
+//			for (int k = i; k - i < 4; ++k) {
+//				responseBytes[k - i] = bytes[k];
+//			}
+//
+//			Float response = ByteUtils.bytesToFloat(responseBytes);
+//
+////			System.out.println("= " + response);
+//
+//			if (response != Float.NEGATIVE_INFINITY) {
+//				responses[(i - j) / 4] = response;
+//			}
+//		}
+////		System.out.println("~ " + Arrays.toString(responses.clone()));
+//
+//		// initialize integers
+//		int numResponses = ((Byte) bytes[i]).intValue();
+//		int selectedElevator = ((Byte) bytes[++i]).intValue();
+//		int sourceElevator = ((Byte) bytes[++i]).intValue();
 
-		int i = HEAD_SIZE, j;
+		ByteBuffer buffer = ByteBuffer.wrap(bytes);
 
-		// initialize request
-		Integer[] request = new Integer[requestEnd + 1 - HEAD_SIZE];
-		j = i;
-		for (; i <= requestEnd; ++i) {
-			request[i - j] = ((Byte) bytes[i]).intValue();
+		int requestLength = buffer.getInt();
+		int responsesLength = buffer.getInt();
+
+		Integer[] request = new Integer[requestLength];
+		for (int i = 1; i <= requestLength; ++i) {
+			request[i - 1] = buffer.getInt();
 		}
 
-		// initialize responses
-		Float[] responses = new Float[(responseEnd - requestEnd) / 4];
-		j = i;
-		for (; i <= responseEnd; i += 4) {
-			byte[] responseBytes = new byte[4];
-
-			for (int k = i; k - i < 4; ++k) {
-				responseBytes[k - i] = bytes[k];
-			}
-
-			Float response = ByteUtils.bytesToFloat(responseBytes);
-
-//			System.out.println("= " + response);
-
-			if (response != Float.NEGATIVE_INFINITY) {
-				responses[(i - j) / 4] = response;
-			}
+		Float[] responses = new Float[responsesLength];
+		for (int i = 1; i <= responsesLength; ++i) {
+			Float response = buffer.getFloat();
+			responses[i - 1] = response == Float.NEGATIVE_INFINITY ? null : response;
 		}
-//		System.out.println("~ " + Arrays.toString(responses.clone()));
-
-		// initialize integers
-		int numResponses = ((Byte) bytes[i]).intValue();
-		int selectedElevator = ((Byte) bytes[++i]).intValue();
-		int sourceElevator = ((Byte) bytes[++i]).intValue();
 
 		// create floor request
 		FloorRequest floorRequest = new FloorRequest() {
@@ -110,9 +148,11 @@ public abstract class FloorRequest {
 		};
 
 		floorRequest.responses = responses;
-		floorRequest.numResponses = numResponses;
-		floorRequest.selectedElevator = selectedElevator;
-		floorRequest.sourceElevator = sourceElevator != -1 ? selectedElevator : null;
+		floorRequest.numResponses = buffer.getInt();
+		floorRequest.selectedElevator = buffer.getInt();
+
+		int sourceElevator = buffer.getInt();
+		floorRequest.sourceElevator = sourceElevator != -1 ? sourceElevator : null;
 
 		return floorRequest;
 	}
