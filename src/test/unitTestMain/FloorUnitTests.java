@@ -1,4 +1,4 @@
-package test;
+package test.unitTestMain;
 
 import main.Floor;
 import static org.junit.Assert.*;
@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 
-public class FloorTest {
+public class FloorUnitTests {
 
 //just checks for state switching functionality
 

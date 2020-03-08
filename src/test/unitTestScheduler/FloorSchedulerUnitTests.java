@@ -1,4 +1,4 @@
-package test;
+package test.unitTestScheduler;
 
 
 import org.junit.Test;
@@ -9,7 +9,7 @@ import util.Transport;
 import static org.junit.Assert.assertTrue;
 import util.Printer;
 
-public class FloorSchedulerUnitTest {
+public class FloorSchedulerUnitTests {
 
 	//have other schedulers running first
 	@Test

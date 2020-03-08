@@ -1,4 +1,4 @@
-package test;
+package test.unitTestMain;
 
 
 import static org.junit.Assert.assertTrue;
@@ -10,7 +10,7 @@ import org.junit.Test;
 import main.InputParser;
 import main.Task;
 
-public class InputParserTest {
+public class InputParserUnitTests {
 
 	@Test
 	public void test() {

@@ -1,4 +1,4 @@
-package test;
+package test.unitTestMain;
 
 import main.FloorSubsystem;
 import static org.junit.Assert.*;
@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 import org.junit.Test;
 
 
-public class FloorSubsystemTest {
+public class FloorSubsystemUnitTests {
 
 	@SuppressWarnings("static-access")
 	@Test

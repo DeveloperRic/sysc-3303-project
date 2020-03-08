@@ -1,4 +1,4 @@
-package test;
+package test.unitTestScheduler;
 
 import static org.junit.Assert.assertTrue;
 
@@ -10,7 +10,7 @@ import scheduler.FloorRequest;
 import scheduler.MainScheduler;
 import util.Transport;
 
-public class ElevatorSchedulerUnitTest {
+public class ElevatorSchedulerUnitTests {
 
 	@Test
 	public void test() {

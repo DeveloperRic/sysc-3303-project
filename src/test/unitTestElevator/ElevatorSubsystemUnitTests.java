@@ -1,4 +1,4 @@
-package unitTestElevator;
+package test.unitTestElevator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import elevator.Elevator;
 import elevator.ElevatorSubsystem;
 import scheduler.ElevatorScheduler;
 import scheduler.MainScheduler;
