@@ -80,21 +80,5 @@ class ElevatorMotorUnitTests {
 		assertEquals(0, endTravel);
 		
 	}
-	
-	@Test
-	void test_doMovementPastFloor() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
-		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
-		Elevator elevator = new Elevator(subsystem);
-		ElevatorMotor em = new ElevatorMotor(elevator);
-		float startTravel = elevator.getMetersTravelled();
-		float velocity = Elevator.FLOOR_HEIGHT + 1;
-		em.doMovement(elevator, velocity);
-		float endTravel = elevator.getMetersTravelled();
-		schedulerElevator.closeComms();
-		assertTrue(endTravel > startTravel);
-		assertEquals(endTravel, startTravel+(velocity % Elevator.FLOOR_HEIGHT));
-		
-	}
 
 }

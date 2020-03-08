@@ -13,10 +13,10 @@ public class Task implements Comparable<Task>{
 	private int endFloor;
 	private String direction;
 	
-	public Task(String timeOfRequest, String startFloor, String direction, String endFloor) {
+	public Task(String timeOfRequest, String startFloor, String direction) {
 		this.timeOfRequest = LocalTime.parse(timeOfRequest);
 		this.startFloor = Integer.parseInt(startFloor);
-		this.endFloor = Integer.parseInt(endFloor);
+//		this.endFloor = Integer.parseInt(endFloor);
 		this.direction = direction;
 	}
 

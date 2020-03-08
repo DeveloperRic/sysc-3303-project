@@ -1,14 +1,14 @@
 package test;
 
-import org.junit.jupiter.api.Test;
-
 import elevator.ElevatorSubsystem;
 import scheduler.ElevatorScheduler;
 
-class ElevatorRuntimeTest {
+import org.junit.Test;
+
+public class ElevatorRuntimeTest {
 
 	@Test
-	void test() {
+	public void test() {
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler());
 		ElevatorSubsystem.setVerbose(true);
 		subsystem.powerOn();

@@ -9,8 +9,8 @@ import util.ByteUtils;
 
 public class MainScheduler {
 
-	static final int PORT_FOR_FLOOR = 63972;
-	static final int PORT_FOR_ELEVATOR = 63973;
+	public static final int PORT_FOR_FLOOR = 63972;
+	public static final int PORT_FOR_ELEVATOR = 63973;
 	private static final int NUMBER_OF_ELEVATORS = 1;
 //	private static final byte[] DEFAULT_REPLY = "< msg received >".getBytes();
 	private static final byte[] DEFAULT_REPLY = new byte[0];
@@ -126,6 +126,7 @@ public class MainScheduler {
 //
 							// send reply
 							transport.send(DEFAULT_REPLY, sourceName);
+							
 //
 //							// notify waiting threads that something's been added
 //							putList.notifyAll();

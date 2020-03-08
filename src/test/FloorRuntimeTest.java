@@ -1,15 +1,15 @@
 package test;
 
-import org.junit.jupiter.api.Test;
-
 import scheduler.FloorRequest;
 import scheduler.FloorsScheduler;
 import util.Transport;
 
-class FloorRuntimeTest {
+import org.junit.Test;
+
+public class FloorRuntimeTest {
 
 	@Test
-	void test() {
+	public void test() {
 		Transport.setVerbose(true);
 		
 		FloorsScheduler scheduler = new FloorsScheduler();

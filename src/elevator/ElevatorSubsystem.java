@@ -91,7 +91,7 @@ public class ElevatorSubsystem {
 
 		scheduler.put(em);
 
-		elevator.buttons[floor - 1].unpress();
+		elevator.buttons[floor+1].unpress();
 	}
 
 	void notifyButtonPressed(int destFloor) {
@@ -108,6 +108,7 @@ public class ElevatorSubsystem {
 					return elevatorNumber;
 				}
 			};
+			request.sourceElevator = elevatorNumber;
 			scheduler.put(new ElevatorMessage() {
 				@Override
 				public FloorRequest getFloorRequest() {

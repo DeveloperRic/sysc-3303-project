@@ -1,5 +1,7 @@
 package scheduler;
 
+import java.util.Arrays;
+
 import util.Transport;
 import util.Communication.Selector;
 
@@ -61,6 +63,10 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public Transport getTransport() {
+		return t;
 	}
 
 }

@@ -1,6 +1,7 @@
 package util;
 
 import java.net.*;
+import java.util.Arrays;
 import java.io.*;
 
 /**
@@ -106,14 +107,16 @@ public final class Transport {
 	 * 
 	 * @param data
 	 * @param destRole e.g. "Host"
+	 * @return 
 	 */
-	public void send(byte[] data) {
+	public Object[] send(byte[] data) {
 		try {
-			send(data, destinationRole, destinationPort);
+			return send(data, destinationRole, destinationPort);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	/**
@@ -140,7 +143,7 @@ public final class Transport {
 	 * @param destPort e.g. 23
 	 * @throws Exception 
 	 */
-	public void send(byte[] data, String destRole, int destPort) throws Exception {
+	public Object[] send(byte[] data, String destRole, int destPort) throws Exception {
 		// Prepare a DatagramPacket and send it via sendReceiveSocket
 		// to port 5000 on the destination host.
 
@@ -159,7 +162,7 @@ public final class Transport {
 			System.out.println("\tPort: " + sendPacket.getPort());
 			System.out.println("Packet length:\t" + len);
 			System.out.print("Packet contents (string): ");
-			System.out.println(new String(data, 0, len)); // or could print "s"
+			System.out.println(Arrays.toString(data)); // or could print "s"
 		}
 
 		// Send the datagram packet to the server via the send/receive socket.
@@ -176,6 +179,7 @@ public final class Transport {
 		if (verbose) {
 			System.out.println("\n" + role + ": Packet sent.\n--------------------------\n");
 		}
+		return new Object[] { data, sendPacket.getPort() };
 	}
 
 	/**
@@ -217,7 +221,7 @@ public final class Transport {
 			System.out.print("Containing (string): ");
 
 			// Form a String from the byte array.
-			System.out.println(new String(data));
+			System.out.println(Arrays.toString(data));
 
 			System.out.println("--------------------------\n");
 		}
@@ -243,6 +247,10 @@ public final class Transport {
 
 	public int getSendPort() {
 		return sendSocket.getLocalPort();
+	}
+	
+	public int getDestinationPort() {
+		return destinationPort;
 	}
 
 	public void setDestinationRole(String destinationRole) {

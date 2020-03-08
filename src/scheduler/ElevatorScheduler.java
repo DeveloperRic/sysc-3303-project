@@ -1,5 +1,7 @@
 package scheduler;
 
+import java.util.Arrays;
+
 import util.Transport;
 import util.Communication.Selector;
 
@@ -37,6 +39,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 //				}
 //			}
 
+			
 			t.send(new byte[0]);
 
 //			waitingOnData.value = true;
@@ -52,6 +55,13 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+						try {
+							receivedBytes.value = (byte[]) t.receive()[0];
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+//						System.out.println("CheckDATA: " + t.receive()[0]);
 //						System.out.println("^^ get()");
 						receivedBytes.notifyAll();
 					}
@@ -162,4 +172,8 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 		t.close();
 	}
 	
+	
+	public Transport getTransport() {
+		return t;
+	}
 }
