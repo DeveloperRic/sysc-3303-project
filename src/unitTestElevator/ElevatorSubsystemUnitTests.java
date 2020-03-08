@@ -23,7 +23,7 @@ class ElevatorSubsystemUnitTests {
 
 	@Test
 	void test_assignTask() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem es = new ElevatorSubsystem(schedulerElevator);
 		int floor = 1;
 		es.assignTask(floor);
@@ -33,7 +33,7 @@ class ElevatorSubsystemUnitTests {
 	
 	@Test
 	void test_powerOn() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem es = new ElevatorSubsystem(schedulerElevator);
 		es.powerOn();
 		schedulerElevator.closeComms();
@@ -42,7 +42,7 @@ class ElevatorSubsystemUnitTests {
 	
 	@Test
 	void test_powerOff() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem es = new ElevatorSubsystem(schedulerElevator);
 		es.powerOff();
 		schedulerElevator.closeComms();
@@ -51,7 +51,7 @@ class ElevatorSubsystemUnitTests {
 	
 	@Test
 	void test_pressButton() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		MainScheduler ms = new MainScheduler();
 		ms.activate();
 		ElevatorSubsystem es = new ElevatorSubsystem(schedulerElevator);

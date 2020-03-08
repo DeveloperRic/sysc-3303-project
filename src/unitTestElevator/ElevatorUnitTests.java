@@ -22,7 +22,7 @@ class ElevatorUnitTests {
 
 	@Test
 	void test_timeToStop() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
 		int floor = 3;
@@ -35,7 +35,7 @@ class ElevatorUnitTests {
 	
 	@Test
 	void test_secondsToStop() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
 		elevator.velocity = 10;

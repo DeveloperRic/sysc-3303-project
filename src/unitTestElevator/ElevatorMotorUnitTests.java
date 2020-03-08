@@ -22,7 +22,7 @@ class ElevatorMotorUnitTests {
 
 	@Test
 	void test_accelerate() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
 		ElevatorMotor em = new ElevatorMotor(elevator);
@@ -36,7 +36,7 @@ class ElevatorMotorUnitTests {
 	
 	@Test
 	void test_decelerate() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
 		ElevatorMotor em = new ElevatorMotor(elevator);
@@ -53,7 +53,7 @@ class ElevatorMotorUnitTests {
 	
 	@Test
 	void test_doMovement() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
 		ElevatorMotor em = new ElevatorMotor(elevator);
@@ -69,7 +69,7 @@ class ElevatorMotorUnitTests {
 	
 	@Test
 	void test_doMovementToFloor() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
 		ElevatorMotor em = new ElevatorMotor(elevator);

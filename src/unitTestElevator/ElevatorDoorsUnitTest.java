@@ -21,7 +21,7 @@ class ElevatorDoorsUnitTest {
 
 	@Test
 	void test_doorsOpen() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
 		ElevatorDoors ed = new ElevatorDoors(elevator);
@@ -32,7 +32,7 @@ class ElevatorDoorsUnitTest {
 	
 	@Test
 	void test_doorsClosed() {
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
 		ElevatorDoors ed = new ElevatorDoors(elevator);

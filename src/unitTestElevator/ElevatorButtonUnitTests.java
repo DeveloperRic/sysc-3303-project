@@ -25,7 +25,7 @@ class ElevatorButtonUnitTests {
 	@Test
 	void test_pressButton() { 
 		MainScheduler ms = new MainScheduler();
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		ElevatorButton elevatorButton = new ElevatorButton(subsystem, 0);
 		ms.activate();
@@ -38,7 +38,7 @@ class ElevatorButtonUnitTests {
 	@Test
 	void test_unpressButton() {
 		MainScheduler ms = new MainScheduler();
-		ElevatorScheduler schedulerElevator = new ElevatorScheduler();
+		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		ElevatorButton elevatorButton = new ElevatorButton(subsystem, 0);
 		ms.activate();
