@@ -21,7 +21,7 @@ import java.io.*;
  */
 public final class Transport {
 
-	private static boolean verbose;
+	private static boolean verbose = true;
 
 	private String role;
 	private String destinationRole;
@@ -242,7 +242,7 @@ public final class Transport {
 	}
 
 	public int getReceivePort() {
-		return receivePort == -1 ? receiveSocket.getLocalPort() : receivePort;
+		return receiveSocket.getLocalPort();
 	}
 
 	public int getSendPort() {

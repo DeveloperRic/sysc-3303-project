@@ -1,5 +1,7 @@
 package scheduler;
 
+import java.nio.ByteBuffer;
+
 import util.Communication.Selector;
 import util.Printer;
 import util.Transport;
@@ -10,11 +12,12 @@ import util.Transport;
  *
  */
 public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRequest> {
-	public static final int ELEVATOR_PORT = 63974;
+//	public static final int ELEVATOR_PORT = 63974;
 
 	// The main scheduler object
 	private final byte elevatorNumber;
 	private final Transport t;
+	private final byte[] receivePort;
 	private final Object getLock = "get lock";
 	private final Object putLock = "put lock";
 	private BytesWrapper receivedBytes = new BytesWrapper(null);
@@ -24,10 +27,11 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 	 */
 	public ElevatorScheduler(Integer elevatorNumber) {
 		this.elevatorNumber = elevatorNumber.byteValue();
-		t = new Transport("Elevator", ELEVATOR_PORT, false);
+		t = new Transport("Elevator");
 		t.setDestinationRole("Scheduler");
 		t.setDestinationPort(MainScheduler.PORT_FOR_ELEVATOR);
-		Printer.print("Elevator send/receive socket bound on port " + t.getReceivePort() + "\n");
+		receivePort = ByteBuffer.allocate(4).putInt(t.getReceivePort()).array();
+		System.out.println("Elevator send/receive socket bound on port " + t.getReceivePort() + "\n");
 	}
 
 	@Override
@@ -39,9 +43,15 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 //				} catch (InterruptedException e) {
 //				}
 //			}
-
 			
-			t.send(new byte[] {elevatorNumber});
+			byte[] bytes = new byte[1 + receivePort.length];
+			
+			bytes[0] = elevatorNumber;
+			for (int i = 0; i < receivePort.length; ++i) {
+				bytes[i + 1] = receivePort[i];
+			}
+
+			t.send(bytes);
 
 //			waitingOnData.value = true;
 
@@ -99,9 +109,15 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 //				}
 //			}
 
-			Printer.print("sending " + message + "\n");
+			System.out.println("sending " + message + "\n");
+			
+			byte[] messageBytes = message.serialize();
+			ByteBuffer buffer = ByteBuffer.allocate(messageBytes.length + 4);
+			
+			buffer.putInt(t.getReceivePort());
+			buffer.put(messageBytes);
 
-			t.send(message.serialize());
+			t.send(buffer.array());
 
 //			waitingOnAcknowledgement.value = true;
 
@@ -167,11 +183,10 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 		t.close();
 	}
 	
-	
 	public byte getElevatorNumber() {
 		return elevatorNumber;
 	}
-	
+
 	public Transport getTransport() {
 		return t;
 	}

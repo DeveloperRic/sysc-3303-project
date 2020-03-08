@@ -62,7 +62,7 @@ public class FloorSchedulerUnitTests {
 					}
 				}.serialize();
 				
-				assertTrue(scheduler.FLOOR_PORT == t.getSendPort() && scheduler.FLOOR_PORT == t.getReceivePort());
+//				assertTrue(scheduler.FLOOR_PORT == t.getSendPort() && scheduler.FLOOR_PORT == t.getReceivePort());
 				
 				//same as scheduler.put(request)
 				Object[] send = t.send(data);

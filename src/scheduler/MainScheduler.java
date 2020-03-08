@@ -1,5 +1,6 @@
 package scheduler;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,9 +36,7 @@ public class MainScheduler {
 		elevatorTransport = new Transport("Scheduler<->Elevator", PORT_FOR_ELEVATOR, false);
 		// set the default destination parameters for client->server and server->client
 		floorTransport.setDestinationRole("Floor");
-		floorTransport.setDestinationPort(FloorsScheduler.FLOOR_PORT);
 		elevatorTransport.setDestinationRole("Elevator");
-		elevatorTransport.setDestinationPort(ElevatorScheduler.ELEVATOR_PORT);
 		Printer.print("Floor    -> Elevator socket bound on port " + floorTransport.getReceivePort());
 		Printer.print("Elevator -> Floor    socket bound on port " + elevatorTransport.getReceivePort());
 		// initialize message objects
@@ -107,31 +106,44 @@ public class MainScheduler {
 			public void run() {
 				while (active) {
 					// wait for request
-					if (verbose)
-						Printer.print("waiting for a new packet");
+//					if (verbose)
+//						System.out.println("waiting for a new packet");
 					Object[] request;
 					try {
 						request = transport.receive();
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
+						e1.printStackTrace();
 						return;
 					}
 					byte[] receivedBytes = (byte[]) request[0];
 
 					// add request to messages
-					if (receivedBytes.length > 1) {
+					if (receivedBytes.length > 5) {
 						synchronized (putList) {
 							if (verbose) {
 								Printer.print("[" + sourceName + "->Scheduler] Received bytes: "
 										+ ByteUtils.toString(receivedBytes));
 							}
 
-							switchState(nextState, receivedBytes);
+							ByteBuffer buffer = ByteBuffer.wrap(receivedBytes);
+
+							int responsePort = buffer.getInt();
+
+							byte[] args = new byte[receivedBytes.length - 4];
+							buffer.get(args, 0, args.length);
+
+							switchState(nextState, args);
 
 //							putList.add(receivedBytes);
 //
 							// send reply
-							transport.send(DEFAULT_REPLY, sourceName);
+							try {
+								transport.send(DEFAULT_REPLY, sourceName, responsePort);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 
 //
 //							// notify waiting threads that something's been added
@@ -139,7 +151,7 @@ public class MainScheduler {
 						}
 					} else {
 						Integer subsystemNumber;
-						if (receivedBytes.length == 1) {
+						if (receivedBytes.length == 1 || receivedBytes.length == 5) {
 							subsystemNumber = ((Byte) receivedBytes[0]).intValue();
 						} else {
 							subsystemNumber = null;
@@ -151,6 +163,8 @@ public class MainScheduler {
 									// wait for list to be non-empty
 									// also wait for the elevator to need to do something
 									boolean actionNeeded = false;
+
+									byte[] bytesToSend = null;
 									while (getList.isEmpty() || !actionNeeded) {
 
 										if (!getList.isEmpty() && subsystemNumber != null) {
@@ -161,12 +175,15 @@ public class MainScheduler {
 												// request for which action is needed
 												for (byte[] reqBytes : getList) {
 													FloorRequest req = FloorRequest.deserialize(reqBytes);
+													
+													System.out.println(req);
 
 													// if request is needing elevator's input OR
 													// if request is assigned to the elevator
 													if (req.selectedElevator == subsystemNumber
 															|| req.responses[subsystemNumber - 1] == null) {
 														actionNeeded = true;
+														bytesToSend = reqBytes;
 														break;
 													}
 												}
@@ -193,12 +210,29 @@ public class MainScheduler {
 										Printer.print("[]---> " + sourceName + " ready to send");
 									}
 									// send message
-									transport.send(getList.remove(0), sourceName);
+									if (bytesToSend == null) {
+										bytesToSend = getList.remove(0);
+									} else {
+										getList.remove(bytesToSend);
+									}
+									int portToSendTo;
+									if (receivedBytes.length == 5) {
+										portToSendTo = ByteBuffer.wrap(receivedBytes, 1, 4).getInt();
+										System.out.println("rec b = " + receivedBytes[1] + " port = " + portToSendTo);
+									} else {
+										portToSendTo = ((Byte) request[1]).intValue();
+									}
+									try {
+										transport.send(bytesToSend, sourceName, portToSendTo);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 							}
 						}).start();
-						if (verbose)
-							Printer.print("created thread");
+//						if (verbose)
+//							System.out.println("created thread");
 					}
 				}
 			}
