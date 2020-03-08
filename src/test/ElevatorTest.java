@@ -1,5 +1,7 @@
 package test;
 
+import util.Printer;
+
 import org.junit.Test;
 
 import elevator.ElevatorSubsystem;
@@ -92,7 +94,7 @@ public class ElevatorTest {
 
 				if (verbose) {
 					while (testing) {
-						System.out.println("[Floor] " + floorsScheduler.get(null) + "\n");
+						Printer.print("[Floor] " + floorsScheduler.get(null) + "\n");
 					}
 				}
 			}
@@ -110,9 +112,9 @@ public class ElevatorTest {
 //		subsystem.assignTask(5);
 //		subsystem.assignTask(1);
 //		
-//		System.out.println("\n*** Assigned all tasks ***");
+//		Printer.print("\n*** Assigned all tasks ***");
 //		
-//		System.out.println(subsystem.getWorkDoing().toString() + "\n");
+//		Printer.print(subsystem.getWorkDoing().toString() + "\n");
 //		
 
 		// wait for elevator to return to sleep mode

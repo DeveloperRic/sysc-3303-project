@@ -1,6 +1,7 @@
 package elevator;
 
 import elevator.ElevatorSubsystem.ElevatorState;
+import util.Printer;
 
 public final class ElevatorMotor implements Runnable {
 
@@ -15,12 +16,12 @@ public final class ElevatorMotor implements Runnable {
 	@Override
 	public void run() {
 		if (ElevatorSubsystem.verbose) {
-			System.out.println("[Elevator] woken up");
+			Printer.print("[Elevator] woken up");
 		}
 		this.elevator.velocity = Elevator.ACCELERATION;
 		this.elevator.metresTravelled = 0;
 //		this.elevator.subsystem.notifyStatus();
-//		System.out.println("Get in");
+//		Printer.print("Get in");
 		while (this.elevator.subsystem.poweredOn && (!this.elevator.subsystem.workDoing.isEmpty())) {
 //		while (this.elevator.subsystem.poweredOn && (this.elevator.subsystem.getTask() != null)) {
 //				|| !this.elevatorState.subsystem.workToDo.isEmpty())) {
@@ -36,18 +37,18 @@ public final class ElevatorMotor implements Runnable {
 //				isWorkToDo = true;
 						break;
 					}
-//				System.out.println("Moving towards floor " + targetFloor);
+//				Printer.print("Moving towards floor " + targetFloor);
 
 					if (targetFloor > elevator.currentFloor) {
 						elevator.direction = 1;
 					} else if (targetFloor < elevator.currentFloor) {
 						elevator.direction = -1;
 					}
-//					System.out.println("MOTOR: direction is now " + elevator.direction + " for task "
+//					Printer.print("MOTOR: direction is now " + elevator.direction + " for task "
 //							+ elevator.currentFloor + " -> " + targetFloor);
 
 					if (!taskAssigned) {
-						// System.out.println("Starting a task (-> " + targetFloor + ")");
+						// Printer.print("Starting a task (-> " + targetFloor + ")");
 					}
 					taskAssigned = true;
 
@@ -58,7 +59,7 @@ public final class ElevatorMotor implements Runnable {
 
 					if (secondsToFloor - 1 < this.elevator.secondsToStop()) {
 						if (this.elevator.currentFloor == targetFloor) {
-							// System.out.println("\nArrived at floor " + targetFloor);
+							// Printer.print("\nArrived at floor " + targetFloor);
 
 							this.elevator.velocity = Elevator.ACCELERATION;
 							this.elevator.metresTravelled = 0;
@@ -81,7 +82,7 @@ public final class ElevatorMotor implements Runnable {
 								elevator.direction = 0;
 							}
 
-							// System.out.println(
+							// Printer.print(
 							// "\nelev: " + state.currentFloor + "\ndoing: " + workDoing + "\ntodo: " +
 							// workToDo);
 
@@ -125,7 +126,7 @@ public final class ElevatorMotor implements Runnable {
 		this.elevator.metresTravelled = 0;
 		this.elevator.direction = 0;
 		running = false;
-		System.out.println("\nElevator is sleeping");
+		Printer.print("\nElevator is sleeping");
 	}
 
 	public void accelerate(Elevator elevator) {

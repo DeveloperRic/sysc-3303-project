@@ -1,6 +1,7 @@
 package test;
 
 import scheduler.FloorRequest;
+import util.Printer;
 import scheduler.FloorsScheduler;
 import util.Transport;
 
@@ -32,7 +33,7 @@ public class FloorRuntimeTest {
 					}
 				});
 				
-				System.out.println(scheduler.get(null));
+				Printer.print(scheduler.get(null));
 
 				try {
 					Thread.sleep(1000);
@@ -47,7 +48,7 @@ public class FloorRuntimeTest {
 					}
 				});
 				
-				System.out.println(scheduler.get(null));
+				Printer.print(scheduler.get(null));
 
 				try {
 					Thread.sleep(1000);
@@ -62,7 +63,7 @@ public class FloorRuntimeTest {
 					}
 				});
 				
-				System.out.println(scheduler.get(null));
+				Printer.print(scheduler.get(null));
 			}
 		}).start();
 

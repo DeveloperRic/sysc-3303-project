@@ -1,5 +1,7 @@
 package elevator;
 
+import util.Printer;
+
 public class Elevator {
 
 	public static final float ACCELERATION = 0.68f;
@@ -46,7 +48,7 @@ public class Elevator {
 	public synchronized float timeToStopAtFloor(int floor, int direction) {
 
 		if (ElevatorSubsystem.verbose) {
-			System.out.println("(req = " + floor + " going " + direction + ") (cur = " + currentFloor + " going "
+			Printer.print("(req = " + floor + " going " + direction + ") (cur = " + currentFloor + " going "
 					+ this.direction + ")");
 		}
 
@@ -58,7 +60,7 @@ public class Elevator {
 		// If directions are different
 		if (direction != 0 && direction != this.direction) {
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("dif direction (req = " + floor + " going " + direction + ") (cur = " + currentFloor
+				Printer.print("dif direction (req = " + floor + " going " + direction + ") (cur = " + currentFloor
 						+ " going " + this.direction + ")");
 			}
 			return -1;
@@ -67,7 +69,7 @@ public class Elevator {
 		// If start floor lower than elevator while elevator going up
 		if (floor < currentFloor && this.direction == UP) {
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("If start floor lower than elevator while elevator going up");
+				Printer.print("If start floor lower than elevator while elevator going up");
 			}
 			return -1;
 		}
@@ -75,9 +77,9 @@ public class Elevator {
 		// If start floor higher than elevator while elevator going down
 		if (floor > currentFloor && this.direction == DOWN) {
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("If start floor higher than elevator while elevator going down " + floor + " > "
+				Printer.print("If start floor higher than elevator while elevator going down " + floor + " > "
 						+ currentFloor);
-				System.out.println("direction is " + direction + " for " + subsystem.workDoing);
+				Printer.print("direction is " + direction + " for " + subsystem.workDoing);
 			}
 			return -1;
 		}
@@ -98,7 +100,7 @@ public class Elevator {
 	}
 
 //	public synchronized void assignTask(Task task) {
-//		// System.out.println("Elevator Received Task");
+//		// Printer.print("Elevator Received Task");
 //		if (canStopAtFloor(task.getStartFloor())) {
 //
 //			if (currentFloor != task.getStartFloor() && !this.subsystem.workDoing.contains(task.getStartFloor())) {
@@ -109,10 +111,10 @@ public class Elevator {
 //				this.subsystem.workDoing.add(task.getDestinationFloor());
 //			}
 //
-//			// System.out.println("Added task to workDoing (" + task.getStartFloor() + " ->
+//			// Printer.print("Added task to workDoing (" + task.getStartFloor() + " ->
 //			// " + task.getDestinationFloor() + ")");
 //
-//			// System.out.println("\nelev: " + state.currentFloor + "\ndoing: " + workDoing
+//			// Printer.print("\nelev: " + state.currentFloor + "\ndoing: " + workDoing
 //			// + "\ntodo: " + workToDo);
 //
 //			if (!isAwake())
@@ -126,10 +128,10 @@ public class Elevator {
 //				this.subsystem.workToDo.add(task.getDestinationFloor());
 //			}
 //
-//			// System.out.println("Added task to workToDo (" + task.getStartFloor() + " -> "
+//			// Printer.print("Added task to workToDo (" + task.getStartFloor() + " -> "
 //			// + task.getDestinationFloor() + ")");
 //
-//			// System.out.println("\nelev: " + state.currentFloor + "\ndoing: " + workDoing
+//			// Printer.print("\nelev: " + state.currentFloor + "\ndoing: " + workDoing
 //			// + "\ntodo: " + workToDo);
 //		}
 //	}
@@ -144,7 +146,7 @@ public class Elevator {
 
 		motor = new ElevatorMotor(this);
 		Thread motionThread = new Thread(motor, "ElevatorMotion");
-		System.out.println("Waking up elevator");
+		Printer.print("Waking up elevator");
 		motor.running = true;
 		motionThread.start();
 	}

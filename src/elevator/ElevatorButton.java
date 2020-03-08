@@ -1,5 +1,7 @@
 package elevator;
 
+import util.Printer;
+
 public class ElevatorButton {
 
 	private ElevatorSubsystem subsystem;
@@ -17,7 +19,7 @@ public class ElevatorButton {
 		if (!pressed) {
 			pressed = true;
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("ELEVATOR BUTTON: floor " + floor + " pressed");
+				Printer.print("ELEVATOR BUTTON: floor " + floor + " pressed");
 			}
 			// TODO send request to Scheduler
 			lamp.turnOn();
@@ -30,7 +32,7 @@ public class ElevatorButton {
 		if (pressed) {
 			pressed = false;
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("ELEVATOR BUTTON: floor " + floor + " unpressed");
+				Printer.print("ELEVATOR BUTTON: floor " + floor + " unpressed");
 			}
 			lamp.turnOff();
 		}

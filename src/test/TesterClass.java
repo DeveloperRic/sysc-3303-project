@@ -14,11 +14,11 @@ public class TesterClass {
 	
 	public static void main(String[] args) {
 		
-		//System.out.println("Testing");
+		//Printer.print("Testing");
 		
 		//InputParser inputParser = new InputParser("\\src\\assets\\Inputs.txt");
 		//inputParser.printTasks();
-		//System.out.println("");
+		//Printer.print("");
 		//inputParser.printTimeRequests();
 		
 //		MainScheduler scheduler = new MainScheduler();

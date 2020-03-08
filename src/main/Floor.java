@@ -1,5 +1,7 @@
 package main;
 
+import util.Printer;
+
 public class Floor {
 		int floorNumber;
 		public Lamp upRequestLight;
@@ -42,7 +44,7 @@ public class Floor {
 			
 			@Override
 			public void requestUp() {
-				System.out.println("FLOOR SUBSYSTEM: Up requested on floor " + floorNumber);
+				Printer.print("FLOOR SUBSYSTEM: Up requested on floor " + floorNumber);
 				floor.upRequestLight.turnOn();
 				
 				if (downRequestLight.lampOn) {
@@ -65,7 +67,7 @@ public class Floor {
 					floor.setState(noRequest);
 					break;
 				default: 
-					System.out.println("There's no request for an elevator in that direction on this floor.");
+					Printer.print("There's no request for an elevator in that direction on this floor.");
 				}	
 			}
 		}
@@ -87,7 +89,7 @@ public class Floor {
 			@Override
 			public void requestDown() {
 				// If upState already requested turn on light and then switch to bothState
-				System.out.println("FLOOR SUBSYSTEM: Down requested on floor " + floorNumber);
+				Printer.print("FLOOR SUBSYSTEM: Down requested on floor " + floorNumber);
 				downRequestLight.turnOn();
 				
 				if (upRequestLight.lampOn) {
@@ -103,7 +105,7 @@ public class Floor {
 					floor.setState(noRequest);
 					break;
 				default: 
-					System.out.println("There's no request for an elevator in that direction on this floor.");
+					Printer.print("There's no request for an elevator in that direction on this floor.");
 				}
 			}
 		}
@@ -117,12 +119,12 @@ public class Floor {
 			
 			@Override
 			public void requestUp() {
-				System.out.println("FLOOR SUBSYSTEM: Up requested on floor " + floorNumber);
+				Printer.print("FLOOR SUBSYSTEM: Up requested on floor " + floorNumber);
 			}
 
 			@Override
 			public void requestDown() {
-				System.out.println("FLOOR SUBSYSTEM: Down requested on floor " + floorNumber);
+				Printer.print("FLOOR SUBSYSTEM: Down requested on floor " + floorNumber);
 			}
 
 			@Override
@@ -166,7 +168,7 @@ public class Floor {
 
 			@Override
 			public void requestServed(int direction) {
-				System.out.println("There are no requests on this floor.");
+				Printer.print("There are no requests on this floor.");
 			}
 		}
 		

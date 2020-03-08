@@ -5,6 +5,7 @@ import java.util.Arrays;
 import scheduler.ElevatorMessage;
 import scheduler.FloorRequest;
 import util.Communication.Selector;
+import util.Printer;
 
 class TaskGetter implements Runnable {
 
@@ -19,7 +20,7 @@ class TaskGetter implements Runnable {
 
 		while (subsystem.poweredOn) {
 
-//			System.out.println("entering loop");
+//			Printer.print("entering loop");
 
 			// wait for a request (that will benefit us)
 			// if a request does not benefit us (e.g. assigned to a different elevator)
@@ -29,7 +30,7 @@ class TaskGetter implements Runnable {
 				@Override
 				public boolean equals(Object obj) {
 					FloorRequest request = (FloorRequest) obj;
-//					System.out.println("sel " + request.selectedElevator);
+//					Printer.print("sel " + request.selectedElevator);
 					// request must either be directed to this elevator or must require our response
 					return request.selectedElevator == subsystem.elevatorNumber
 							|| request.responses[subsystem.elevatorNumber - 1] == null;
@@ -37,7 +38,7 @@ class TaskGetter implements Runnable {
 			});
 
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("ELEVATOR SUBSYSTEM: Processing request from Scheduler\n");
+				Printer.print("ELEVATOR SUBSYSTEM: Processing request from Scheduler\n");
 			}
 
 			// deconstruct the floor request
@@ -87,7 +88,7 @@ class TaskGetter implements Runnable {
 //					} catch (InterruptedException e) {}
 //				}
 //				subsystem.removeTask();
-////				System.out.println("[TaskGetter] " + subsystem.workDoing.toString());
+////				Printer.print("[TaskGetter] " + subsystem.workDoing.toString());
 //			}
 
 			try {
@@ -95,10 +96,10 @@ class TaskGetter implements Runnable {
 			} catch (InterruptedException e) {
 			}
 
-//			System.out.println("slept " + subsystem.poweredOn);
+//			Printer.print("slept " + subsystem.poweredOn);
 		}
 
-//		System.out.println("exit");
+//		Printer.print("exit");
 
 		// FOLLOWING CODE IS BROKEN NOW
 
@@ -108,10 +109,10 @@ class TaskGetter implements Runnable {
 //		while (true) {
 //
 //			Task o = (Task) this.elevator.SchedulerElevator.get();
-//			System.out.println("ELEVATOR SUBSYSYTEM: Elevator received task " + i
+//			Printer.print("ELEVATOR SUBSYSYTEM: Elevator received task " + i
 //					+ " from Scheduler\n Task Information : " + o.toString() + "\n");
 //			this.elevator.state.assignTask(o);
-//			System.out.println("ELEVATOR SUBSYSTEM: Elevator sending confirmation message to Scheduler: Task " + i
+//			Printer.print("ELEVATOR SUBSYSTEM: Elevator sending confirmation message to Scheduler: Task " + i
 //					+ " received. Moving...\n");
 //			this.elevator.SchedulerElevator.put("Task " + i + " received. Moving...");
 //			i++;

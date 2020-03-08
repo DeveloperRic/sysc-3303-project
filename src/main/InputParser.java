@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.Map.Entry;
+import util.Printer;
 
 public class InputParser {
 	
@@ -58,8 +59,8 @@ public class InputParser {
 		
 		//Validate Input Size
 		if(inputs.length < 4) {
-			System.out.println(inputs.length);
-			System.out.println("Input Line " + lineNumber + " has less than 4 arguments. Skipping Input...");
+			Printer.print(inputs.length);
+			Printer.print("Input Line " + lineNumber + " has less than 4 arguments. Skipping Input...");
 			return false;
 		}
 		
@@ -67,7 +68,7 @@ public class InputParser {
 		try {
 			LocalTime.parse(inputs[0]);
 		} catch (DateTimeParseException e) {
-			System.out.println("Input Line " + lineNumber + " has an invalid Date time format. Skipping Input...");
+			Printer.print("Input Line " + lineNumber + " has an invalid Date time format. Skipping Input...");
 			return false;
 		}
 		
@@ -75,13 +76,13 @@ public class InputParser {
 		try {
 			Integer.parseInt(inputs[1]);
 		} catch (NumberFormatException e) {
-			System.out.println("Input Line " + lineNumber + " has an invalid Start floor format. Skipping Input...");
+			Printer.print("Input Line " + lineNumber + " has an invalid Start floor format. Skipping Input...");
 			return false;
 		}
 		
 		//Validate Direction Type
 		if( !(inputs[2].toLowerCase().contains("up")) && !(inputs[2].toLowerCase().contains("down")) ) {
-			System.out.println("Input Line " + lineNumber + " has an invalid Direction format. Skipping Input...");
+			Printer.print("Input Line " + lineNumber + " has an invalid Direction format. Skipping Input...");
 			return false;
 		}
 
@@ -89,7 +90,7 @@ public class InputParser {
 		try {
 			Integer.parseInt(inputs[3]);
 		} catch (NumberFormatException e) {
-			System.out.println("Input Line " + lineNumber + " has an invalid Destination floor format. Skipping Input...");
+			Printer.print("Input Line " + lineNumber + " has an invalid Destination floor format. Skipping Input...");
 			return false;
 		}
 		
@@ -105,14 +106,14 @@ public class InputParser {
 		//Compare if valid start floor and end floor if going up
 		if(directionUp) {
 			if(startFloor - destFloor >= 0) {
-				System.out.println("Input Line " + lineNumber + " is attempting to go UP from floor " + startFloor + " to floor " + destFloor
+				Printer.print("Input Line " + lineNumber + " is attempting to go UP from floor " + startFloor + " to floor " + destFloor
 										+ ". Invalid Logic. Skipping Input...");
 				return false;
 			} 
 		}
 		else {
 			if(startFloor - destFloor <= 0) {
-				System.out.println("Input Line " + lineNumber + " is attempting to go DOWN from floor " + startFloor + " to floor " + destFloor
+				Printer.print("Input Line " + lineNumber + " is attempting to go DOWN from floor " + startFloor + " to floor " + destFloor
 						+ ". Invalid Logic. Skipping Input...");
 				return false;				
 			}
@@ -128,7 +129,7 @@ public class InputParser {
 			Task task = new Task(inputs[0], inputs[1], inputs[2]);
 			tasks.put(LocalTime.parse(inputs[0]).toString(),task);
 		} catch (Exception e) {
-			System.out.println("Invalid Input: " + e);
+			Printer.print("Invalid Input: " + e);
 		}	
 	}
 	
@@ -144,11 +145,11 @@ public class InputParser {
 		while(i.hasNext()) {
 			Entry<String,Task> me = (Entry<String, Task>)i.next();
 			System.out.print("Task " + index + ". KEY : " + me.getKey() + " -> ");
-			System.out.println("VALUE : " + me.getValue());
+			Printer.print("VALUE : " + me.getValue());
 			index++;
 		}
 		
-		System.out.println();
+		Printer.print();
 	}
 	
 	public void storeTimeRequests() {
@@ -164,7 +165,7 @@ public class InputParser {
 	
 	public void printTimeRequests() {
 		for(LocalTime time : timeRequests) {
-			System.out.println(time.toString());
+			Printer.print(time.toString());
 		}
 	}
 	

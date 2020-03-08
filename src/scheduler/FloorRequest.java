@@ -34,7 +34,7 @@ public abstract class FloorRequest {
 		// serialize the request
 		j = ++i;
 		for (; i - j < (request.length); ++i) {
-			// System.out.println("Check1: " + i + " " + j + " " + request.length);
+			// Printer.print("Check1: " + i + " " + j + " " + request.length);
 			bytes[i] = request[i - j].byteValue();
 		}
 
@@ -62,7 +62,7 @@ public abstract class FloorRequest {
 	}
 
 	public static FloorRequest deserialize(byte[] bytes) {
-//		System.out.println("flr deserializing " + ByteUtils.toString(bytes));
+//		Printer.print("flr deserializing " + ByteUtils.toString(bytes));
 		final int HEAD_SIZE = 2;
 		final int requestEnd = HEAD_SIZE + ((Byte) bytes[0]).intValue() - 1;
 		final int responseEnd = requestEnd + ((Byte) bytes[1]).intValue();
@@ -88,13 +88,13 @@ public abstract class FloorRequest {
 
 			Float response = ByteUtils.bytesToFloat(responseBytes);
 
-//			System.out.println("= " + response);
+//			Printer.print("= " + response);
 
 			if (response != Float.NEGATIVE_INFINITY) {
 				responses[(i - j) / 4] = response;
 			}
 		}
-//		System.out.println("~ " + Arrays.toString(responses.clone()));
+//		Printer.print("~ " + Arrays.toString(responses.clone()));
 
 		// initialize integers
 		int numResponses = ((Byte) bytes[i]).intValue();

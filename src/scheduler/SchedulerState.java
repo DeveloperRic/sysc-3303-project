@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import util.Printer;
 
 public enum SchedulerState {
 
@@ -61,7 +62,7 @@ public enum SchedulerState {
 				List<Float> responses = new ArrayList<Float>(request.responses.length);
 				// subtract 2 seconds (for processing delay)
 				for (int i = 0; i < request.responses.length; ++i) {
-					System.out.println(Arrays.toString(request.responses.clone()));
+					Printer.print(Arrays.toString(request.responses.clone()));
 					responses.add(request.responses[i] -= 2);
 				}
 				// pick the smallest (non-negative) eta
@@ -90,7 +91,7 @@ public enum SchedulerState {
 			request.selectedElevator = (int) params[1];
 			// send acknowledgement to elevator
 			if (MainScheduler.verbose) {
-				System.out.println("SCHEDULER SUBSYSTEM: Selected elevator " + request.selectedElevator + " for task\n"
+				Printer.print("SCHEDULER SUBSYSTEM: Selected elevator " + request.selectedElevator + " for task\n"
 						+ " Content: " + request + "\n");
 			}
 			m.elevatorsMessages.add(request.serialize());
@@ -117,7 +118,7 @@ public enum SchedulerState {
 	private static void changeTo(MainScheduler m, SchedulerState nextState, Object param) {
 		m.currentState.working = false;
 		if (MainScheduler.verbose) {
-			System.out.println("SCHEDULER SUBSYSTEM: state changing to -> " + nextState + "\n");
+			Printer.print("SCHEDULER SUBSYSTEM: state changing to -> " + nextState + "\n");
 		}
 		nextState.working = true;
 		m.currentState = nextState;

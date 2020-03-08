@@ -27,7 +27,7 @@ public class Communication<A, B> {
 	public void aPut(A something) {
 		synchronized (aToB) {
 			if (verbose) {
-				System.out.println("COMMUNICATION: " + aName + " SENDING message to " + bName + "\n Content : "
+				Printer.print("COMMUNICATION: " + aName + " SENDING message to " + bName + "\n Content : "
 						+ something + "\n");
 			}
 			aToB.add(something);
@@ -38,7 +38,7 @@ public class Communication<A, B> {
 	public void bPut(B something) {
 		synchronized (bToA) {
 			if (verbose) {
-				System.out.println("COMMUNICATION: " + bName + " SENDING message to " + aName + "\n Content : "
+				Printer.print("COMMUNICATION: " + bName + " SENDING message to " + aName + "\n Content : "
 						+ something + "\n");
 			}
 			bToA.add(something);
@@ -48,7 +48,7 @@ public class Communication<A, B> {
 
 	public void delayBPut(B something, int secondsDelay) {
 		if (verbose) {
-			System.out.println("COMMUNICATION: Delaying message from " + bName + " -> " + aName + "\n");
+			Printer.print("COMMUNICATION: Delaying message from " + bName + " -> " + aName + "\n");
 		}
 		new Thread(new Runnable() {
 			@Override
@@ -85,7 +85,7 @@ public class Communication<A, B> {
 			}
 
 			if (verbose) {
-				System.out.println(
+				Printer.print(
 						"COMMUNICATION: " + aName + " RECEIVING message from " + bName + "\n Content : " + obj + "\n");
 			}
 
@@ -116,7 +116,7 @@ public class Communication<A, B> {
 			}
 
 			if (verbose) {
-				System.out.println(
+				Printer.print(
 						"COMMUNICATION: " + bName + " RECEIVING message from " + aName + "\n Content : " + obj + "\n");
 			}
 

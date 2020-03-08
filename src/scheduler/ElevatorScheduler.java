@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import util.Transport;
 import util.Communication.Selector;
+import util.Printer;
 
 /**
  * This class limits the access of the MainScheduler to only the elevator put
@@ -26,7 +27,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 		t = new Transport("Elevator", ELEVATOR_PORT, false);
 		t.setDestinationRole("Scheduler");
 		t.setDestinationPort(MainScheduler.PORT_FOR_ELEVATOR);
-		System.out.println("Elevator send/receive socket bound on port " + t.getReceivePort() + "\n");
+		Printer.print("Elevator send/receive socket bound on port " + t.getReceivePort() + "\n");
 	}
 
 	@Override
@@ -48,7 +49,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 
 				while (receivedBytes.value == null || receivedBytes.value.length == 0) {
 					if (receivedBytes.value == null) {
-						System.out.println("--->[data] Elevator receiving\n");
+						Printer.print("--->[data] Elevator receiving\n");
 						try {
 							receivedBytes.value = (byte[]) t.receive()[0];
 						} catch (Exception e) {
@@ -61,14 +62,14 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-//						System.out.println("CheckDATA: " + t.receive()[0]);
-//						System.out.println("^^ get()");
+//						Printer.print("CheckDATA: " + t.receive()[0]);
+//						Printer.print("^^ get()");
 						receivedBytes.notifyAll();
 					}
 
 					if (receivedBytes.value.length == 0) {
 						try {
-							System.out.println("--->[data] Elevator waiting\n");
+							Printer.print("--->[data] Elevator waiting\n");
 							receivedBytes.wait();
 						} catch (InterruptedException e) {
 						}
@@ -76,7 +77,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 				}
 
 				FloorRequest floorRequest = FloorRequest.deserialize(receivedBytes.value);
-				System.out.println("Received " + floorRequest + "\n");
+				Printer.print("Received " + floorRequest + "\n");
 
 				receivedBytes.value = null;
 
@@ -92,19 +93,19 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 
 	@Override
 	public void put(ElevatorMessage message) {
-//		System.out.println("put called " + (++putBlocked) + " potentially blocked");
+//		Printer.print("put called " + (++putBlocked) + " potentially blocked");
 		synchronized (putLock) {
-			System.out.println("got ack lock");
+			Printer.print("got ack lock");
 
 //			while (waitingOnAcknowledgement.value) {
-//				System.out.println("wait on ack");
+//				Printer.print("wait on ack");
 //				try {
 //					waitingOnAcknowledgement.wait();
 //				} catch (InterruptedException e) {
 //				}
 //			}
 
-			System.out.println("sending " + message + "\n");
+			Printer.print("sending " + message + "\n");
 
 			t.send(message.serialize());
 
@@ -116,20 +117,20 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 
 				while (receivedBytes.value == null || receivedBytes.value.length > 0) {
 					if (receivedBytes.value == null) {
-						System.out.println("--->[conf] Elevator receiving\n");
+						Printer.print("--->[conf] Elevator receiving\n");
 						try {
 							receivedBytes.value = (byte[]) t.receive()[0];
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-//						System.out.println("^^ put()");
+//						Printer.print("^^ put()");
 						receivedBytes.notifyAll();
 					}
 
 					if (receivedBytes.value.length > 0) {
 						try {
-							System.out.println("--->[conf] Elevator waiting\n");
+							Printer.print("--->[conf] Elevator waiting\n");
 							receivedBytes.wait();
 						} catch (InterruptedException e) {
 						}
@@ -143,7 +144,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 //				waitingOnAcknowledgement.notifyAll();
 			}
 		}
-//		System.out.println("released put lock " + (--putBlocked) + " potentially blocked");
+//		Printer.print("released put lock " + (--putBlocked) + " potentially blocked");
 	}
 
 	public void delay(ElevatorMessage o) {

@@ -6,6 +6,7 @@ import java.util.List;
 //import util.Communication;
 import util.Transport;
 import util.ByteUtils;
+import util.Printer;
 
 public class MainScheduler {
 
@@ -37,8 +38,8 @@ public class MainScheduler {
 		floorTransport.setDestinationPort(FloorsScheduler.FLOOR_PORT);
 		elevatorTransport.setDestinationRole("Elevator");
 		elevatorTransport.setDestinationPort(ElevatorScheduler.ELEVATOR_PORT);
-		System.out.println("Floor    -> Elevator socket bound on port " + floorTransport.getReceivePort());
-		System.out.println("Elevator -> Floor    socket bound on port " + elevatorTransport.getReceivePort());
+		Printer.print("Floor    -> Elevator socket bound on port " + floorTransport.getReceivePort());
+		Printer.print("Elevator -> Floor    socket bound on port " + elevatorTransport.getReceivePort());
 		// initialize message objects
 		floorsMessages = new ArrayList<>();
 		elevatorsMessages = new ArrayList<>();
@@ -87,7 +88,7 @@ public class MainScheduler {
 			}
 		}
 		if (verbose) {
-			System.out.println("SCHEDULER SUBSYSTEM: state changing to -> " + state + "\n");
+			Printer.print("SCHEDULER SUBSYSTEM: state changing to -> " + state + "\n");
 		}
 		state.working = true;
 		currentState = state;
@@ -102,7 +103,7 @@ public class MainScheduler {
 				while (active) {
 					// wait for request
 					if (verbose)
-						System.out.println("waiting for a new packet");
+						Printer.print("waiting for a new packet");
 					Object[] request;
 					try {
 						request = transport.receive();
@@ -116,7 +117,7 @@ public class MainScheduler {
 					if (receivedBytes.length > 0) {
 						synchronized (putList) {
 							if (verbose) {
-								System.out.println("[" + sourceName + "->Scheduler] Received bytes: "
+								Printer.print("[" + sourceName + "->Scheduler] Received bytes: "
 										+ ByteUtils.toString(receivedBytes));
 							}
 
@@ -139,7 +140,7 @@ public class MainScheduler {
 									// wait for list to be non-empty
 									while (getList.isEmpty()) {
 										if (verbose) {
-											System.out.println("[]---> " + sourceName + " waiting");
+											Printer.print("[]---> " + sourceName + " waiting");
 										}
 										try {
 											getList.wait();
@@ -147,7 +148,7 @@ public class MainScheduler {
 										}
 									}
 									if (verbose) {
-										System.out.println("[]---> " + sourceName + " ready to send");
+										Printer.print("[]---> " + sourceName + " ready to send");
 									}
 									// send message
 									transport.send(getList.remove(0), sourceName);
@@ -155,7 +156,7 @@ public class MainScheduler {
 							}
 						}).start();
 						if (verbose)
-							System.out.println("created thread");
+							Printer.print("created thread");
 					}
 				}
 			}
@@ -188,7 +189,7 @@ public class MainScheduler {
 //				X obj = source.bGet();
 //
 //				if (verbose) {
-//					System.out.println("SCHEDULER SUBSYSTEM: Middleman processing message from " + sourceName + "\n");
+//					Printer.print("SCHEDULER SUBSYSTEM: Middleman processing message from " + sourceName + "\n");
 //				}
 //
 //				switchState(state, obj);

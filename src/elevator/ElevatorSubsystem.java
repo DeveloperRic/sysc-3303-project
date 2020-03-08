@@ -6,6 +6,7 @@ import java.util.PriorityQueue;
 import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
 import scheduler.FloorRequest;
+import util.Printer;
 
 public class ElevatorSubsystem {
 
@@ -66,12 +67,12 @@ public class ElevatorSubsystem {
 			if (!workDoing.contains(floor)) {
 				workDoing.add(floor);
 
-				System.out.println("ELEVATOR SUBSYSTEM: Assigned task (floor = " + floor + ")\n");
+				Printer.print("ELEVATOR SUBSYSTEM: Assigned task (floor = " + floor + ")\n");
 
 				if (!elevator.isAwake())
 					elevator.wakeup();
 			} else {
-				System.out.println("ELEVATOR SUBSYSTEM: Skipping task (floor = " + floor + ") -- already in queue\n");
+				Printer.print("ELEVATOR SUBSYSTEM: Skipping task (floor = " + floor + ") -- already in queue\n");
 			}
 		}
 	}
@@ -81,7 +82,7 @@ public class ElevatorSubsystem {
 		// saying "elevator arrived at floor ${floor}"
 
 		String s = "Elevator " + elevatorNumber + " arrived at floor " + floor;
-		System.out.println("\n[Elevator] " + s + "\n");
+		Printer.print("\n[Elevator] " + s + "\n");
 
 		ElevatorMessage em = new ElevatorMessage() {
 			public String getAcknowledgement() {

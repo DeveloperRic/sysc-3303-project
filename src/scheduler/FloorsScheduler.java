@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import util.Transport;
 import util.Communication.Selector;
+import util.Printer;
 
 /**
  * This class limits the access of the MainScheduler to only the floor put and
@@ -23,7 +24,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 		t = new Transport("Floor", FLOOR_PORT, true);
 		t.setDestinationRole("Scheduler");
 		t.setDestinationPort(MainScheduler.PORT_FOR_FLOOR);
-		System.out.println("Floor send/receive socket bound on port " + t.getReceivePort() + "\n");
+		Printer.print("Floor send/receive socket bound on port " + t.getReceivePort() + "\n");
 	}
 
 	/**
@@ -35,7 +36,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	public String get(Selector selector) {
 //		return s.floorCommunication.aGet(selector).getAcknowledgement();
 		t.send(new byte[0]);
-		System.out.println("--->[] Floor waiting to receive");
+		Printer.print("--->[] Floor waiting to receive");
 		String s = "";
 		try {
 			s = ElevatorMessage.deserialize((byte[]) t.receive()[0]).getAcknowledgement();
@@ -56,7 +57,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 //		s.floorCommunication.aPut(o);
 		t.send(o.serialize());
 		// receive confirmation of message received
-		System.out.println("--->[conf] Floor waiting to receive");
+		Printer.print("--->[conf] Floor waiting to receive");
 		try {
 			t.receive();
 		} catch (Exception e) {

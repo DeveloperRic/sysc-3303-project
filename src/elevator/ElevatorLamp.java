@@ -1,5 +1,7 @@
 package elevator;
 
+import util.Printer;
+
 public class ElevatorLamp {
 
 	private boolean illuminated;
@@ -7,7 +9,7 @@ public class ElevatorLamp {
 	public void turnOn() {
 		if (!illuminated) {
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("\tlamp on\n");
+				Printer.print("\tlamp on\n");
 			}
 			illuminated = true;
 		}
@@ -16,7 +18,7 @@ public class ElevatorLamp {
 	public void turnOff() {
 		if (illuminated) {
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("\tlamp off\n");
+				Printer.print("\tlamp off\n");
 			}
 			illuminated = false;
 		}
