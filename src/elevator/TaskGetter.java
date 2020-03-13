@@ -70,6 +70,9 @@ class TaskGetter implements Runnable {
 			} else {
 				// re-queue the request until an elevator can handle it
 				// add a delay to prevent spamming console
+				request.responses[subsystem.elevatorNumber - 1] = eta;
+				request.numResponses++;
+				
 				subsystem.scheduler.delay(response);
 			}
 

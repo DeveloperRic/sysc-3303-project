@@ -3,6 +3,8 @@ package scheduler;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import elevator.ElevatorSubsystem;
+
 public abstract class ElevatorMessage {
 	public FloorRequest getFloorRequest() {
 		return null;
@@ -23,16 +25,16 @@ public abstract class ElevatorMessage {
 		byte[] floorRequest = null;
 		byte[] acknowledgement = null;
 
-		int numbersLength = 2;
+		int bufferLength = 2 * 4;
 
 		if (getFloorRequest() != null) {
 			floorRequest = getFloorRequest().serialize();
-			numbersLength += floorRequest.length;
+			bufferLength += floorRequest.length;
 		}
 
 		if (getAcknowledgement() != null) {
 			acknowledgement = getAcknowledgement().getBytes();
-			numbersLength += acknowledgement.length;
+			bufferLength += acknowledgement.length;
 		}
 
 //		byte[] bytes = new byte[numbersLength];
@@ -62,7 +64,7 @@ public abstract class ElevatorMessage {
 //		
 //		return bytes;
 
-		ByteBuffer buffer = ByteBuffer.allocate(numbersLength * 4);
+		ByteBuffer buffer = ByteBuffer.allocate(bufferLength);
 
 		buffer.putInt(floorRequest != null ? floorRequest.length : 0);
 		buffer.putInt(acknowledgement != null ? acknowledgement.length : 0);
@@ -76,7 +78,8 @@ public abstract class ElevatorMessage {
 
 		byte[] bytes = buffer.array();
 
-		System.out.println("Elevator Messages Test: " + Arrays.toString(bytes));
+		if (ElevatorSubsystem.verbose)
+			System.out.println("Elevator Messages Test: " + Arrays.toString(bytes));
 		return bytes;
 	}
 

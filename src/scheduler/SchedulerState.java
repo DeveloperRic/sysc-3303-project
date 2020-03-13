@@ -59,20 +59,30 @@ public enum SchedulerState {
 			// wait for responses to come in from all elevators
 			if (request.numResponses == request.responses.length) {
 				List<Float> responses = new ArrayList<Float>(request.responses.length);
+				boolean noElevatorCanProcess = true;
 				// subtract 2 seconds (for processing delay)
 				for (int i = 0; i < request.responses.length; ++i) {
-					System.out.println(Arrays.toString(request.responses.clone()));
+					if (MainScheduler.verbose) {
+						System.out.println(Arrays.toString(request.responses.clone()));
+					}
+					if (request.responses[i] >= 0) {
+						noElevatorCanProcess = false;
+					}
 					responses.add(request.responses[i] -= 2);
 				}
-				// pick the smallest (non-negative) eta
-				for (int i = 0; i < responses.size(); ++i) {
-					if (responses.get(i) < 0) {
-						responses.set(i, Collections.max(responses) - responses.get(i));
+				if (!noElevatorCanProcess) {
+					// pick the smallest (non-negative) eta
+					for (int i = 0; i < responses.size(); ++i) {
+						if (responses.get(i) < 0) {
+							responses.set(i, Collections.max(responses) - responses.get(i));
+						}
 					}
+					int selectedElevator = responses.indexOf(Collections.min(responses)) + 1;
+					// message elevator it has been picked
+					changeTo(m, SEND_ACKNOWLEDGEMENT_TO_ELEVATOR, new Object[] { request, selectedElevator });
+				} else {
+					changeTo(m, FORWARD_REQUEST_TO_ELEVATOR, request.serialize());
 				}
-				int selectedElevator = responses.indexOf(Collections.min(responses)) + 1;
-				// message elevator it has been picked
-				changeTo(m, SEND_ACKNOWLEDGEMENT_TO_ELEVATOR, new Object[] { request, selectedElevator });
 			} else {
 				m.elevatorsMessages.add(request.serialize());
 				notifyDone(m, m.elevatorsMessages);
@@ -123,7 +133,7 @@ public enum SchedulerState {
 		m.currentState = nextState;
 		nextState.doWork(m, param);
 	}
-	
+
 	private static void notifyDone(MainScheduler m) {
 		notifyDone(m, null);
 	}

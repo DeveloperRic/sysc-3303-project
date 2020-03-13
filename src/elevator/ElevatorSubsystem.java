@@ -6,10 +6,11 @@ import java.util.PriorityQueue;
 import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
 import scheduler.FloorRequest;
+import util.Transport;
 
 public class ElevatorSubsystem {
 
-	static boolean verbose = true;
+	public static boolean verbose = true;
 
 	boolean poweredOn;
 	int elevatorNumber;
@@ -87,7 +88,7 @@ public class ElevatorSubsystem {
 
 		scheduler.put(em);
 
-		elevator.buttons[floor+1].unpress();
+		elevator.buttons[floor-1].unpress();
 	}
 
 	void notifyButtonPressed(int destFloor) {
@@ -120,6 +121,7 @@ public class ElevatorSubsystem {
 
 	public static void setVerbose(boolean verbose) {
 		ElevatorSubsystem.verbose = verbose;
+		Transport.setVerbose(verbose);
 	}
 
 	enum ElevatorState {
