@@ -52,11 +52,15 @@ final class ElevatorMotor implements Runnable {
 					taskAssigned = true;
 
 					float distanceToFloor = Math.abs(targetFloor - this.elevator.currentFloor) * Elevator.FLOOR_HEIGHT;
-					float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / this.elevator.velocity;
+					int secondsToFloor = (int) Math
+							.ceil(distanceToFloor == 0 ? 0 : distanceToFloor / this.elevator.velocity);
+//					int secondsToFloor = (int) Math.ceil(this.elevator.timeToStopAtFloor(targetFloor, elevator.direction));
+					int secondsToStop = (int) Math.ceil(this.elevator.secondsToStop());
 
-//					System.out.print(nextFloor + ", " + distanceToFloor + ", " + secondsToFloor + " {} ");
+					System.out.println(targetFloor + ", " + secondsToFloor + ", " + secondsToStop + " {"
+							+ elevator.velocity + "} ");
 
-					if (secondsToFloor - 1 < this.elevator.secondsToStop()) {
+					if (secondsToFloor <= secondsToStop) {
 						System.out.println("Current Floor: " + this.elevator.currentFloor);
 
 						if (this.elevator.currentFloor == targetFloor) {
@@ -91,21 +95,17 @@ final class ElevatorMotor implements Runnable {
 //						targetFloor = this.elevatorState.subsystem.workToDo.peek();
 //					}
 
-						} else {
-							if (this.elevator.velocity == Elevator.MAX_VELOCITY) {
-								// System.out.print(".");// + currentFloor
-								System.out.println("Reached To Max Speed...   ");
-							} else {
-								// System.out.print("-");
-								System.out.println("Decelerating (moving " + (elevator.direction == 1 ? "up" : "down")
-										+ ")...   ");
-							}
+						} else if (secondsToFloor < secondsToStop) {
+							// System.out.print("-");
+							System.out.println(
+									"Decelerating (moving " + (elevator.direction == 1 ? "up" : "down") + ")...   ");
 
 							this.decelerate(this.elevator);
 							this.elevator.subsystem.currentState = ElevatorState.DECELERATING;
 						}
 					} else {
-						if (this.elevator.velocity == Elevator.MAX_VELOCITY) {
+						boolean atMaxVelocity = this.elevator.velocity == Elevator.MAX_VELOCITY;
+						if (atMaxVelocity) {
 							// System.out.print(".");
 							System.out.println("Reached Max Speed...   ");
 						} else {
@@ -116,7 +116,8 @@ final class ElevatorMotor implements Runnable {
 
 						this.accelerate(this.elevator);
 
-						this.elevator.subsystem.currentState = ElevatorState.ACCELERATING;
+						this.elevator.subsystem.currentState = atMaxVelocity ? ElevatorState.MAX_SPEED
+								: ElevatorState.ACCELERATING;
 					}
 
 //			this.elevator.notifyStatus();

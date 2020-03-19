@@ -14,6 +14,7 @@ public class ElevatorRuntimeTest {
 		System.out.print("Enter this elevator's number : ");
 		Scanner scanner = new Scanner(System.in);
 		int elevNum = Integer.parseInt(scanner.nextLine());
+		scanner.close();
 
 		System.out.println("elevatorNumber set to " + elevNum + "\n");
 

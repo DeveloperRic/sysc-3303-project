@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import scheduler.RequestHeader.RequestType;
 //import util.Communication;
 import util.Transport;
 import util.BlockingList;
@@ -13,7 +14,7 @@ public class MainScheduler {
 
 	public static final int PORT_FOR_FLOOR = 63972;
 	public static final int PORT_FOR_ELEVATOR = 63973;
-	private static final int NUMBER_OF_ELEVATORS = 2;
+	private static final int NUMBER_OF_ELEVATORS = 1;
 //	private static final byte[] DEFAULT_REPLY = "< msg received >".getBytes();
 	private static final byte[] DEFAULT_REPLY = new byte[0];
 
@@ -106,39 +107,37 @@ public class MainScheduler {
 					Object[] request = transport.receive();
 					byte[] receivedBytes = (byte[]) request[0];
 
+					RequestHeader requestHeader = RequestHeader.parseFromBytes(receivedBytes);
+
 					// add request to messages
-					if (receivedBytes.length > 5) {
+					if (requestHeader.getType() == RequestType.SEND_DATA) {
 						synchronized (putList) {
 							if (verbose) {
 								System.out.println("[" + sourceName + "->Scheduler] Received bytes: "
 										+ ByteUtils.toString(receivedBytes));
 							}
+							
+							int argsLength = receivedBytes.length - RequestHeader.HEADER_SIZE;
 
-							ByteBuffer buffer = ByteBuffer.wrap(receivedBytes);
+							ByteBuffer buffer = ByteBuffer.wrap(receivedBytes, RequestHeader.HEADER_SIZE,
+									argsLength);
 
-							int responsePort = buffer.getInt();
-
-							byte[] args = new byte[receivedBytes.length - 4];
-							buffer.get(args, 0, args.length);
+							byte[] args = new byte[argsLength];
+							buffer.get(args);
 
 							switchState(nextState, args);
 
 //							putList.add(receivedBytes);
 //
 							// send reply
-							transport.send(DEFAULT_REPLY, sourceName, responsePort);
+							transport.send(DEFAULT_REPLY, sourceName, requestHeader.getPortToReplyTo());
 
 //
 //							// notify waiting threads that something's been added
 //							putList.notifyAll();
 						}
 					} else {
-						Integer subsystemNumber;
-						if (receivedBytes.length == 1 || receivedBytes.length == 5) {
-							subsystemNumber = ((Byte) receivedBytes[0]).intValue();
-						} else {
-							subsystemNumber = null;
-						}
+						Integer subsystemNumber = requestHeader.getSubsystemNumber();
 						new Thread(new Runnable() {
 							@Override
 							public void run() {
@@ -203,13 +202,7 @@ public class MainScheduler {
 									} else {
 										getList.remove(bytesToSend);
 									}
-									int portToSendTo;
-									if (receivedBytes.length == 5) {
-										portToSendTo = ByteBuffer.wrap(receivedBytes, 1, 4).getInt();
-									} else {
-										portToSendTo = (int) request[1];
-									}
-									transport.send(bytesToSend, sourceName, portToSendTo);
+									transport.send(bytesToSend, sourceName, requestHeader.getPortToReplyTo());
 								}
 							}
 						}).start();

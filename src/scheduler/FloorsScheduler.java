@@ -1,7 +1,6 @@
 package scheduler;
 
-import java.nio.ByteBuffer;
-
+import scheduler.RequestHeader.RequestType;
 import util.Communication.Selector;
 import util.Transport;
 
@@ -16,7 +15,6 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	// The main scheduler object
 	private final byte floorNumber;
 	private final Transport t;
-	private final byte[] receivePort;
 	private final Object getLock = "get lock";
 	private final Object putLock = "put lock";
 	private BytesWrapper receivedBytes = new BytesWrapper(null);
@@ -29,7 +27,6 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 		t = new Transport("Floor");
 		t.setDestinationRole("Scheduler");
 		t.setDestinationPort(MainScheduler.PORT_FOR_FLOOR);
-		receivePort = ByteBuffer.allocate(4).putInt(t.getReceivePort()).array();
 		System.out.println("Floor send/receive socket bound on port " + t.getReceivePort() + "\n");
 	}
 
@@ -43,14 +40,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 //				}
 //			}
 
-			byte[] bytes = new byte[1 + receivePort.length];
-
-			bytes[0] = floorNumber;
-			for (int i = 0; i < receivePort.length; ++i) {
-				bytes[i + 1] = receivePort[i];
-			}
-
-			t.send(bytes);
+			t.send(new RequestHeader(RequestType.GET_DATA, t.getReceivePort(), floorNumber).getBytes());
 
 //			waitingOnData.value = true;
 
@@ -105,13 +95,8 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 
 			System.out.println("sending " + request + "\n");
 
-			byte[] messageBytes = request.serialize();
-			ByteBuffer buffer = ByteBuffer.allocate(messageBytes.length + 4);
-
-			buffer.putInt(t.getReceivePort());
-			buffer.put(messageBytes);
-
-			t.send(buffer.array());
+			t.send(new RequestHeader(RequestType.SEND_DATA, t.getReceivePort(), floorNumber)
+					.attachDataBytes(request.serialize()));
 
 //			waitingOnAcknowledgement.value = true;
 
