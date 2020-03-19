@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+
 //import util.Communication;
 import util.Transport;
 import util.BlockingList;
@@ -262,5 +263,14 @@ public class MainScheduler {
 //		}
 //
 //	}
+	
+	
+	public static void main(String args[]){
+		
+		MainScheduler mainScheduler = new MainScheduler();
+		mainScheduler.setVerbose(false); // code works now, no need for spam
+		mainScheduler.activate();
+		
+	}
 
 }

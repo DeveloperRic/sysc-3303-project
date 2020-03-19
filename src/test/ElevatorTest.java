@@ -81,7 +81,7 @@ public class ElevatorTest {
 				} catch (InterruptedException e) {
 				}
 
-				subsystem.pressButton(1);
+				subsystem.pressButton(3);
 
 				floorsScheduler.put(new FloorRequest() {
 					@Override

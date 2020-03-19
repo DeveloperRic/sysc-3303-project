@@ -7,6 +7,7 @@ final class ElevatorMotor implements Runnable {
 	private final Elevator elevator;
 	boolean running;
 	private boolean taskAssigned;
+	boolean Ready = false;
 
 	ElevatorMotor(Elevator elevator) {
 		this.elevator = elevator;
@@ -16,8 +17,9 @@ final class ElevatorMotor implements Runnable {
 	public void run() {
 		if (ElevatorSubsystem.verbose) {
 			System.out.println("[Elevator] woken up");
+			running = true;
 		}
-		this.elevator.velocity = Elevator.ACCELERATION;
+		this.elevator.velocity = 0;
 		this.elevator.metresTravelled = 0;
 //		this.elevator.subsystem.notifyStatus();
 //		System.out.println("Get in");
@@ -54,10 +56,13 @@ final class ElevatorMotor implements Runnable {
 					float distanceToFloor = Math.abs(targetFloor - this.elevator.currentFloor) * Elevator.FLOOR_HEIGHT;
 					float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / this.elevator.velocity;
 
-//					System.out.print(nextFloor + ", " + distanceToFloor + ", " + secondsToFloor + " {} ");
+					//System.out.println(this.elevator.velocity + ", " + distanceToFloor + ", " + secondsToFloor + " {} " + this.elevator.currentFloor);
 
-					if (secondsToFloor - 1 < this.elevator.secondsToStop()) {
-						System.out.println("Current Floor: " + this.elevator.currentFloor);
+					if (this.elevator.RemainDistance() >= (distanceToFloor - elevator.metresTravelled)) Ready = true;
+					
+					System.out.println("Current Floor: " + this.elevator.currentFloor);
+					
+					if (Ready) {
 
 						if (this.elevator.currentFloor == targetFloor) {
 							// System.out.println("\nArrived at floor " + targetFloor);
@@ -82,6 +87,8 @@ final class ElevatorMotor implements Runnable {
 							if (elevator.subsystem.workDoing.size() == 0) {
 								elevator.direction = 0;
 							}
+							
+							Ready = false;
 
 							// System.out.println(
 							// "\nelev: " + state.currentFloor + "\ndoing: " + workDoing + "\ntodo: " +
@@ -95,24 +102,37 @@ final class ElevatorMotor implements Runnable {
 							if (this.elevator.velocity == Elevator.MAX_VELOCITY) {
 								// System.out.print(".");// + currentFloor
 								System.out.println("Reached To Max Speed...   ");
-							} else {
+								this.decelerate(this.elevator);
+							}
+							
+							else if (this.elevator.velocity <= Elevator.ACCELERATION && this.elevator.currentFloor != targetFloor){
+								
+								System.out.println("Decelerating (moving " + (elevator.direction == 1 ? "up" : "down")+ ")...   ");
+								doMovement(elevator, this.elevator.velocity);
+							}
+							
+							else {
 								// System.out.print("-");
 								System.out.println("Decelerating (moving " + (elevator.direction == 1 ? "up" : "down")
 										+ ")...   ");
+								this.decelerate(this.elevator);
 							}
-
-							this.decelerate(this.elevator);
+							
+							//this.decelerate(this.elevator);
+							
 							this.elevator.subsystem.currentState = ElevatorState.DECELERATING;
 						}
 					} else {
 						if (this.elevator.velocity == Elevator.MAX_VELOCITY) {
 							// System.out.print(".");
 							System.out.println("Reached Max Speed...   ");
-						} else {
+						}
+						else {
 							// System.out.print("+");
 							System.out.println(
 									"Accerlating (moving " + (elevator.direction == 1 ? "up" : "down") + ")...   ");
 						}
+						
 
 						this.accelerate(this.elevator);
 
@@ -137,7 +157,7 @@ final class ElevatorMotor implements Runnable {
 	}
 
 	void accelerate(Elevator elevator) {
-		if (!elevator.isMoving())
+		if (!running)
 			return;
 		elevator.velocity = Math.min(elevator.velocity + Elevator.ACCELERATION, Elevator.MAX_VELOCITY);
 		if (elevator.velocity == Elevator.MAX_VELOCITY) {
@@ -147,7 +167,7 @@ final class ElevatorMotor implements Runnable {
 	}
 
 	void decelerate(Elevator elevator) {
-		if (!elevator.isMoving())
+		if (!running)
 			return;
 		doMovement(elevator, elevator.velocity = Math.max(elevator.velocity - Elevator.ACCELERATION, 0));
 	}
@@ -160,5 +180,8 @@ final class ElevatorMotor implements Runnable {
 			elevator.metresTravelled = 0;
 			// System.out.print("|");
 		}
+		
+		//System.out.print(" Meter Traveled: " + elevator.metresTravelled + "     ");
+		
 	}
 }

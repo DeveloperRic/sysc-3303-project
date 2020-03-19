@@ -2,6 +2,7 @@ package elevator;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.Scanner;
 
 import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
@@ -126,6 +127,20 @@ public class ElevatorSubsystem {
 
 	enum ElevatorState {
 		IDLE, ACCELERATING, DECELERATING, MAX_SPEED, DOORS_OPENING, DOORS_OPEN, DOORS_CLOSING, DOORS_CLOSED
+	}
+	
+	public static void main(String[] args){
+		
+//		System.out.print("Enter this elevator's number : ");
+//		Scanner scanner = new Scanner(System.in);
+//		int elevNum = Integer.parseInt(scanner.nextLine());
+//
+//		System.out.println("elevatorNumber set to " + elevNum + "\n");
+		
+		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler(1));
+		ElevatorSubsystem.setVerbose(false);
+		subsystem.powerOn();
+		
 	}
 
 }

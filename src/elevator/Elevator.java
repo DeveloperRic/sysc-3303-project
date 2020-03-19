@@ -38,6 +38,18 @@ public class Elevator {
 	public synchronized float secondsToStop() {
 		return velocity <= ACCELERATION ? 0 : velocity / ACCELERATION;
 	}
+	
+	public synchronized float RemainDistance(){
+		
+		float RemainMeterTraveled = 0;
+		
+		for (int i = 0; i < secondsToStop(); i++){
+			RemainMeterTraveled += (velocity - i * 0.68);
+		}
+		
+		return RemainMeterTraveled;
+	}
+	
 
 	synchronized float timeToStopAtFloor(int floor, int direction) {
 
