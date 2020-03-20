@@ -5,29 +5,29 @@ import java.nio.ByteBuffer;
 import util.ByteUtils;
 
 public class RequestHeader {
-	
-	public static final int HEADER_SIZE = 3 * 4;
 
 	public enum RequestType {
-		GET_DATA(0), SEND_DATA(1);
+		GET_DATA((byte) 0), SEND_DATA((byte) 1);
 		
-		private int id;
+		private byte id;
 		
-		RequestType(int id) {
+		RequestType(byte id) {
 			this.id = id;
 		}
 		
-		public int getId() {
+		public byte getId() {
 			return id;
 		}
 		
-		public static RequestType valueOf(int id) {
+		public static RequestType valueOf(byte id) {
 			for (RequestType type : values()) {
 				if (type.id == id) return type;
 			}
 			return null;
 		}
 	}
+	
+	public static final int HEADER_SIZE = 1 + 2 * 4;
 	
 	private RequestType type;
 	private int portToReplyTo;
@@ -64,7 +64,7 @@ public class RequestHeader {
 	
 	public byte[] getBytes() {
 		ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE);
-		buffer.putInt(type.id);
+		buffer.put(type.id);
 		buffer.putInt(portToReplyTo);
 		buffer.putInt(subsystemNumber);
 		return buffer.array();
@@ -82,7 +82,7 @@ public class RequestHeader {
 		System.out.println("parsing " + ByteUtils.toString(bytes));
 		ByteBuffer buffer = ByteBuffer.wrap(bytes, 0, HEADER_SIZE);
 		return new RequestHeader(
-				RequestType.valueOf(buffer.getInt()), 
+				RequestType.valueOf(buffer.get()), 
 				buffer.getInt(), 
 				buffer.getInt());
 	}
