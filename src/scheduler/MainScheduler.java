@@ -5,16 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import scheduler.RequestHeader.RequestType;
-//import util.Communication;
-import util.Transport;
 import util.BlockingList;
 import util.ByteUtils;
+import util.Transport;
 
 public class MainScheduler {
 
 	public static final int PORT_FOR_FLOOR = 63972;
 	public static final int PORT_FOR_ELEVATOR = 63973;
-	private static final int NUMBER_OF_ELEVATORS = 1;
+	private static final int NUMBER_OF_ELEVATORS = 2;
 //	private static final byte[] DEFAULT_REPLY = "< msg received >".getBytes();
 	private static final byte[] DEFAULT_REPLY = new byte[0];
 
@@ -116,11 +115,10 @@ public class MainScheduler {
 								System.out.println("[" + sourceName + "->Scheduler] Received bytes: "
 										+ ByteUtils.toString(receivedBytes));
 							}
-							
+
 							int argsLength = receivedBytes.length - RequestHeader.HEADER_SIZE;
 
-							ByteBuffer buffer = ByteBuffer.wrap(receivedBytes, RequestHeader.HEADER_SIZE,
-									argsLength);
+							ByteBuffer buffer = ByteBuffer.wrap(receivedBytes, RequestHeader.HEADER_SIZE, argsLength);
 
 							byte[] args = new byte[argsLength];
 							buffer.get(args);
@@ -255,5 +253,13 @@ public class MainScheduler {
 //		}
 //
 //	}
+
+	public static void main(String args[]) {
+
+		MainScheduler mainScheduler = new MainScheduler();
+		mainScheduler.setVerbose(false); // code works now, no need for spam
+		mainScheduler.activate();
+
+	}
 
 }
