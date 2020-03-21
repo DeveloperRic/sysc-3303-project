@@ -9,8 +9,7 @@ import elevator.*;
 import scheduler.ElevatorScheduler;
 
 class ElevatorDoorsUnitTest {
-	
-	
+
 	@BeforeEach
 	void setUp() throws Exception {
 	}
@@ -29,7 +28,7 @@ class ElevatorDoorsUnitTest {
 		assertTrue(ed.isOpen());
 		schedulerElevator.closeComms();
 	}
-	
+
 	@Test
 	void test_doorsClosed() {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);

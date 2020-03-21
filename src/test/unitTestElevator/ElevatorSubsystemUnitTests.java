@@ -11,7 +11,7 @@ import scheduler.ElevatorScheduler;
 import scheduler.MainScheduler;
 
 class ElevatorSubsystemUnitTests {
-	
+
 	@BeforeEach
 	void setUp() throws Exception {
 	}
@@ -29,7 +29,7 @@ class ElevatorSubsystemUnitTests {
 		schedulerElevator.closeComms();
 		assertEquals(floor, es.getFirstWorkDoing());
 	}
-	
+
 	@Test
 	void test_powerOn() {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
@@ -38,7 +38,7 @@ class ElevatorSubsystemUnitTests {
 		schedulerElevator.closeComms();
 		assertTrue(es.isPoweredOn());
 	}
-	
+
 	@Test
 	void test_powerOff() {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
@@ -47,7 +47,7 @@ class ElevatorSubsystemUnitTests {
 		schedulerElevator.closeComms();
 		assertFalse(es.isPoweredOn());
 	}
-	
+
 	@Test
 	void test_pressButton() {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);

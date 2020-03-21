@@ -30,9 +30,9 @@ class ElevatorUnitTests {
 		elevator.direction = direction;
 		float distance = Math.abs(elevator.currentFloor - floor) * Elevator.FLOOR_HEIGHT;
 		schedulerElevator.closeComms();
-		assertEquals(distance/elevator.velocity, elevator.timeToStopAtFloor(floor, direction));
+		assertEquals(distance / elevator.velocity, elevator.timeToStopAtFloor(floor, direction));
 	}
-	
+
 	@Test
 	void test_secondsToStop() {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
@@ -40,9 +40,7 @@ class ElevatorUnitTests {
 		Elevator elevator = new Elevator(subsystem);
 		elevator.velocity = 10;
 		schedulerElevator.closeComms();
-		assertEquals(elevator.velocity/Elevator.ACCELERATION, elevator.secondsToStop());
+		assertEquals(elevator.velocity / Elevator.ACCELERATION, elevator.secondsToStop());
 	}
-	
-	
 
 }

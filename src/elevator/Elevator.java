@@ -57,7 +57,7 @@ public class Elevator {
 		return RemainMeterTraveled;
 	}
 
-	synchronized float timeToStopAtFloor(int floor, int direction) {
+	public synchronized float timeToStopAtFloor(int floor, int direction) {
 
 		if (ElevatorSubsystem.verbose) {
 			Printer.print("(req = " + floor + " going " + direction + ") (cur = " + currentFloor + " going "

@@ -3,46 +3,45 @@ package scheduler;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import util.ByteUtils;
-
-/** FloorRequest.java
- * This class is used as a communication class to store the floor destination and
- * the direct so the elevator can use it.
+/**
+ * FloorRequest.java This class is used as a communication class to store the
+ * floor destination and the direct so the elevator can use it.
  *
  */
 public abstract class FloorRequest {
-	//Meant to store the ETA of each elevator so the scheduler can decide which elevator to choose.
+	// Meant to store the ETA of each elevator so the scheduler can decide which
+	// elevator to choose.
 	public Float[] responses = new Float[MainScheduler.getNumberOfElevators()];
-	//Keeps track of the valid number of responses in the response[]
+	// Keeps track of the valid number of responses in the response[]
 	public int numResponses = 0;
-	//The elevator chosen to go do this Floor Request
+	// The elevator chosen to go do this Floor Request
 	public int selectedElevator = -1;
 	public Integer sourceElevator;
 
-    /**
-     * Returns the floor destination and direction message saved at run time.
-     * FloorRequest.getRequest()[0] contains the floor destination to go to.
-     * FloorRequest.getRequest()[1] contains the direction the elevator should be going in.
-     * 
-     * @return Integer[] The floor destination and the direction.
-     */
+	/**
+	 * Returns the floor destination and direction message saved at run time.
+	 * FloorRequest.getRequest()[0] contains the floor destination to go to.
+	 * FloorRequest.getRequest()[1] contains the direction the elevator should be
+	 * going in.
+	 * 
+	 * @return Integer[] The floor destination and the direction.
+	 */
 	public abstract Integer[] getRequest();
 
-    /**
-     * Returns the button pressed inside the elevator if any.
-     * 
-     * @return Integer object The number pressed.
-     */
+	/**
+	 * Returns the button pressed inside the elevator if any.
+	 * 
+	 * @return Integer object The number pressed.
+	 */
 	public Integer getSourceElevator() {
 		return sourceElevator;
 	}
 
-	
-    /**
-     * Returns the formatted String message of the Floor destination and direction.
-     * 
-     * @return String object The formatted String of the data in this class.
-     */
+	/**
+	 * Returns the formatted String message of the Floor destination and direction.
+	 * 
+	 * @return String object The formatted String of the data in this class.
+	 */
 	@Override
 	public String toString() {
 		Integer[] req = getRequest();
@@ -51,17 +50,15 @@ public abstract class FloorRequest {
 				+ selectedElevator + ")" + " (res " + Arrays.toString(responses.clone()) + ")" + ")>";
 	}
 
-	
-    /**
-     * Converts the FloorRequest into a byte[] to be sent through UDP.
-     * byte[0] is the length of the request array.
-     * byte[1] is the length of the number of responses * 4(number of bytes in a float).
-     * Stores the request and responses data in the middle of the byte[]
-     * byte[byte.length-2] is numResponses stored.
-     * byte[byte.length-1] is the selectedElevator stored.
-     * 
-     * @return byte[] The byte[] version of the FloorRequest.
-     */
+	/**
+	 * Converts the FloorRequest into a byte[] to be sent through UDP. byte[0] is
+	 * the length of the request array. byte[1] is the length of the number of
+	 * responses * 4(number of bytes in a float). Stores the request and responses
+	 * data in the middle of the byte[] byte[byte.length-2] is numResponses stored.
+	 * byte[byte.length-1] is the selectedElevator stored.
+	 * 
+	 * @return byte[] The byte[] version of the FloorRequest.
+	 */
 	public synchronized byte[] serialize() {
 		Integer[] request = getRequest();
 
@@ -120,17 +117,17 @@ public abstract class FloorRequest {
 		return buffer.array();
 	}
 
-	
 	/**
-     * Converts the serialized byte[] back into an FloorMessage.
-     * Retrieves the Floor Destination and Direction if any.
-     * Retrieves the Responses if any.
-     * Retrieves the Selected Elevator if any.
-     * 
-     * @param bytes The byte array that is to be converted back into an FloorRequest.
-     * 
-     * @return FloorRequest object The class that contains the Floor Destination, Direction and ETAs from the elevators.
-     */
+	 * Converts the serialized byte[] back into an FloorMessage. Retrieves the Floor
+	 * Destination and Direction if any. Retrieves the Responses if any. Retrieves
+	 * the Selected Elevator if any.
+	 * 
+	 * @param bytes The byte array that is to be converted back into an
+	 *              FloorRequest.
+	 * 
+	 * @return FloorRequest object The class that contains the Floor Destination,
+	 *         Direction and ETAs from the elevators.
+	 */
 	public static FloorRequest deserialize(byte[] bytes) {
 //		System.out.println("flr deserializing " + ByteUtils.toString(bytes));
 //		final int HEAD_SIZE = 2;

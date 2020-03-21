@@ -3,9 +3,6 @@ package scheduler;
 import scheduler.RequestHeader.RequestType;
 import util.Communication.Selector;
 import util.Printer;
-
-import java.nio.ByteBuffer;
-
 import util.Transport;
 
 /**

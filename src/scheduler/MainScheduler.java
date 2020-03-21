@@ -72,11 +72,22 @@ public class MainScheduler {
 	public static int getNumberOfElevators() {
 		return NUMBER_OF_ELEVATORS;
 	}
-	
-	public SchedulerState getState() { return currentState; }
-	public List<byte[]> getElevatorMessages() { return elevatorsMessages;}
-	public List<byte[]> getFloorMessages() {return floorsMessages;}
-	public void setState(SchedulerState state) { currentState = state; };
+
+	public SchedulerState getState() {
+		return currentState;
+	}
+
+	public List<byte[]> getElevatorMessages() {
+		return elevatorsMessages;
+	}
+
+	public List<byte[]> getFloorMessages() {
+		return floorsMessages;
+	}
+
+	public void setState(SchedulerState state) {
+		currentState = state;
+	};
 
 	public void setVerbose(boolean verbose) {
 		MainScheduler.verbose = verbose;
@@ -191,8 +202,8 @@ public class MainScheduler {
 										}
 
 										if (verbose) {
-											Printer.print(subsystemNumber + ": []---> " + sourceName
-													+ " waiting (try " + (++numTimesWaited) + ")");
+											Printer.print(subsystemNumber + ": []---> " + sourceName + " waiting (try "
+													+ (++numTimesWaited) + ")");
 										}
 
 										// if there's still nothing to do, wait
@@ -265,7 +276,7 @@ public class MainScheduler {
 //		}
 //
 //	}
-	
+
 	public void closeComms() {
 		floorTransport.close();
 		elevatorTransport.close();

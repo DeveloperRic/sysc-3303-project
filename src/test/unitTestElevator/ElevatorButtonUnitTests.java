@@ -15,7 +15,7 @@ class ElevatorButtonUnitTests {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		
+
 	}
 
 	@AfterEach
@@ -23,7 +23,7 @@ class ElevatorButtonUnitTests {
 	}
 
 	@Test
-	void test_pressButton() { 
+	void test_pressButton() {
 		MainScheduler ms = new MainScheduler();
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
@@ -34,7 +34,7 @@ class ElevatorButtonUnitTests {
 		ms.closeComms();
 		schedulerElevator.closeComms();
 	}
-	
+
 	@Test
 	void test_unpressButton() {
 		MainScheduler ms = new MainScheduler();
