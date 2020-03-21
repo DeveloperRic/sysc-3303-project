@@ -3,6 +3,7 @@ package test.unitTestMain;
 import main.FloorSubsystem;
 import main.InputParser;
 import main.Task;
+import static java.time.temporal.ChronoUnit.MILLIS;
 
 import static org.junit.Assert.*;
 
@@ -28,11 +29,11 @@ public class FloorSubsystemUnitTests {
 	FloorSubsystem floorSS = new FloorSubsystem(null);
 	floorSS.parseAdd("this wont work !");
 	assertTrue(floorSS.tasks.size() == 0);	
-	
-	floorSS.parseAdd("ZoneId.systemDefault()).format(formatter) 1 Down a");
+
+	floorSS.parseAdd("14:05:15.0 1 Down a");
 	assertTrue(floorSS.tasks.size() == 0);	
 	
-	floorSS.parseAdd("ZoneId.systemDefault()).format(formatter) 2 Up 4");
+	floorSS.parseAdd("14:05:15.0 2 Up 4");
 	assertTrue(floorSS.tasks.size() == 1);	
 	}
 	
@@ -43,14 +44,22 @@ public class FloorSubsystemUnitTests {
 		InputParser ip = new InputParser(inputFileDestination);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 		long strt = System.currentTimeMillis();
+		LocalTime l = null;
 		while(ip.requests.size() > 0) {
 			String[] request = ip.requests.remove(0).split(" ");
-			try {
-				Thread.sleep(Integer.parseInt(request[0]));
-			} catch (NumberFormatException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(l == null) {
+				l = LocalTime.parse(request[0]);
 			}
+			else {
+				try {
+					Thread.sleep(MILLIS.between(l, LocalTime.parse(request[0])));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			
 			String time = LocalTime.now(ZoneId.systemDefault()).format(formatter);
 			fss.parseAdd(time +" "+ request[1] +" "+ request[2]);
 			System.out.println(time +" "+ request[1] +" "+ request[2]);

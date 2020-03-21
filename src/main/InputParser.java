@@ -67,8 +67,8 @@ public class InputParser {
 		
 		//Validate Date Type
 		try {
-			Integer.parseInt(inputs[0]);
-		} catch (NumberFormatException e) {
+            LocalTime.parse(inputs[0]);
+        } catch (DateTimeParseException e) {
 			Printer.print("Input Line " + lineNumber + " has an invalid Date time format. Skipping Input...");
 			return false;
 		}
