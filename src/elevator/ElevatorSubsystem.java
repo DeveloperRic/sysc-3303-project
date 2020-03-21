@@ -2,15 +2,17 @@ package elevator;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.Scanner;
 
 import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
 import scheduler.FloorRequest;
+import util.Transport;
 import util.Printer;
 
 public class ElevatorSubsystem {
 
-	static boolean verbose = true;
+	public static boolean verbose = true;
 
 	boolean poweredOn;
 	int elevatorNumber;
@@ -92,7 +94,7 @@ public class ElevatorSubsystem {
 
 		scheduler.put(em);
 
-		elevator.buttons[floor+1].unpress();
+		elevator.buttons[floor-1].unpress();
 	}
 
 	void notifyButtonPressed(int destFloor) {
@@ -129,10 +131,25 @@ public class ElevatorSubsystem {
 
 	public static void setVerbose(boolean verbose) {
 		ElevatorSubsystem.verbose = verbose;
+		Transport.setVerbose(verbose);
 	}
 
 	enum ElevatorState {
 		IDLE, ACCELERATING, DECELERATING, MAX_SPEED, DOORS_OPENING, DOORS_OPEN, DOORS_CLOSING, DOORS_CLOSED
+	}
+	
+	public static void main(String[] args){
+		
+//		System.out.print("Enter this elevator's number : ");
+//		Scanner scanner = new Scanner(System.in);
+//		int elevNum = Integer.parseInt(scanner.nextLine());
+//
+//		System.out.println("elevatorNumber set to " + elevNum + "\n");
+		
+		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler(1));
+		ElevatorSubsystem.setVerbose(false);
+		subsystem.powerOn();
+		
 	}
 
 }

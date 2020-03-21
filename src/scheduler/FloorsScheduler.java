@@ -1,5 +1,6 @@
 package scheduler;
 
+import scheduler.RequestHeader.RequestType;
 import util.Communication.Selector;
 import util.Printer;
 
@@ -8,74 +9,146 @@ import java.nio.ByteBuffer;
 import util.Transport;
 
 /**
- * This class limits the access of the MainScheduler to only the floor put and
- * get functions
+ * This class limits the access of the MainScheduler to only the elevator put
+ * and get functions
  *
  */
 public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
-//	public static final int FLOOR_PORT = 63971;
+//	public static final int ELEVATOR_PORT = 63971;
 
 	// The main scheduler object
-	private Transport t;
+	private final byte floorNumber;
+	private final Transport t;
+	private final Object getLock = "get lock";
+	private final Object putLock = "put lock";
+	private BytesWrapper receivedBytes = new BytesWrapper(null);
 
 	/**
 	 * Instantiates the floor scheduler (lives in floor-subsystem runtime)
 	 */
-	public FloorsScheduler() {
-		t = new Transport("Floor", -1, true);
+	public FloorsScheduler(Integer floorNumber) {
+		this.floorNumber = floorNumber.byteValue();
+		t = new Transport("Floor");
 		t.setDestinationRole("Scheduler");
 		t.setDestinationPort(MainScheduler.PORT_FOR_FLOOR);
 		Printer.print("Floor send/receive socket bound on port " + t.getReceivePort() + "\n");
 	}
 
-	/**
-	 * Allows access to the MainScheduler.floorGet function
-	 * 
-	 * @returns an object from MainScheduler.floorGet
-	 */
 	@Override
 	public String get(Selector selector) {
-//		return s.floorCommunication.aGet(selector).getAcknowledgement();
-		t.send(new byte[0]);
-		Printer.print("--->[] Floor waiting to receive");
-		String s = "";
-		try {
-			s = ElevatorMessage.deserialize((byte[]) t.receive()[0]).getAcknowledgement();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		synchronized (getLock) {
+//			while (waitingOnData.value) {
+//				try {
+//					waitingOnData.wait();
+//				} catch (InterruptedException e) {
+//				}
+//			}
+
+			t.send(new RequestHeader(RequestType.GET_DATA, t.getReceivePort(), floorNumber).getBytes());
+
+//			waitingOnData.value = true;
+
+			synchronized (receivedBytes) {
+
+				while (receivedBytes.value == null || receivedBytes.value.length == 0) {
+					if (receivedBytes.value == null) {
+						Printer.print("--->[data] Floor receiving\n");
+						receivedBytes.value = (byte[]) t.receive()[0];
+//						Printer.print("CheckDATA: " + t.receive()[0]);
+//						Printer.print("^^ get()");
+						receivedBytes.notifyAll();
+					}
+
+					if (receivedBytes.value.length == 0) {
+						try {
+							Printer.print("--->[data] Floor waiting\n");
+							receivedBytes.wait();
+						} catch (InterruptedException e) {
+						}
+					}
+				}
+
+				ElevatorMessage elevatorMessage = ElevatorMessage.deserialize(receivedBytes.value);
+				Printer.print("Received " + elevatorMessage + "\n");
+
+				receivedBytes.value = null;
+
+//				waitingOnData.value = false;
+//				waitingOnData.notifyAll();
+
+				return elevatorMessage.getAcknowledgement();
+			}
 		}
-		return s;
 	}
 
-	/**
-	 * Allows access to the MainScheduler.floorPut function
-	 * 
-	 * @returns a boolean from MainScheduler.floorPut
-	 */
+//	private int putBlocked;
+
 	@Override
-	public void put(FloorRequest o) {
-//		s.floorCommunication.aPut(o);
-		byte[] requestBytes = o.serialize();
-		ByteBuffer buffer = ByteBuffer.allocate(requestBytes.length + 4);
+	public void put(FloorRequest request) {
+//		System.out.println("put called " + (++putBlocked) + " potentially blocked");
+		synchronized (putLock) {
+//			System.out.println("got ack lock");
 
-		buffer.putInt(t.getReceivePort());
-		buffer.put(requestBytes);
+//			while (waitingOnAcknowledgement.value) {
+//				System.out.println("wait on ack");
+//				try {
+//					waitingOnAcknowledgement.wait();
+//				} catch (InterruptedException e) {
+//				}
+//			}
 
-		t.send(buffer.array());
+			System.out.println("sending " + request + "\n");
 
-		// receive confirmation of message received
-		Printer.print("--->[conf] Floor waiting to receive");
-		try {
-			t.receive();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			t.send(new RequestHeader(RequestType.SEND_DATA, t.getReceivePort(), floorNumber)
+					.attachDataBytes(request.serialize()));
+
+//			waitingOnAcknowledgement.value = true;
+
+			// receive confirmation of message received
+
+			synchronized (receivedBytes) {
+
+				while (receivedBytes.value == null || receivedBytes.value.length > 0) {
+					if (receivedBytes.value == null) {
+						System.out.println("--->[conf] Floor receiving\n");
+						receivedBytes.value = (byte[]) t.receive()[0];
+//						System.out.println("^^ put()");
+						receivedBytes.notifyAll();
+					}
+
+					if (receivedBytes.value.length > 0) {
+						try {
+							System.out.println("--->[conf] Floor waiting\n");
+							receivedBytes.wait();
+						} catch (InterruptedException e) {
+						}
+					}
+				}
+
+				receivedBytes.value = null;
+				receivedBytes.notifyAll();
+
+//				waitingOnAcknowledgement.value = false;
+//				waitingOnAcknowledgement.notifyAll();
+			}
 		}
+//		Printer.print("released put lock " + (--putBlocked) + " potentially blocked");
+	}
+
+	private static class BytesWrapper {
+		private byte[] value;
+
+		private BytesWrapper(byte[] value) {
+			this.value = value;
+		}
+	}
+
+	public byte getElevatorNumber() {
+		return floorNumber;
 	}
 
 	public Transport getTransport() {
 		return t;
 	}
-
+	
 }

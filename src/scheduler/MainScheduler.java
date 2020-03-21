@@ -4,16 +4,17 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-//import util.Communication;
-import util.Transport;
+import scheduler.RequestHeader.RequestType;
+import util.BlockingList;
 import util.ByteUtils;
+import util.Transport;
 import util.Printer;
 
 public class MainScheduler {
 
 	public static final int PORT_FOR_FLOOR = 63972;
 	public static final int PORT_FOR_ELEVATOR = 63973;
-	private static final int NUMBER_OF_ELEVATORS = 1;
+	private static final int NUMBER_OF_ELEVATORS = 2;
 //	private static final byte[] DEFAULT_REPLY = "< msg received >".getBytes();
 	private static final byte[] DEFAULT_REPLY = new byte[0];
 
@@ -40,8 +41,8 @@ public class MainScheduler {
 		Printer.print("Floor    -> Elevator socket bound on port " + floorTransport.getReceivePort());
 		Printer.print("Elevator -> Floor    socket bound on port " + elevatorTransport.getReceivePort());
 		// initialize message objects
-		floorsMessages = new ArrayList<>();
-		elevatorsMessages = new ArrayList<>();
+		floorsMessages = new BlockingList<>(new ArrayList<>());
+		elevatorsMessages = new BlockingList<>(new ArrayList<>());
 	}
 
 	public void activate() {
@@ -118,44 +119,36 @@ public class MainScheduler {
 					}
 					byte[] receivedBytes = (byte[]) request[0];
 
+					RequestHeader requestHeader = RequestHeader.parseFromBytes(receivedBytes);
+
 					// add request to messages
-					if (receivedBytes.length > 5) {
+					if (requestHeader.getType() == RequestType.SEND_DATA) {
 						synchronized (putList) {
 							if (verbose) {
 								Printer.print("[" + sourceName + "->Scheduler] Received bytes: "
 										+ ByteUtils.toString(receivedBytes));
 							}
 
-							ByteBuffer buffer = ByteBuffer.wrap(receivedBytes);
+							int argsLength = receivedBytes.length - RequestHeader.HEADER_SIZE;
 
-							int responsePort = buffer.getInt();
+							ByteBuffer buffer = ByteBuffer.wrap(receivedBytes, RequestHeader.HEADER_SIZE, argsLength);
 
-							byte[] args = new byte[receivedBytes.length - 4];
-							buffer.get(args, 0, args.length);
+							byte[] args = new byte[argsLength];
+							buffer.get(args);
 
 							switchState(nextState, args);
 
 //							putList.add(receivedBytes);
 //
 							// send reply
-							try {
-								transport.send(DEFAULT_REPLY, sourceName, responsePort);
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+							transport.send(DEFAULT_REPLY, sourceName, requestHeader.getPortToReplyTo());
 
 //
 //							// notify waiting threads that something's been added
 //							putList.notifyAll();
 						}
 					} else {
-						Integer subsystemNumber;
-						if (receivedBytes.length == 1 || receivedBytes.length == 5) {
-							subsystemNumber = ((Byte) receivedBytes[0]).intValue();
-						} else {
-							subsystemNumber = null;
-						}
+						Integer subsystemNumber = requestHeader.getSubsystemNumber();
 						new Thread(new Runnable() {
 							@Override
 							public void run() {
@@ -165,7 +158,9 @@ public class MainScheduler {
 									boolean actionNeeded = false;
 
 									byte[] bytesToSend = null;
-									while (getList.isEmpty() || !actionNeeded) {
+
+									int numTimesWaited = 0;
+									while (getList.isEmpty() || (!isForFloor && !actionNeeded)) {
 
 										if (!getList.isEmpty() && subsystemNumber != null) {
 
@@ -175,8 +170,9 @@ public class MainScheduler {
 												// request for which action is needed
 												for (byte[] reqBytes : getList) {
 													FloorRequest req = FloorRequest.deserialize(reqBytes);
-													
-													System.out.println(req);
+
+													if (verbose)
+														System.out.println(req);
 
 													// if request is needing elevator's input OR
 													// if request is assigned to the elevator
@@ -195,11 +191,12 @@ public class MainScheduler {
 										}
 
 										if (verbose) {
-											Printer.print("[]---> " + sourceName + " waiting");
+											Printer.print(subsystemNumber + ": []---> " + sourceName
+													+ " waiting (try " + (++numTimesWaited) + ")");
 										}
 
 										// if there's still nothing to do, wait
-										if (getList.isEmpty() || !actionNeeded) {
+										if (getList.isEmpty() || (!isForFloor && !actionNeeded)) {
 											try {
 												getList.wait();
 											} catch (InterruptedException e) {
@@ -207,7 +204,7 @@ public class MainScheduler {
 										}
 									}
 									if (verbose) {
-										Printer.print("[]---> " + sourceName + " ready to send");
+										Printer.print(subsystemNumber + ": []---> " + sourceName + " ready to send");
 									}
 									// send message
 									if (bytesToSend == null) {
@@ -215,19 +212,7 @@ public class MainScheduler {
 									} else {
 										getList.remove(bytesToSend);
 									}
-									int portToSendTo;
-									if (receivedBytes.length == 5) {
-										portToSendTo = ByteBuffer.wrap(receivedBytes, 1, 4).getInt();
-										System.out.println("rec b = " + receivedBytes[1] + " port = " + portToSendTo);
-									} else {
-										portToSendTo = ((Byte) request[1]).intValue();
-									}
-									try {
-										transport.send(bytesToSend, sourceName, portToSendTo);
-									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
+									transport.send(bytesToSend, sourceName, requestHeader.getPortToReplyTo());
 								}
 							}
 						}).start();
@@ -284,6 +269,14 @@ public class MainScheduler {
 	public void closeComms() {
 		floorTransport.close();
 		elevatorTransport.close();
+	}
+
+	public static void main(String args[]) {
+
+		MainScheduler mainScheduler = new MainScheduler();
+		mainScheduler.setVerbose(false); // code works now, no need for spam
+		mainScheduler.activate();
+
 	}
 
 }

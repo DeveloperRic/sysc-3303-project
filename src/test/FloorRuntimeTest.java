@@ -13,15 +13,15 @@ public class FloorRuntimeTest {
 
 	@Test
 	public void test() {
-		Transport.setVerbose(true);
-		
-		FloorsScheduler scheduler = new FloorsScheduler();
-		
+		Transport.setVerbose(false);
+
+		FloorsScheduler scheduler = new FloorsScheduler(-1); // just one floor for now, later there will be more
+
 //		FloorSubsystem floorSS = new FloorSubsystem(scheduler);
 //		
 //		new Thread(floorSS,"FloorSS").start();
 
-		new Thread(new Runnable() {
+		Thread thread1 = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -31,14 +31,14 @@ public class FloorRuntimeTest {
 				} catch (InterruptedException e) {
 				}
 
-				Integer[] r1 = new Integer[] {5, 1};
+				Integer[] r1 = new Integer[] { 5, 1 };
 				scheduler.put(new FloorRequest() {
 					@Override
 					public Integer[] getRequest() {
 						return r1;
 					}
 				});
-				
+
 				System.out.println(scheduler.get(null));
 
 				try {
@@ -46,32 +46,57 @@ public class FloorRuntimeTest {
 				} catch (InterruptedException e) {
 				}
 
-				Integer[] r2 = new Integer[] {3, 1};
+				Integer[] r2 = new Integer[] { 20, -1 };
 				scheduler.put(new FloorRequest() {
 					@Override
 					public Integer[] getRequest() {
 						return r2;
 					}
 				});
-				
+
 				System.out.println(scheduler.get(null));
+			}
+		});
+
+		Thread thread2 = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
 
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(10000);
 				} catch (InterruptedException e) {
 				}
 
-				Integer[] r3 = new Integer[] {10, -1};
+				Integer[] r1 = new Integer[] { 3, 1 };
 				scheduler.put(new FloorRequest() {
 					@Override
 					public Integer[] getRequest() {
-						return r3;
+						return r1;
 					}
 				});
+
+				System.out.println(scheduler.get(null));
 				
+				try {
+					Thread.sleep(13000);
+				} catch (InterruptedException e) {
+				}
+
+				Integer[] r2 = new Integer[] { 6, -1 };
+				scheduler.put(new FloorRequest() {
+					@Override
+					public Integer[] getRequest() {
+						return r2;
+					}
+				});
+
 				System.out.println(scheduler.get(null));
 			}
-		}).start();
+		});
+
+		thread1.start();
+		thread2.start();
 
 		// wait for elevator to return to sleep mode
 		while (true) {

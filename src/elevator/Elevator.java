@@ -45,25 +45,37 @@ public class Elevator {
 		return velocity <= ACCELERATION ? 0 : velocity / ACCELERATION;
 	}
 
-	public synchronized float timeToStopAtFloor(int floor, int direction) {
+	public synchronized float remainingDistance() {
+		float RemainMeterTraveled = 0;
+
+		float seconds2Stop = secondsToStop();
+
+		for (int i = 0; i < seconds2Stop; i++) {
+			RemainMeterTraveled += (velocity - i * ACCELERATION);
+		}
+
+		return RemainMeterTraveled;
+	}
+
+	synchronized float timeToStopAtFloor(int floor, int direction) {
 
 		if (ElevatorSubsystem.verbose) {
 			Printer.print("(req = " + floor + " going " + direction + ") (cur = " + currentFloor + " going "
 					+ this.direction + ")");
 		}
 
-		// If elevator has not been assigned anything yet
-		if (velocity == 0 || currentFloor == floor || this.direction == 0) {
-			return 0;
-		}
-
-		// If directions are different
-		if (direction != 0 && direction != this.direction) {
+		// If directions are opposites
+		if (direction != 0 && this.direction != 0 && direction != this.direction) {
 			if (ElevatorSubsystem.verbose) {
 				Printer.print("dif direction (req = " + floor + " going " + direction + ") (cur = " + currentFloor
 						+ " going " + this.direction + ")");
 			}
 			return -1;
+		}
+
+		// If elevator is already on the floor
+		if (currentFloor == floor) {
+			return 0;
 		}
 
 		// If start floor lower than elevator while elevator going up
@@ -88,53 +100,26 @@ public class Elevator {
 //			return false;
 //		}
 
-		// If elevator has not been assigned anything yet
-		if (velocity == 0 || currentFloor == floor || this.direction == 0) {
-			return 0;
-		}
-
 		// if velocity is too fast to slow down, return false;
-		float distanceToFloor = Math.abs(floor - currentFloor) * FLOOR_HEIGHT;
-		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / velocity;
-		return secondsToFloor >= secondsToStop() ? secondsToFloor : -1;
-	}
+//		float distanceToFloor = Math.abs(floor - currentFloor) * FLOOR_HEIGHT;
+//		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / velocity;
+//		return secondsToFloor >= secondsToStop() ? secondsToFloor : -1;
 
-//	public synchronized void assignTask(Task task) {
-//		// Printer.print("Elevator Received Task");
-//		if (canStopAtFloor(task.getStartFloor())) {
-//
-//			if (currentFloor != task.getStartFloor() && !this.subsystem.workDoing.contains(task.getStartFloor())) {
-//				this.subsystem.workDoing.add(task.getStartFloor());
-//			}
-//			if (currentFloor != task.getDestinationFloor()
-//					&& !this.subsystem.workDoing.contains(task.getDestinationFloor())) {
-//				this.subsystem.workDoing.add(task.getDestinationFloor());
-//			}
-//
-//			// Printer.print("Added task to workDoing (" + task.getStartFloor() + " ->
-//			// " + task.getDestinationFloor() + ")");
-//
-//			// Printer.print("\nelev: " + state.currentFloor + "\ndoing: " + workDoing
-//			// + "\ntodo: " + workToDo);
-//
-//			if (!isAwake())
-//				wakeup();
-//		} else {
-//			if (currentFloor != task.getStartFloor() && !this.subsystem.workToDo.contains(task.getStartFloor())) {
-//				this.subsystem.workToDo.add(task.getStartFloor());
-//			}
-//			if (currentFloor != task.getDestinationFloor()
-//					&& !this.subsystem.workToDo.contains(task.getDestinationFloor())) {
-//				this.subsystem.workToDo.add(task.getDestinationFloor());
-//			}
-//
-//			// Printer.print("Added task to workToDo (" + task.getStartFloor() + " -> "
-//			// + task.getDestinationFloor() + ")");
-//
-//			// Printer.print("\nelev: " + state.currentFloor + "\ndoing: " + workDoing
-//			// + "\ntodo: " + workToDo);
-//		}
-//	}
+		int ticks = 0; // how many ticks (seconds) has it been
+		float accVelocity = velocity; // how fast were we going when we had to stop
+		float distanceTraveled = 0; // just a marker for when to exit the loop, not needed for math
+		float halfDistanceToFloor = (Math.abs(floor - currentFloor) * FLOOR_HEIGHT) / 2;
+
+		do {
+			accVelocity += accVelocity == MAX_VELOCITY ? 0 : ACCELERATION;
+			distanceTraveled += accVelocity;
+			ticks++;
+		} while (distanceTraveled < halfDistanceToFloor);
+
+		int secondsToFloor = ticks * 2; // x2 value to account for accelerating then decelerating
+
+		return secondsToFloor;
+	}
 
 	public boolean isAwake() {
 		return motor != null && motor.running;

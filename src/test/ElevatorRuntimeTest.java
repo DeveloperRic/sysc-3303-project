@@ -3,14 +3,23 @@ package test;
 import elevator.ElevatorSubsystem;
 import scheduler.ElevatorScheduler;
 
+import java.util.Scanner;
+
 import org.junit.Test;
 
 public class ElevatorRuntimeTest {
 
 	@Test
 	public void test() {
-		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler(1));
-		ElevatorSubsystem.setVerbose(true);
+		System.out.print("Enter this elevator's number : ");
+		Scanner scanner = new Scanner(System.in);
+		int elevNum = Integer.parseInt(scanner.nextLine());
+		scanner.close();
+
+		System.out.println("elevatorNumber set to " + elevNum + "\n");
+
+		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler(elevNum));
+		ElevatorSubsystem.setVerbose(false);
 		subsystem.powerOn();
 
 //		new Thread(new Runnable() {
