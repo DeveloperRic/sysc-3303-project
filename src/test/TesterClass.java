@@ -46,7 +46,7 @@ public class TesterClass {
 		
 		//Active floor scheduler
 		Transport.setVerbose(true);
-		FloorsScheduler floorScheduler = new FloorsScheduler();
+		FloorsScheduler floorScheduler = new FloorsScheduler(-1);
 
 		
 		//Delay

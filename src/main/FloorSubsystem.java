@@ -3,6 +3,7 @@ import java.io.*;
 import java.util.*;
 
 import scheduler.FloorRequest;
+import scheduler.FloorsScheduler;
 import scheduler.SchedulerType;
 import util.Printer;
 
@@ -108,4 +109,15 @@ public class FloorSubsystem implements Runnable{
 			Printer.print("Invalid Input: " + e);
 		}
 	}
+	
+	public static void main(String args[]){
+		
+		FloorsScheduler scheduler = new FloorsScheduler(-1);
+
+		FloorSubsystem floorSS = new FloorSubsystem(scheduler);
+		
+		new Thread(floorSS,"FloorSS").start();
+		
+	}
+	
 }
