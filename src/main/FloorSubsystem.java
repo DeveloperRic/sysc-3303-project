@@ -44,6 +44,43 @@ public class FloorSubsystem implements Runnable{
 	@Override
 	public void run(){
 		int taskNum = 0;
+		
+		Thread input = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				while(true) {
+					Integer[] arr = new Integer[2];
+					Task t = getNextTask();
+					Printer.print("FLOOR SUBSYSTEM: Task " + taskNum + " being sent to Scheduler : \n Task Information : " + t + "\n");
+					arr[0] = t.getStartFloor();
+					arr[1] = t.getDirection();
+					
+					scheduler.put(new FloorRequest() {
+						@Override
+						public Integer[] getRequest() {
+							return arr;
+						}
+					});
+					//Printer.print("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get(null) + "\n");
+				}
+				
+			}
+		});
+		
+		Thread output = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(true) {
+					Printer.print("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get(null) + "\n");
+				}
+			}
+		});
+		
+		input.start();
+		output.start();
 		/*try {
 			getInputs();
 		} catch (IOException e) {
@@ -51,7 +88,7 @@ public class FloorSubsystem implements Runnable{
 		}
 		
 		Printer.print(tasks.toString() + "\n\n");
-		*/
+		
 		//puts each task into the taskQueue in the scheduler
 		while(true) {
 			Printer.print("FLOOR SUBSYSTEM: Task " + taskNum + " being sent to Scheduler : \n Task Information : " + tasks.get(taskNum) + "\n");
@@ -66,7 +103,7 @@ public class FloorSubsystem implements Runnable{
 				}
 			});
 			//Printer.print("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get(null) + "\n");
-		}
+		}*/
 		
 			
 	}

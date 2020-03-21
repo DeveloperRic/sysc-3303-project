@@ -3,6 +3,8 @@ package test.unitTestMain;
 import main.FloorSubsystem;
 import main.InputParser;
 import main.Task;
+import scheduler.FloorsScheduler;
+
 import static java.time.temporal.ChronoUnit.MILLIS;
 
 import static org.junit.Assert.*;
@@ -39,7 +41,9 @@ public class FloorSubsystemUnitTests {
 	
 	@Test
 	public void test2() {
-		FloorSubsystem fss = new FloorSubsystem(null);
+		FloorsScheduler fs = new FloorsScheduler(-1);
+		FloorSubsystem fss = new FloorSubsystem(fs);
+		fss.run();
 		String inputFileDestination = "\\src\\assets\\Inputs.txt";
 		InputParser ip = new InputParser(inputFileDestination);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
