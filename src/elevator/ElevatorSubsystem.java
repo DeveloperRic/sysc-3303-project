@@ -7,11 +7,8 @@ import java.util.Scanner;
 import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
 import scheduler.FloorRequest;
-<<<<<<< HEAD
 import util.Printer;
-=======
 import util.Transport;
->>>>>>> origin/udp
 
 public class ElevatorSubsystem {
 

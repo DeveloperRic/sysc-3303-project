@@ -162,7 +162,7 @@ public final class ElevatorMotor implements Runnable {
 		Printer.print("\nElevator is sleeping");
 	}
 
-	void accelerate(Elevator elevator) {
+	public void accelerate(Elevator elevator) {
 		if (!running)
 			return;
 		elevator.velocity = Math.min(elevator.velocity + Elevator.ACCELERATION, Elevator.MAX_VELOCITY);
@@ -172,7 +172,7 @@ public final class ElevatorMotor implements Runnable {
 		doMovement(elevator, elevator.velocity);
 	}
 
-	void decelerate(Elevator elevator) {
+	public void decelerate(Elevator elevator) {
 		if (!running)
 			return;
 		doMovement(elevator, elevator.velocity = Math.max(elevator.velocity - Elevator.ACCELERATION, 0));
