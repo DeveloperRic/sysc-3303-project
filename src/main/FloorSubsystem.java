@@ -42,35 +42,36 @@ public class FloorSubsystem implements Runnable{
 	
 	@Override
 	public void run(){
-		try {
+		int taskNum = 0;
+		/*try {
 			getInputs();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		Printer.print(tasks.toString() + "\n\n");
-		
+		*/
 		//puts each task into the taskQueue in the scheduler
-		for (int i=0; i<tasks.size(); i++) {
-			Printer.print("FLOOR SUBSYSTEM: Task " + i + " being sent to Scheduler : \n Task Information : " + tasks.get(i) + "\n");
+		while(true) {
+			Printer.print("FLOOR SUBSYSTEM: Task " + taskNum + " being sent to Scheduler : \n Task Information : " + tasks.get(taskNum) + "\n");
 			Integer[] arr = new Integer[2];
-			arr[0] = tasks.get(i).getStartFloor();
-			arr[1] = tasks.get(i).getDirection();
+			Task t = getNextTask();
+			arr[0] = t.getStartFloor();
+			arr[1] = t.getDirection();
 			scheduler.put(new FloorRequest() {
 				@Override
 				public Integer[] getRequest() {
 					return arr;
 				}
 			});
+			//Printer.print("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get(null) + "\n");
 		}
 		
-		while(true) {
-			Printer.print("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get(null) + "\n");
-		}
+			
 	}
 
 	//reads from the input file and calls parseAdd on each line 
-	public static void getInputs() throws IOException {
+	public void getInputs() throws IOException {
 		String localDir = System.getProperty("user.dir");
 		BufferedReader in = new BufferedReader(new FileReader(localDir + "\\src\\assets\\Inputs.txt"));
 		String ln;
@@ -80,8 +81,22 @@ public class FloorSubsystem implements Runnable{
 		in.close();
 	}
 	
+	public synchronized Task getNextTask() {
+		while(tasks.size() <= 0) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return tasks.remove(0);
+	}
+	
 	//splits each string by whitespace and creates a Task object and puts it into the matrix
-	public static void parseAdd(String ln) {      
+	public synchronized void parseAdd(String ln) {
+		notifyAll();
+		
 		String[] inputs = ln.split(" ");
 	
 		try {
