@@ -9,6 +9,7 @@ import scheduler.ElevatorScheduler;
 import scheduler.FloorRequest;
 import scheduler.FloorsScheduler;
 import scheduler.MainScheduler;
+import util.Printer;
 
 /**
  * Unit tests for the Scheduler classes
@@ -33,7 +34,7 @@ public class SchedulerTest extends TestCase {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				System.out.println("[*Test] Floor 5 request to go UP");
+				Printer.print("[*Test] Floor 5 request to go UP");
 				//floorScheduler.put(new Integer[] {5, 1});
 				floorScheduler.put(new FloorRequest() {
 					@Override
@@ -47,7 +48,7 @@ public class SchedulerTest extends TestCase {
 
 //		assertEquals(true, m.isFloorRequest);
 //		
-//		System.out.println("[*Test] Elevator workDoing = " + subsystem.workDoing.toString());
+//		Printer.print("[*Test] Elevator workDoing = " + subsystem.workDoing.toString());
 		
 		while (subsystem.getElevator().isAwake()) {
 			try {
@@ -292,9 +293,9 @@ public class SchedulerTest extends TestCase {
 //				SchedulerType se = new ElevatorScheduler(m);
 //				
 //				for(int i = 0; i < 5; i++) {
-//					System.out.println("HERE1");
+//					Printer.print("HERE1");
 //					se.get();
-//					System.out.println("HERE2");
+//					Printer.print("HERE2");
 //				}
 //
 //				b1.set(true);

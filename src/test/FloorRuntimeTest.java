@@ -1,5 +1,7 @@
 package test;
 
+import scheduler.FloorRequest;
+import util.Printer;
 import org.junit.Test;
 
 import main.FloorSubsystem;

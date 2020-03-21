@@ -1,9 +1,11 @@
 package elevator;
 
+import util.Printer;
+
 public class Elevator {
 
-	static final float ACCELERATION = 0.68f;
-	static final float MAX_VELOCITY = 4.31f;
+	public static final float ACCELERATION = 0.68f;
+	public static final float MAX_VELOCITY = 4.31f;
 	public static final float FLOOR_HEIGHT = 3.23f; // This should be a function call to Floor but whatever for now
 
 	private static final int UP = 1;
@@ -34,6 +36,10 @@ public class Elevator {
 	public boolean isMoving() {
 		return velocity > 0;
 	}
+	
+	public float getMetersTravelled() {
+		return metresTravelled;
+	}
 
 	public synchronized float secondsToStop() {
 		return velocity <= ACCELERATION ? 0 : velocity / ACCELERATION;
@@ -54,14 +60,14 @@ public class Elevator {
 	synchronized float timeToStopAtFloor(int floor, int direction) {
 
 		if (ElevatorSubsystem.verbose) {
-			System.out.println("(req = " + floor + " going " + direction + ") (cur = " + currentFloor + " going "
+			Printer.print("(req = " + floor + " going " + direction + ") (cur = " + currentFloor + " going "
 					+ this.direction + ")");
 		}
 
 		// If directions are opposites
 		if (direction != 0 && this.direction != 0 && direction != this.direction) {
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("dif direction (req = " + floor + " going " + direction + ") (cur = " + currentFloor
+				Printer.print("dif direction (req = " + floor + " going " + direction + ") (cur = " + currentFloor
 						+ " going " + this.direction + ")");
 			}
 			return -1;
@@ -75,7 +81,7 @@ public class Elevator {
 		// If start floor lower than elevator while elevator going up
 		if (floor < currentFloor && this.direction == UP) {
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("If start floor lower than elevator while elevator going up");
+				Printer.print("If start floor lower than elevator while elevator going up");
 			}
 			return -1;
 		}
@@ -83,9 +89,9 @@ public class Elevator {
 		// If start floor higher than elevator while elevator going down
 		if (floor > currentFloor && this.direction == DOWN) {
 			if (ElevatorSubsystem.verbose) {
-				System.out.println("If start floor higher than elevator while elevator going down " + floor + " > "
+				Printer.print("If start floor higher than elevator while elevator going down " + floor + " > "
 						+ currentFloor);
-				System.out.println("direction is " + direction + " for " + subsystem.workDoing);
+				Printer.print("direction is " + direction + " for " + subsystem.workDoing);
 			}
 			return -1;
 		}
@@ -119,13 +125,13 @@ public class Elevator {
 		return motor != null && motor.running;
 	}
 
-	synchronized void wakeup() {
+	public synchronized void wakeup() {
 		if (isAwake())
 			return;
 
 		motor = new ElevatorMotor(this);
 		Thread motionThread = new Thread(motor, "ElevatorMotion");
-		System.out.println("Waking up elevator");
+		Printer.print("Waking up elevator");
 		motor.running = true;
 		motionThread.start();
 	}

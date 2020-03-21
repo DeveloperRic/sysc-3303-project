@@ -5,6 +5,7 @@ import java.util.*;
 import scheduler.FloorRequest;
 import scheduler.FloorsScheduler;
 import scheduler.SchedulerType;
+import util.Printer;
 
 public class FloorSubsystem implements Runnable{
 
@@ -48,11 +49,11 @@ public class FloorSubsystem implements Runnable{
 			e.printStackTrace();
 		}
 		
-		System.out.println(tasks.toString() + "\n\n");
+		Printer.print(tasks.toString() + "\n\n");
 		
 		//puts each task into the taskQueue in the scheduler
 		for (int i=0; i<tasks.size(); i++) {
-			System.out.println("FLOOR SUBSYSTEM: Task " + i + " being sent to Scheduler : \n Task Information : " + tasks.get(i) + "\n");
+			Printer.print("FLOOR SUBSYSTEM: Task " + i + " being sent to Scheduler : \n Task Information : " + tasks.get(i) + "\n");
 			Integer[] arr = new Integer[2];
 			arr[0] = tasks.get(i).getStartFloor();
 			arr[1] = tasks.get(i).getDirection();
@@ -65,7 +66,7 @@ public class FloorSubsystem implements Runnable{
 		}
 		
 		while(true) {
-			System.out.println("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get(null) + "\n");
+			Printer.print("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get(null) + "\n");
 		}
 	}
 
@@ -90,7 +91,7 @@ public class FloorSubsystem implements Runnable{
 //			tasks.add(new Task(inputs[0], inputs[3], "", inputs[1]));
 			//taskMatrix.get(task.getStartFloor()-1).get(task.getDirection()).add(task);
 		} catch (Exception e) {
-			System.out.println("Invalid Input: " + e);
+			Printer.print("Invalid Input: " + e);
 		}
 	}
 	

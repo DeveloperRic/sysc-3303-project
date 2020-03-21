@@ -1,8 +1,9 @@
 package elevator;
 
 import elevator.ElevatorSubsystem.ElevatorState;
+import util.Printer;
 
-class ElevatorDoors {
+public class ElevatorDoors {
 	private final float DOOR_MOVE_TIME = 6.74f;
 
 	private Elevator elevator;
@@ -13,10 +14,10 @@ class ElevatorDoors {
 		this.elevator = elevator;
 	}
 
-	void openDoors() {
+	public void openDoors() {
 		if (doorsOpen)
 			return;
-		System.out.println("Opening doors");
+		Printer.print("Opening doors");
 		
 		this.elevator.subsystem.currentState = ElevatorState.DOORS_OPENING;
 
@@ -29,10 +30,10 @@ class ElevatorDoors {
 		this.elevator.subsystem.currentState = ElevatorState.DOORS_OPEN;
 	}
 
-	void closeDoors() {
+	public void closeDoors() {
 		if (!doorsOpen)
 			return;
-		System.out.println("Closing doors");
+		Printer.print("Closing doors");
 		
 		this.elevator.subsystem.currentState = ElevatorState.DOORS_CLOSING;
 		
@@ -43,5 +44,9 @@ class ElevatorDoors {
 		}
 		doorsOpen = false;
 		this.elevator.subsystem.currentState = ElevatorState.DOORS_CLOSED;
+	}
+	
+	public boolean isOpen() {
+		return doorsOpen;
 	}
 }

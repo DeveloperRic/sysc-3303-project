@@ -2,6 +2,10 @@ package scheduler;
 
 import scheduler.RequestHeader.RequestType;
 import util.Communication.Selector;
+import util.Printer;
+
+import java.nio.ByteBuffer;
+
 import util.Transport;
 
 /**
@@ -27,7 +31,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 		t = new Transport("Floor");
 		t.setDestinationRole("Scheduler");
 		t.setDestinationPort(MainScheduler.PORT_FOR_FLOOR);
-		System.out.println("Floor send/receive socket bound on port " + t.getReceivePort() + "\n");
+		Printer.print("Floor send/receive socket bound on port " + t.getReceivePort() + "\n");
 	}
 
 	@Override
@@ -48,16 +52,16 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 
 				while (receivedBytes.value == null || receivedBytes.value.length == 0) {
 					if (receivedBytes.value == null) {
-						System.out.println("--->[data] Floor receiving\n");
+						Printer.print("--->[data] Floor receiving\n");
 						receivedBytes.value = (byte[]) t.receive()[0];
-//						System.out.println("CheckDATA: " + t.receive()[0]);
-//						System.out.println("^^ get()");
+//						Printer.print("CheckDATA: " + t.receive()[0]);
+//						Printer.print("^^ get()");
 						receivedBytes.notifyAll();
 					}
 
 					if (receivedBytes.value.length == 0) {
 						try {
-							System.out.println("--->[data] Floor waiting\n");
+							Printer.print("--->[data] Floor waiting\n");
 							receivedBytes.wait();
 						} catch (InterruptedException e) {
 						}
@@ -65,7 +69,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 				}
 
 				ElevatorMessage elevatorMessage = ElevatorMessage.deserialize(receivedBytes.value);
-				System.out.println("Received " + elevatorMessage + "\n");
+				Printer.print("Received " + elevatorMessage + "\n");
 
 				receivedBytes.value = null;
 
@@ -128,7 +132,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 //				waitingOnAcknowledgement.notifyAll();
 			}
 		}
-//		System.out.println("released put lock " + (--putBlocked) + " potentially blocked");
+//		Printer.print("released put lock " + (--putBlocked) + " potentially blocked");
 	}
 
 	private static class BytesWrapper {

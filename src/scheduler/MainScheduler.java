@@ -8,6 +8,7 @@ import scheduler.RequestHeader.RequestType;
 import util.BlockingList;
 import util.ByteUtils;
 import util.Transport;
+import util.Printer;
 
 public class MainScheduler {
 
@@ -37,8 +38,8 @@ public class MainScheduler {
 		// set the default destination parameters for client->server and server->client
 		floorTransport.setDestinationRole("Floor");
 		elevatorTransport.setDestinationRole("Elevator");
-		System.out.println("Floor    -> Elevator socket bound on port " + floorTransport.getReceivePort());
-		System.out.println("Elevator -> Floor    socket bound on port " + elevatorTransport.getReceivePort());
+		Printer.print("Floor    -> Elevator socket bound on port " + floorTransport.getReceivePort());
+		Printer.print("Elevator -> Floor    socket bound on port " + elevatorTransport.getReceivePort());
 		// initialize message objects
 		floorsMessages = new BlockingList<>(new ArrayList<>());
 		elevatorsMessages = new BlockingList<>(new ArrayList<>());
@@ -71,6 +72,11 @@ public class MainScheduler {
 	public static int getNumberOfElevators() {
 		return NUMBER_OF_ELEVATORS;
 	}
+	
+	public SchedulerState getState() { return currentState; }
+	public List<byte[]> getElevatorMessages() { return elevatorsMessages;}
+	public List<byte[]> getFloorMessages() {return floorsMessages;}
+	public void setState(SchedulerState state) { currentState = state; };
 
 	public void setVerbose(boolean verbose) {
 		MainScheduler.verbose = verbose;
@@ -79,7 +85,7 @@ public class MainScheduler {
 		Transport.setVerbose(verbose);
 	}
 
-	private synchronized void switchState(SchedulerState state, Object param) {
+	public synchronized void switchState(SchedulerState state, Object param) {
 		while (currentState != null && state.working) {
 			try {
 				wait();
@@ -87,7 +93,7 @@ public class MainScheduler {
 			}
 		}
 		if (verbose) {
-			System.out.println("SCHEDULER SUBSYSTEM: state changing to -> " + state + "\n");
+			Printer.print("SCHEDULER SUBSYSTEM: state changing to -> " + state + "\n");
 		}
 		state.working = true;
 		currentState = state;
@@ -103,7 +109,14 @@ public class MainScheduler {
 					// wait for request
 //					if (verbose)
 //						System.out.println("waiting for a new packet");
-					Object[] request = transport.receive();
+					Object[] request;
+					try {
+						request = transport.receive();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						return;
+					}
 					byte[] receivedBytes = (byte[]) request[0];
 
 					RequestHeader requestHeader = RequestHeader.parseFromBytes(receivedBytes);
@@ -112,7 +125,7 @@ public class MainScheduler {
 					if (requestHeader.getType() == RequestType.SEND_DATA) {
 						synchronized (putList) {
 							if (verbose) {
-								System.out.println("[" + sourceName + "->Scheduler] Received bytes: "
+								Printer.print("[" + sourceName + "->Scheduler] Received bytes: "
 										+ ByteUtils.toString(receivedBytes));
 							}
 
@@ -178,7 +191,7 @@ public class MainScheduler {
 										}
 
 										if (verbose) {
-											System.out.println(subsystemNumber + ": []---> " + sourceName
+											Printer.print(subsystemNumber + ": []---> " + sourceName
 													+ " waiting (try " + (++numTimesWaited) + ")");
 										}
 
@@ -191,8 +204,7 @@ public class MainScheduler {
 										}
 									}
 									if (verbose) {
-										System.out
-												.println(subsystemNumber + ": []---> " + sourceName + " ready to send");
+										Printer.print(subsystemNumber + ": []---> " + sourceName + " ready to send");
 									}
 									// send message
 									if (bytesToSend == null) {
@@ -238,7 +250,7 @@ public class MainScheduler {
 //				X obj = source.bGet();
 //
 //				if (verbose) {
-//					System.out.println("SCHEDULER SUBSYSTEM: Middleman processing message from " + sourceName + "\n");
+//					Printer.print("SCHEDULER SUBSYSTEM: Middleman processing message from " + sourceName + "\n");
 //				}
 //
 //				switchState(state, obj);
@@ -253,6 +265,11 @@ public class MainScheduler {
 //		}
 //
 //	}
+	
+	public void closeComms() {
+		floorTransport.close();
+		elevatorTransport.close();
+	}
 
 	public static void main(String args[]) {
 

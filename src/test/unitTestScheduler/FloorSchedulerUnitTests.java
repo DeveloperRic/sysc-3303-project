@@ -1,4 +1,4 @@
-package test;
+package test.unitTestScheduler;
 
 
 import org.junit.Test;
@@ -7,8 +7,9 @@ import scheduler.FloorRequest;
 import scheduler.FloorsScheduler;
 import util.Transport;
 import static org.junit.Assert.assertTrue;
+import util.Printer;
 
-public class FloorSchedulerUnitTest {
+public class FloorSchedulerUnitTests {
 
 	//have other schedulers running first
 	@Test
@@ -71,13 +72,19 @@ public class FloorSchedulerUnitTest {
 				assertTrue((int)send[1] == t.getDestinationPort());
 				
 				// receive confirmation of message received
-				System.out.println("--->[conf] Floor waiting to receive");
+				Printer.print("--->[conf] Floor waiting to receive");
 				
 				//just check to see if floor sched can receive packets 
-				Object[] receive = t.receive();
+				Object[] receive = null;
+				try {
+					receive = t.receive();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				assertTrue(receive[1] != null);
 				
-				System.out.println(scheduler.get(null));
+				Printer.print(scheduler.get(null));
 				
 			}
 		}).start();

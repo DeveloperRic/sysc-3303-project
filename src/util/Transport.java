@@ -110,7 +110,13 @@ public final class Transport {
 	 * @return 
 	 */
 	public Object[] send(byte[] data) {
-		return send(data, destinationRole, destinationPort);
+		try {
+			return send(data, destinationRole, destinationPort);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -121,7 +127,12 @@ public final class Transport {
 	 * @param destRole e.g. "Host"
 	 */
 	public void send(byte[] data, String destRole) {
-		send(data, destRole, destinationPort);
+		try {
+			send(data, destRole, destinationPort);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -130,15 +141,16 @@ public final class Transport {
 	 * @param data
 	 * @param destRole e.g. "Host"
 	 * @param destPort e.g. 23
+	 * @throws Exception 
 	 */
-	public Object[] send(byte[] data, String destRole, int destPort) {
+	public Object[] send(byte[] data, String destRole, int destPort) throws Exception {
 		// Prepare a DatagramPacket and send it via sendReceiveSocket
 		// to port 5000 on the destination host.
 
 		if (verbose) {
-			System.out.println("\n--------------------------\n");
+			Printer.print("\n--------------------------\n");
 
-			System.out.println(role + ": sending a packet\n");
+			Printer.print(role + ": sending a packet\n");
 		}
 
 		int len = data.length;
@@ -146,25 +158,26 @@ public final class Transport {
 		DatagramPacket sendPacket = new DatagramPacket(data, len, address, destPort);
 
 		if (verbose) {
-			System.out.println("To " + destRole + ": " + sendPacket.getAddress());
-			System.out.println("\tPort: " + sendPacket.getPort());
-			System.out.println("Packet length:\t" + len);
+			Printer.print("To " + destRole + ": " + sendPacket.getAddress());
+			Printer.print("\tPort: " + sendPacket.getPort());
+			Printer.print("Packet length:\t" + len);
 			System.out.print("Packet contents (string): ");
-			System.out.println(Arrays.toString(data)); // or could print "s"
+			Printer.print(Arrays.toString(data)); // or could print "s"
 		}
 
 		// Send the datagram packet to the server via the send/receive socket.
 
 		try {
-//			System.out.println("null? " + sendSocket + " (" + (sendSocket == null) + ")");
+//			Printer.print("null? " + sendSocket + " (" + (sendSocket == null) + ")");
 			sendSocket.send(sendPacket);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(1);
+			throw new Exception();
+			//System.exit(1);
 		}
 
 		if (verbose) {
-			System.out.println("\n" + role + ": Packet sent.\n--------------------------\n");
+			Printer.print("\n" + role + ": Packet sent.\n--------------------------\n");
 		}
 		return new Object[] { data, sendPacket.getPort() };
 	}
@@ -173,8 +186,9 @@ public final class Transport {
 	 * Waits for data on the Transport's receiveSocket
 	 * 
 	 * @return [byte[] data-received, int port-data-came-from]
+	 * @throws Exception 
 	 */
-	public Object[] receive() {
+	public Object[] receive() throws Exception {
 		// Construct a DatagramPacket for receiving packets up
 		// to 100 bytes long (the length of the byte array).
 
@@ -186,7 +200,8 @@ public final class Transport {
 			receiveSocket.receive(receivePacket);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(1);
+			throw new Exception();
+		//	System.exit(1);
 		}
 
 		int len = receivePacket.getLength();
@@ -196,19 +211,19 @@ public final class Transport {
 			data[i] = longData[i];
 
 		if (verbose) {
-			System.out.println("\n--------------------------\n");
+			Printer.print("\n--------------------------\n");
 
 			// Process the received datagram.
-			System.out.println(role + ": Packet received\n");
-			System.out.println("From source: " + receivePacket.getAddress());
-			System.out.println("source port: " + receivePacket.getPort());
-			System.out.println("Packet length: " + len);
+			Printer.print(role + ": Packet received\n");
+			Printer.print("From source: " + receivePacket.getAddress());
+			Printer.print("source port: " + receivePacket.getPort());
+			Printer.print("Packet length: " + len);
 			System.out.print("Containing (string): ");
 
 			// Form a String from the byte array.
-			System.out.println(Arrays.toString(data));
+			Printer.print(Arrays.toString(data));
 
-			System.out.println("--------------------------\n");
+			Printer.print("--------------------------\n");
 		}
 		return new Object[] { data, receivePacket.getPort() };
 	}
@@ -256,7 +271,12 @@ public final class Transport {
 	 */
 	public static void SEND(byte[] data, String sourceRole, String destRole, int destPort) {
 		Transport transport = new Transport(sourceRole);
-		transport.send(data, destRole, destPort);
+		try {
+			transport.send(data, destRole, destPort);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		transport.close();
 	}
 

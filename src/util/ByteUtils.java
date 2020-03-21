@@ -49,7 +49,7 @@ public final class ByteUtils {
 	 * @return
 	 */
 	public static float bytesToFloat(byte[] bytes) {
-//		System.out.println("b->f " + toString(bytes) + " | " + Arrays.toString(ByteBuffer.wrap(bytes, 0, 4).array()));
+//		Printer.print("b->f " + toString(bytes) + " | " + Arrays.toString(ByteBuffer.wrap(bytes, 0, 4).array()));
 		return ByteBuffer.wrap(bytes, 0, 4).getFloat();
 	}
 
