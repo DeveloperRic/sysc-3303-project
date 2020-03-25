@@ -4,7 +4,6 @@ import scheduler.RequestHeader.RequestType;
 import util.Communication.Selector;
 import util.Printer;
 
-import java.nio.ByteBuffer;
 import util.Transport;
 
 /**
@@ -79,6 +78,8 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 
 //				waitingOnData.value = false;
 //				waitingOnData.notifyAll();
+
+				Printer.print("floorInt: " + elevatorMessage.getFloorArrivedOn());
 
 				return elevatorMessage.getAcknowledgement();
 			}
@@ -159,5 +160,5 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	public Transport getTransport() {
 		return t;
 	}
-	
+
 }

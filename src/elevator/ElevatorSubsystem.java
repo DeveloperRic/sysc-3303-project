@@ -2,8 +2,6 @@ package elevator;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
-import java.util.Scanner;
-
 import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
 import scheduler.FloorRequest;
@@ -45,7 +43,7 @@ public class ElevatorSubsystem {
 	public int getFirstWorkDoing() {
 		return workDoing.peek();
 	}
-	
+
 	public boolean isPoweredOn() {
 		return poweredOn;
 	}
@@ -87,14 +85,20 @@ public class ElevatorSubsystem {
 		Printer.print("\n[Elevator] " + s + "\n");
 
 		ElevatorMessage em = new ElevatorMessage() {
+			@Override
 			public String getAcknowledgement() {
 				return s;
+			}
+
+			@Override
+			public Integer getFloorArrivedOn() {
+				return floor;
 			}
 		};
 
 		scheduler.put(em);
 
-		elevator.buttons[floor-1].unpress();
+		elevator.buttons[floor - 1].unpress();
 	}
 
 	void notifyButtonPressed(int destFloor) {
@@ -124,7 +128,7 @@ public class ElevatorSubsystem {
 	public void pressButton(int floor) {
 		elevator.buttons[floor - 1].press();
 	}
-	
+
 	public boolean isButtonPressed(int floor) {
 		return elevator.buttons[floor - 1].isPressed();
 	}
@@ -137,19 +141,19 @@ public class ElevatorSubsystem {
 	enum ElevatorState {
 		IDLE, ACCELERATING, DECELERATING, MAX_SPEED, DOORS_OPENING, DOORS_OPEN, DOORS_CLOSING, DOORS_CLOSED
 	}
-	
-	public static void main(String[] args){
-		
+
+	public static void main(String[] args) {
+
 //		System.out.print("Enter this elevator's number : ");
 //		Scanner scanner = new Scanner(System.in);
 //		int elevNum = Integer.parseInt(scanner.nextLine());
 //
 //		System.out.println("elevatorNumber set to " + elevNum + "\n");
-		
+
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler(1));
 		ElevatorSubsystem.setVerbose(false);
 		subsystem.powerOn();
-		
+
 	}
 
 }
