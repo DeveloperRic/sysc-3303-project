@@ -1,7 +1,11 @@
 package elevator;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+
+import main.InputParser;
+import main.Task;
 import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
 import scheduler.FloorRequest;
@@ -19,6 +23,8 @@ public class ElevatorSubsystem {
 //	List<Integer> workDoing;
 	ElevatorScheduler scheduler;
 	ElevatorState currentState;
+	
+	private ArrayList<Task> tasks = new ArrayList<Task>();
 
 	public ElevatorSubsystem(ElevatorScheduler schedulerElevator) {
 		this.scheduler = schedulerElevator;
@@ -137,6 +143,9 @@ public class ElevatorSubsystem {
 		ElevatorSubsystem.verbose = verbose;
 		Transport.setVerbose(verbose);
 	}
+	
+	public ArrayList<Task> getTasks() { return tasks; }
+	public void setTasks(ArrayList<Task> tasks) { this.tasks = tasks; }
 
 	enum ElevatorState {
 		IDLE, ACCELERATING, DECELERATING, MAX_SPEED, DOORS_OPENING, DOORS_OPEN, DOORS_CLOSING, DOORS_CLOSED
@@ -149,8 +158,18 @@ public class ElevatorSubsystem {
 //		int elevNum = Integer.parseInt(scanner.nextLine());
 //
 //		System.out.println("elevatorNumber set to " + elevNum + "\n");
+		
+		InputParser ip = new InputParser("\\src\\assets\\Inputs.txt");
+		ArrayList<Task> tasks = new ArrayList<Task>();
+		
+		while(ip.requests.size() > 0) {
+			String[] request = ip.requests.remove(0).split(" ");
+			Task newTask = new Task(request[0], request[1], request[2], request[3]);
+			tasks.add(newTask);
+		}
 
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(new ElevatorScheduler(1));
+		subsystem.setTasks(tasks);
 		ElevatorSubsystem.setVerbose(false);
 		subsystem.powerOn();
 

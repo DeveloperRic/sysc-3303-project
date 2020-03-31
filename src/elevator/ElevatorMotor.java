@@ -1,6 +1,9 @@
 package elevator;
 
+import java.util.ArrayList;
+
 import elevator.ElevatorSubsystem.ElevatorState;
+import main.Task;
 import util.Printer;
 
 public final class ElevatorMotor implements Runnable {
@@ -77,7 +80,34 @@ public final class ElevatorMotor implements Runnable {
 							elevator.subsystem.notifyArrivedAtFloor(targetFloor);
 
 							this.elevator.doors.openDoors();
+							
 							// TODO allow people to press button just in time and open doors again
+							//We reached a floor
+							//We go through the tasks
+								//We check the if any of the start floors in the tasks match the target floor
+								//If it is a match
+									//We call pressButton(task.destinationfloor)
+									//We remove it from the task list
+								//Else we do nothing
+							
+/*							int i = 0;
+							for(Task t : elevator.subsystem.getTasks()) {
+								if(t.getStartFloor() == targetFloor) {
+									elevator.subsystem.pressButton(t.getDestinationFloor());
+									elevator.subsystem.getTasks().remove(i);
+								}
+								i++;
+							}*/
+							
+							ArrayList<Task> tasks = elevator.subsystem.getTasks();
+							
+							for(int i=0; i < tasks.size() ;i++) {
+								if(tasks.get(i).getStartFloor() == targetFloor) {
+									elevator.subsystem.pressButton(tasks.get(i).getDestinationFloor());
+									elevator.subsystem.getTasks().remove(i);
+								}
+							}
+							
 							this.elevator.doors.closeDoors();
 
 							if (isWorkToDo) {

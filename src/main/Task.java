@@ -16,17 +16,16 @@ public class Task implements Comparable<Task>{
 	public Task(String timeOfRequest, String startFloor, String direction) {
 		this.timeOfRequest = LocalTime.parse(timeOfRequest);
 		this.startFloor = Integer.parseInt(startFloor);
-//		this.endFloor = Integer.parseInt(endFloor);
+		this.direction = direction;
+	}
+	
+	public Task(String timeOfRequest, String startFloor, String direction, String endFloor) {
+		this.timeOfRequest = LocalTime.parse(timeOfRequest);
+		this.startFloor = Integer.parseInt(startFloor);
+		this.endFloor = Integer.parseInt(endFloor);
 		this.direction = direction;
 	}
 
-	//CONSTRUCTORS
-	//Task(String requestTime, String startFloor, String direction, String destinationFloor) {
-		//this.requestTime = LocalTime.parse(requestTime);
-		//this.startFloor = Integer.parseInt(startFloor);
-		//this.direction = direction;
-		//this.destinationFloor = Integer.parseInt(destinationFloor);
-	//}
 	
 	//GETTERS
 	public LocalTime getRequestTime() {
