@@ -11,7 +11,7 @@ import util.Transport;
  * and get functions
  *
  */
-public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
+public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMessage> {
 //	public static final int ELEVATOR_PORT = 63971;
 
 	// The main scheduler object
@@ -33,7 +33,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	}
 
 	@Override
-	public String get(Selector selector) {
+	public ElevatorMessage get(Selector selector) {
 		synchronized (getLock) {
 //			while (waitingOnData.value) {
 //				try {
@@ -81,7 +81,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 
 				Printer.print("floorInt: " + elevatorMessage.getFloorArrivedOn());
 
-				return elevatorMessage.getAcknowledgement();
+				return elevatorMessage;
 			}
 		}
 	}

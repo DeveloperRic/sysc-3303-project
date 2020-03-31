@@ -10,7 +10,7 @@ public class FloorUnitTests {
 
 //just checks for state switching functionality
 
-	@Test
+/*	@Test
 	public void test() {
 	Floor floor = new Floor(0);
 	
@@ -48,5 +48,5 @@ public class FloorUnitTests {
 	floor.requestUp();
 	floor.requestDown();
 	assertTrue(floor.state == floor.bothRequested);
-	}
+	}*/
 }

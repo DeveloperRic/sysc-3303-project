@@ -1,44 +1,37 @@
 package main;
+import static java.time.temporal.ChronoUnit.MILLIS;
+
 import java.io.*;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import scheduler.ElevatorMessage;
 import scheduler.FloorRequest;
 import scheduler.FloorsScheduler;
 import scheduler.SchedulerType;
 import util.Printer;
+import util.Transport;
 
 public class FloorSubsystem implements Runnable{
+	
+	private static final int MAX_FLOORS = 22;
 
-	/*static LinkedList<Task> floor1Up = new LinkedList<Task>();
-	static LinkedList<Task> floor1Down = new LinkedList<Task>();
-	static ArrayList<LinkedList<Task>> floor1 = new ArrayList<LinkedList<Task>>(
-			Arrays.asList(floor1Up, floor1Down)); 
-	
-	static LinkedList<Task> floor2Up = new LinkedList<Task>();
-	static LinkedList<Task> floor2Down = new LinkedList<Task>();
-	static ArrayList<LinkedList<Task>> floor2 = new ArrayList<LinkedList<Task>>(
-			Arrays.asList(floor2Up, floor2Down)); 
-	
-	static LinkedList<Task> floor3Up = new LinkedList<Task>();
-	static LinkedList<Task> floor3Down = new LinkedList<Task>();
-	static ArrayList<LinkedList<Task>> floor3 = new ArrayList<LinkedList<Task>>(
-			Arrays.asList(floor3Up, floor3Down));  
-	
-	static LinkedList<Task> floor4Up = new LinkedList<Task>();
-	static LinkedList<Task> floor4Down = new LinkedList<Task>();
-	static ArrayList<LinkedList<Task>> floor4 = new ArrayList<LinkedList<Task>>(
-			Arrays.asList(floor4Up, floor4Down));  
-	
-	static ArrayList<ArrayList<LinkedList<Task>>> taskMatrix = new ArrayList<ArrayList<LinkedList<Task>>>(
-			Arrays.asList(floor1, floor2, floor3, floor4));*/
-	
 	//Arraylist to hold the tasks
 	public static ArrayList<Task> tasks = new ArrayList<Task>();
 	
-	public SchedulerType scheduler = null;
+	private ArrayList<Floor> floors = null;
+	public FloorsScheduler scheduler = null;
 	
-	public FloorSubsystem(SchedulerType scheduler) {
+	public FloorSubsystem(FloorsScheduler scheduler) {
 		this.scheduler = scheduler;
+		this.floors = new ArrayList<Floor>();
+		
+		//Create the floors
+		for(int i=0; i<MAX_FLOORS; i++) {
+			floors.add(new Floor(i+1,MAX_FLOORS));
+		}
 	}
 	
 	@Override
@@ -57,6 +50,9 @@ public class FloorSubsystem implements Runnable{
 					arr[0] = t.getStartFloor();
 					arr[1] = t.getDirection();
 					
+					//Store the request in the floor
+					floors.get(t.getStartFloor() - 1).storeRequest(t);
+					
 					scheduler.put(new FloorRequest() {
 						@Override
 						public Integer[] getRequest() {
@@ -74,38 +70,27 @@ public class FloorSubsystem implements Runnable{
 			@Override
 			public void run() {
 				while(true) {
-					Printer.print("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get(null) + "\n");
+					
+					//What type of messages do we receive from the elevator?
+					
+					//Receive the message
+					ElevatorMessage elevatorMessage = scheduler.get(null);
+					//Check the floor it has arrived on and clear and tasks stored in this floor
+					serviceFloorRequests(elevatorMessage.getFloorArrivedOn());
+					
+					Printer.print("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + elevatorMessage.getAcknowledgement() + "\n");
 				}
 			}
 		});
 		
 		input.start();
-		output.start();
-		/*try {
-			getInputs();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		Printer.print(tasks.toString() + "\n\n");
-		
-		//puts each task into the taskQueue in the scheduler
-		while(true) {
-			Printer.print("FLOOR SUBSYSTEM: Task " + taskNum + " being sent to Scheduler : \n Task Information : " + tasks.get(taskNum) + "\n");
-			Integer[] arr = new Integer[2];
-			Task t = getNextTask();
-			arr[0] = t.getStartFloor();
-			arr[1] = t.getDirection();
-			scheduler.put(new FloorRequest() {
-				@Override
-				public Integer[] getRequest() {
-					return arr;
-				}
-			});
-			//Printer.print("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from Scheduler : \n " + (String)scheduler.get(null) + "\n");
-		}*/
-		
-			
+		output.start();			
+	}
+	
+	//Once we get an acknowledgement that an elevator has arrived at a certain floor.
+	//We can clear all Requests stored in this floor.
+	public void serviceFloorRequests(Integer floor) {
+		floors.get(floor - 1).serviceRequest();
 	}
 
 	//reads from the input file and calls parseAdd on each line 
@@ -149,12 +134,39 @@ public class FloorSubsystem implements Runnable{
 	
 	public static void main(String args[]){
 		
+		//Start the FloorScheduler and store it in the FloorSubsystem
+		Transport.setVerbose(true);
 		FloorsScheduler scheduler = new FloorsScheduler(-1);
-
 		FloorSubsystem floorSS = new FloorSubsystem(scheduler);
 		
 		new Thread(floorSS,"FloorSS").start();
 		
+		String inputFileDestination = "\\src\\assets\\Inputs.txt";
+		InputParser ip = new InputParser(inputFileDestination);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+		long strt = System.currentTimeMillis();
+		LocalTime l = null;
+		
+		while(ip.requests.size() > 0) {
+			String[] request = ip.requests.remove(0).split(" ");
+			if(l == null) {
+				l = LocalTime.parse(request[0]);
+			}
+			else {
+				try {
+					Thread.sleep(MILLIS.between(l, LocalTime.parse(request[0])));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			
+			String time = LocalTime.now(ZoneId.systemDefault()).format(formatter);
+			floorSS.parseAdd(time +" "+ request[1] +" "+ request[2]);
+			System.out.println(time +" "+ request[1] +" "+ request[2]);
+			System.out.println((System.currentTimeMillis() - strt)+": "+floorSS.tasks.size());
+		}
 	}
 	
 }

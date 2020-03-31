@@ -1,190 +1,65 @@
 package main;
 
+import java.util.ArrayList;
 import util.Printer;
 
 public class Floor {
-		int floorNumber;
-		public Lamp upRequestLight;
-		public Lamp downRequestLight;
 		
-		public FloorState bothRequested;
-		public FloorState upRequested;
-		public FloorState downRequested;
-		public FloorState noRequest;
+		private static final int UP = 1;
+		private static final int DOWN = -1;
 		
-		public FloorState state;
+		private int floorNumber;
+		private FloorButton upButton;
+		private FloorButton downButton;
 		
-		//FLOOR CONSTRUCTOR
-		public Floor (int floorNumber) {
-			upRequestLight = new Lamp();
-			downRequestLight = new Lamp();
+		//TODO: Implement Direction Lamps
+		//private DirectionLamp (x4)
+		
+		private ArrayList<Task> requests;
+		
+		public Floor (int floorNumber, int maxFloor) {
 			
 			this.floorNumber = floorNumber;
+			requests = new ArrayList<Task>();
 			
-			upRequested = new upRequested(this);
-			downRequested = new downRequested(this);
-			bothRequested = new bothRequested(this);
-			noRequest = new noRequest(this);
+			upButton = new FloorButton(UP);
+			downButton = new FloorButton(DOWN);
 			
-			state = noRequest;
-		}
-		//FLOORSTATE
-		public interface FloorState {
-			void requestUp();
-			void requestDown();
-			void requestServed(int direction);
-		}
-
-		//UP REQUESTED
-		public class upRequested implements FloorState {
-			Floor floor;
-			public upRequested(Floor _floor) {
-				floor = _floor;
-			}
+			if(this.floorNumber == 1)
+				downButton = null;
 			
-			@Override
-			public void requestUp() {
-				Printer.print("FLOOR SUBSYSTEM: Up requested on floor " + floorNumber);
-				floor.upRequestLight.turnOn();
-				
-				if (downRequestLight.lampOn) {
-					floor.setState(bothRequested);
-				}
-			}
+			if(this.floorNumber == maxFloor)
+				upButton = null;
 
-			@Override
-			public void requestDown() {
-				floor.setState(downRequested);
-				floor.requestDown();
-				
-			}
-
-			@Override
-			public void requestServed(int direction) {
-				switch (direction) {
-				case 1:
-					upRequestLight.turnOff();
-					floor.setState(noRequest);
-					break;
-				default: 
-					Printer.print("There's no request for an elevator in that direction on this floor.");
-				}	
-			}
 		}
 		
-		//DOWN REQUESTED
-		public class downRequested implements FloorState {
-			Floor floor;
-			public downRequested(Floor _floor) {
-				floor = _floor;
+		public void storeRequest(Task task) {
+			requests.add(task);
+			
+			if(task.getDirection() == UP && upButton != null)
+				upButton.pressButton();
+			
+			if(task.getDirection() == DOWN && downButton != null)
+				downButton.pressButton();
+		}
+		
+		public void serviceRequest() {
+			
+			//If the task matches a task in the requests and the direction is stopping
+			//Remove it from the requests (Should i clear all requests?)
+			if(!requests.isEmpty()) {
+				requests.clear();
 			}
 			
-			@Override
-			public void requestUp() {
-				// If in downState switch to upState
-				floor.setState(upRequested);
-				floor.requestUp();
-			}
-
-			@Override
-			public void requestDown() {
-				// If upState already requested turn on light and then switch to bothState
-				Printer.print("FLOOR SUBSYSTEM: Down requested on floor " + floorNumber);
-				downRequestLight.turnOn();
-				
-				if (upRequestLight.lampOn) {
-					floor.setState(bothRequested);
-				}
-			}
-
-			@Override
-			public void requestServed(int direction) {
-				switch (direction) {
-				case -1:
-					downRequestLight.turnOff();
-					floor.setState(noRequest);
-					break;
-				default: 
-					Printer.print("There's no request for an elevator in that direction on this floor.");
-				}
-			}
-		}
-		
-		//BOTH REQUESTED
-		public class bothRequested implements FloorState {
-			Floor floor;
-			public bothRequested(Floor _floor) {
-				floor = _floor;
-			}
+			//Turn the lamps off
+			if(upButton != null)
+				upButton.getFloorLamp().turnOff();
 			
-			@Override
-			public void requestUp() {
-				Printer.print("FLOOR SUBSYSTEM: Up requested on floor " + floorNumber);
-			}
-
-			@Override
-			public void requestDown() {
-				Printer.print("FLOOR SUBSYSTEM: Down requested on floor " + floorNumber);
-			}
-
-			@Override
-			public void requestServed(int direction) {
-				switch (direction) {
-				case -1:
-					downRequestLight.turnOff();
-					if(upRequestLight.lampOn) {
-						floor.setState(upRequested);
-					} else { floor.setState(noRequest);}
-					break;
-				case 1: 
-					upRequestLight.turnOff();
-					if(downRequestLight.lampOn) {
-						floor.setState(downRequested);
-					} else { floor.setState(noRequest);}
-					break;
-				}
-			}
-		}
-		
-		//NO REQUESTS
-		public class noRequest implements FloorState {
-			Floor floor;
-			public noRequest(Floor _floor) {
-				floor = _floor;
-			}
+			if(downButton != null)
+				downButton.getFloorLamp().turnOff();
 			
-			@Override
-			public void requestUp() {
-				floor.setState(upRequested);
-				floor.requestUp();
-			}
-
-			@Override
-			public void requestDown() {
-				floor.setState(downRequested);
-				floor.requestDown();
-				
-			}
-
-			@Override
-			public void requestServed(int direction) {
-				Printer.print("There are no requests on this floor.");
-			}
 		}
 		
-		public void requestDown() {
-			state.requestDown();
-		}
-		
-		public void requestUp() {
-			state.requestUp();
-		}
-		
-		public void requestServed(int direction) {
-			state.requestServed(direction);
-		}
-		
-		public void setState (FloorState _state) {
-			state = _state;
-		}
+		public ArrayList<Task> getRequests() { return requests; }
+		public int getFloorNumber() { return floorNumber; }
 }
