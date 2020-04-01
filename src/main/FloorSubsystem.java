@@ -98,12 +98,11 @@ public class FloorSubsystem implements Runnable{
 		String localDir = System.getProperty("user.dir");
 		BufferedReader in = new BufferedReader(new FileReader(localDir + "\\src\\assets\\Inputs.txt"));
 		String ln;
-
 		while ((ln = in.readLine()) != null)
 			parseAdd(ln);
 		in.close();
 	}
-	
+
 	public synchronized Task getNextTask() {
 		while(tasks.size() <= 0) {
 			try {

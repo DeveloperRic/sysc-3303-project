@@ -146,5 +146,4 @@ public class ElevatorTest {
 //		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / elevator.velocity;
 //		return secondsToFloor >= elevator.secondsToStop();
 //	}
-
 }
