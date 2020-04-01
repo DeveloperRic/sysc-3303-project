@@ -19,7 +19,7 @@ public class ElevatorSchedulerUnitTests {
 		int startFloor = 5;
 		
 		Integer[] r = new Integer[] { startFloor, 0 };
-		
+
 		FloorRequest request = new FloorRequest() {
 			@Override
 			public Integer[] getRequest() {

@@ -33,7 +33,7 @@ public class FloorSubsystem implements Runnable{
 			floors.add(new Floor(i+1,MAX_FLOORS));
 		}
 	}
-	
+
 	@Override
 	public void run(){
 		int taskNum = 0;
@@ -98,7 +98,7 @@ public class FloorSubsystem implements Runnable{
 		String localDir = System.getProperty("user.dir");
 		BufferedReader in = new BufferedReader(new FileReader(localDir + "\\src\\assets\\Inputs.txt"));
 		String ln;
-		
+
 		while ((ln = in.readLine()) != null)
 			parseAdd(ln);
 		in.close();
@@ -119,14 +119,14 @@ public class FloorSubsystem implements Runnable{
 	//splits each string by whitespace and creates a Task object and puts it into the matrix
 	public synchronized void parseAdd(String ln) {
 		notifyAll();
-		
+
 		String[] inputs = ln.split(" ");
-	
+
 		try {
 			Task task = new Task(inputs[0], inputs[1], inputs[2]);
 			tasks.add(task);
 //			tasks.add(new Task(inputs[0], inputs[3], "", inputs[1]));
-			//taskMatrix.get(task.getStartFloor()-1).get(task.getDirection()).add(task);
+			// taskMatrix.get(task.getStartFloor()-1).get(task.getDirection()).add(task);
 		} catch (Exception e) {
 			Printer.print("Invalid Input: " + e);
 		}
@@ -168,5 +168,5 @@ public class FloorSubsystem implements Runnable{
 			System.out.println((System.currentTimeMillis() - strt)+": "+floorSS.tasks.size());
 		}
 	}
-	
+
 }

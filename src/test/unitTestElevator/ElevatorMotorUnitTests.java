@@ -10,8 +10,6 @@ import scheduler.ElevatorScheduler;
 
 class ElevatorMotorUnitTests {
 
-	
-	
 	@BeforeEach
 	void setUp() throws Exception {
 	}
@@ -78,7 +76,6 @@ class ElevatorMotorUnitTests {
 		float endTravel = elevator.getMetersTravelled();
 		schedulerElevator.closeComms();
 		assertEquals(0, endTravel);
-		
 	}
 
 }

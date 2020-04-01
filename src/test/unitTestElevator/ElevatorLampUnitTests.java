@@ -24,7 +24,7 @@ class ElevatorLampUnitTests {
 		el.turnOn();
 		assertTrue(el.isIlluminated());
 	}
-	
+
 	@Test
 	void test_lampOff() {
 		ElevatorLamp el = new ElevatorLamp();

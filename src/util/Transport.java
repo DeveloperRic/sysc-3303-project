@@ -28,7 +28,6 @@ public final class Transport {
 	private InetAddress address;
 	private DatagramSocket sendSocket;
 	private DatagramSocket receiveSocket;
-	private int receivePort;
 	private int destinationPort;
 
 	/**
@@ -58,7 +57,6 @@ public final class Transport {
 					receiveSocket = new DatagramSocket(receivePort);
 				}
 			}
-			this.receivePort = receivePort;
 		} catch (UnknownHostException | SocketException e) { // Can't create the socket.
 			e.printStackTrace();
 			System.exit(1);
@@ -76,7 +74,6 @@ public final class Transport {
 		try {
 			address = InetAddress.getLocalHost();
 			receiveSocket = new DatagramSocket(receivePort);
-			this.receivePort = receivePort;
 		} catch (UnknownHostException | SocketException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -94,7 +91,6 @@ public final class Transport {
 			address = InetAddress.getLocalHost();
 			sendSocket = new DatagramSocket();
 			receiveSocket = new DatagramSocket();
-			receivePort = -1;
 		} catch (UnknownHostException | SocketException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -107,7 +103,7 @@ public final class Transport {
 	 * 
 	 * @param data
 	 * @param destRole e.g. "Host"
-	 * @return 
+	 * @return
 	 */
 	public Object[] send(byte[] data) {
 		try {
@@ -141,7 +137,7 @@ public final class Transport {
 	 * @param data
 	 * @param destRole e.g. "Host"
 	 * @param destPort e.g. 23
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public Object[] send(byte[] data, String destRole, int destPort) throws Exception {
 		// Prepare a DatagramPacket and send it via sendReceiveSocket
@@ -248,7 +244,7 @@ public final class Transport {
 	public int getSendPort() {
 		return sendSocket.getLocalPort();
 	}
-	
+
 	public int getDestinationPort() {
 		return destinationPort;
 	}

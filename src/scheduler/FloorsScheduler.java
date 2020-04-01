@@ -3,7 +3,6 @@ package scheduler;
 import scheduler.RequestHeader.RequestType;
 import util.Communication.Selector;
 import util.Printer;
-
 import util.Transport;
 
 /**
@@ -50,7 +49,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 
 				while (receivedBytes.value == null || receivedBytes.value.length == 0) {
 					if (receivedBytes.value == null) {
-						System.out.println("--->[data] Floor receiving\n");
+						Printer.print("--->[data] Floor receiving\n");
 						try {
 							receivedBytes.value = (byte[]) t.receive()[0];
 						} catch (Exception e) {
@@ -64,7 +63,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 
 					if (receivedBytes.value.length == 0) {
 						try {
-							System.out.println("--->[data] Floor waiting\n");
+							Printer.print("--->[data] Floor waiting\n");
 							receivedBytes.wait();
 						} catch (InterruptedException e) {
 						}
@@ -72,7 +71,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 				}
 
 				ElevatorMessage elevatorMessage = ElevatorMessage.deserialize(receivedBytes.value);
-				System.out.println("Received " + elevatorMessage + "\n");
+				Printer.print("Received " + elevatorMessage + "\n");
 
 				receivedBytes.value = null;
 
@@ -142,7 +141,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 //				waitingOnAcknowledgement.notifyAll();
 			}
 		}
-//		System.out.println("released put lock " + (--putBlocked) + " potentially blocked");
+//		Printer.print("released put lock " + (--putBlocked) + " potentially blocked");
 	}
 
 	private static class BytesWrapper {

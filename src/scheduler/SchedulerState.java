@@ -64,7 +64,7 @@ public enum SchedulerState {
 				// subtract 2 seconds (for processing delay)
 				for (int i = 0; i < request.responses.length; ++i) {
 					if (MainScheduler.verbose) {
-						System.out.println(Arrays.toString(request.responses.clone()));
+						Printer.print(Arrays.toString(request.responses.clone()));
 					}
 					if (request.responses[i] >= 0) {
 						noElevatorCanProcess = false;

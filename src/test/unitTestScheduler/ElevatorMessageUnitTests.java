@@ -111,7 +111,7 @@ public class ElevatorMessageUnitTests {
 			public Integer[] getRequest() {
 				return r;
 			}
-			
+
 			@Override
 			public Integer getSourceElevator() {
 				return 1;
@@ -129,13 +129,13 @@ public class ElevatorMessageUnitTests {
 			public FloorRequest getFloorRequest() {
 				return request;
 			}
-			
+
 			@Override
 			public String getAcknowledgement() {
 				return acknowledgement;
 			}
 		};
-		
+
 		return elevMessage;
 	}
 }

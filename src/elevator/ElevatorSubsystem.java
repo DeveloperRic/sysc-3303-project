@@ -11,6 +11,7 @@ import scheduler.ElevatorScheduler;
 import scheduler.FloorRequest;
 import util.Printer;
 import util.Transport;
+import util.Printer;
 
 public class ElevatorSubsystem {
 
@@ -133,6 +134,10 @@ public class ElevatorSubsystem {
 
 	public void pressButton(int floor) {
 		elevator.buttons[floor - 1].press();
+	}
+	
+	public boolean isButtonPressed(int floor) {
+		return elevator.buttons[floor - 1].isPressed();
 	}
 
 	public boolean isButtonPressed(int floor) {

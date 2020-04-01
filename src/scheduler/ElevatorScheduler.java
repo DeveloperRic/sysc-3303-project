@@ -66,7 +66,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 					if (receivedBytes.value.length == 0) {
 						try {
 							if (ElevatorSubsystem.verbose)
-								System.out.println("--->[data] Elevator waiting\n");
+								Printer.print("--->[data] Elevator waiting\n");
 							receivedBytes.wait();
 						} catch (InterruptedException e) {
 						}
@@ -75,7 +75,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 
 				FloorRequest floorRequest = FloorRequest.deserialize(receivedBytes.value);
 				if (ElevatorSubsystem.verbose)
-					System.out.println("Received " + floorRequest + "\n");
+					Printer.print("Received " + floorRequest + "\n");
 
 				receivedBytes.value = null;
 
@@ -93,7 +93,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 	public void put(ElevatorMessage message) {
 //		Printer.print("put called " + (++putBlocked) + " potentially blocked");
 		synchronized (putLock) {
-//			System.out.println("got ack lock");
+//			Printer.print("got ack lock");
 
 //			while (waitingOnAcknowledgement.value) {
 //				Printer.print("wait on ack");
@@ -132,7 +132,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 					if (receivedBytes.value.length > 0) {
 						try {
 							if (ElevatorSubsystem.verbose)
-								System.out.println("--->[conf] Elevator waiting\n");
+								Printer.print("--->[conf] Elevator waiting\n");
 							receivedBytes.wait();
 						} catch (InterruptedException e) {
 						}

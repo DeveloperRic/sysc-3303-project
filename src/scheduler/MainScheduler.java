@@ -9,6 +9,7 @@ import util.BlockingList;
 import util.ByteUtils;
 import util.Printer;
 import util.Transport;
+import util.Printer;
 
 public class MainScheduler {
 
@@ -77,6 +78,22 @@ public class MainScheduler {
 	public List<byte[]> getElevatorMessages() { return elevatorsMessages;}
 	public List<byte[]> getFloorMessages() {return floorsMessages;}
 	public void setState(SchedulerState state) { currentState = state; };
+
+	public SchedulerState getState() {
+		return currentState;
+	}
+
+	public List<byte[]> getElevatorMessages() {
+		return elevatorsMessages;
+	}
+
+	public List<byte[]> getFloorMessages() {
+		return floorsMessages;
+	}
+
+	public void setState(SchedulerState state) {
+		currentState = state;
+	};
 
 	public void setVerbose(boolean verbose) {
 		MainScheduler.verbose = verbose;
@@ -195,8 +212,8 @@ public class MainScheduler {
 										}
 
 										if (verbose) {
-											System.out.println(subsystemNumber + ": []---> " + sourceName
-													+ " waiting (try " + (++numTimesWaited) + ")");
+											Printer.print(subsystemNumber + ": []---> " + sourceName + " waiting (try "
+													+ (++numTimesWaited) + ")");
 										}
 
 										// if there's still nothing to do, wait
@@ -208,8 +225,7 @@ public class MainScheduler {
 										}
 									}
 									if (verbose) {
-										System.out
-												.println(subsystemNumber + ": []---> " + sourceName + " ready to send");
+										Printer.print(subsystemNumber + ": []---> " + sourceName + " ready to send");
 									}
 									// send message
 									if (bytesToSend == null) {
@@ -276,6 +292,11 @@ public class MainScheduler {
 //
 //	}
 	
+	public void closeComms() {
+		floorTransport.close();
+		elevatorTransport.close();
+	}
+
 	public void closeComms() {
 		floorTransport.close();
 		elevatorTransport.close();

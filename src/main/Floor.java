@@ -30,7 +30,6 @@ public class Floor {
 			
 			if(this.floorNumber == maxFloor)
 				upButton = null;
-
 		}
 		
 		public void storeRequest(Task task) {
@@ -44,7 +43,6 @@ public class Floor {
 		}
 		
 		public void serviceRequest() {
-			
 			//If the task matches a task in the requests and the direction is stopping
 			//Remove it from the requests (Should i clear all requests?)
 			if(!requests.isEmpty()) {

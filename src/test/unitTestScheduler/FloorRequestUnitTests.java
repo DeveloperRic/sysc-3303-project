@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import scheduler.FloorRequest;
 
 public class FloorRequestUnitTests {
-	
 	private static final int UP = 1;
 
 	@BeforeEach
@@ -73,13 +72,13 @@ public class FloorRequestUnitTests {
 			public Integer[] getRequest() {
 				return r;
 			}
-			
+
 			@Override
 			public Integer getSourceElevator() {
 				return 1;
 			}
 		};
-		
+
 		return request;
 	}
 }

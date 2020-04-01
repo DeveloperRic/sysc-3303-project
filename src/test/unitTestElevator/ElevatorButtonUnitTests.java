@@ -15,7 +15,6 @@ class ElevatorButtonUnitTests {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		
 	}
 
 	@AfterEach
@@ -34,7 +33,7 @@ class ElevatorButtonUnitTests {
 		ms.closeComms();
 		schedulerElevator.closeComms();
 	}
-	
+
 	@Test
 	void test_unpressButton() {
 		MainScheduler ms = new MainScheduler();

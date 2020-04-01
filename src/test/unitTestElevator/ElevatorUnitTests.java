@@ -42,7 +42,5 @@ class ElevatorUnitTests {
 		schedulerElevator.closeComms();
 		assertEquals(elevator.velocity/Elevator.ACCELERATION, elevator.secondsToStop());
 	}
-	
-	
 
 }

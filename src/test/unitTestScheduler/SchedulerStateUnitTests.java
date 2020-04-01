@@ -21,7 +21,7 @@ public class SchedulerStateUnitTests {
 	@AfterEach
 	void tearDown() throws Exception {
 	}
-	
+
 	@Test
 	void test_forwardRequestToElevator() {
 		MainScheduler ms = new MainScheduler();
@@ -36,7 +36,7 @@ public class SchedulerStateUnitTests {
 		
 		assertTrue(ms.getElevatorMessages().size() == 1);	
 	}
-	
+
 	@Test
 	void test_forwardAcknowledgementToFloor() {
 		MainScheduler ms = new MainScheduler();
@@ -49,7 +49,7 @@ public class SchedulerStateUnitTests {
 		
 		assertTrue(ms.getFloorMessages().size() == 1);
 	}
-	
+
 	@Test
 	void test_processEtaFromElevator() {
 		MainScheduler ms = new MainScheduler();
@@ -79,18 +79,19 @@ public class SchedulerStateUnitTests {
 		
 		//Create the floor request
 		Integer[] r = new Integer[] {floorDest,direction};	//Going to floor 5, Going up
+
 		FloorRequest request = new FloorRequest() {
 			@Override
 			public Integer[] getRequest() {
 				return r;
 			}
-			
+
 			@Override
 			public Integer getSourceElevator() {
 				return 1;
 			}
 		};
-		
+
 		return request;
 	}
 }

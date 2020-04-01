@@ -36,7 +36,6 @@ public abstract class FloorRequest {
 	public Integer getSourceElevator() {
 		return sourceElevator;
 	}
-
 	
     /**
      * Returns the formatted String message of the Floor destination and direction.
@@ -119,7 +118,6 @@ public abstract class FloorRequest {
 
 		return buffer.array();
 	}
-
 	
 	/**
      * Converts the serialized byte[] back into an FloorMessage.
