@@ -140,10 +140,6 @@ public class ElevatorSubsystem {
 		return elevator.buttons[floor - 1].isPressed();
 	}
 
-	public boolean isButtonPressed(int floor) {
-		return elevator.buttons[floor - 1].isPressed();
-	}
-
 	public static void setVerbose(boolean verbose) {
 		ElevatorSubsystem.verbose = verbose;
 		Transport.setVerbose(verbose);

@@ -79,22 +79,6 @@ public class MainScheduler {
 	public List<byte[]> getFloorMessages() {return floorsMessages;}
 	public void setState(SchedulerState state) { currentState = state; };
 
-	public SchedulerState getState() {
-		return currentState;
-	}
-
-	public List<byte[]> getElevatorMessages() {
-		return elevatorsMessages;
-	}
-
-	public List<byte[]> getFloorMessages() {
-		return floorsMessages;
-	}
-
-	public void setState(SchedulerState state) {
-		currentState = state;
-	};
-
 	public void setVerbose(boolean verbose) {
 		MainScheduler.verbose = verbose;
 //		floorCommunication.setVerbose(verbose);
@@ -292,11 +276,6 @@ public class MainScheduler {
 //
 //	}
 	
-	public void closeComms() {
-		floorTransport.close();
-		elevatorTransport.close();
-	}
-
 	public void closeComms() {
 		floorTransport.close();
 		elevatorTransport.close();
