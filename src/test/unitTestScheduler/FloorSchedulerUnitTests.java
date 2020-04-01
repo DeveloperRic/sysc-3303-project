@@ -16,7 +16,7 @@ public class FloorSchedulerUnitTests {
 	public void test() {
 		Transport.setVerbose(true);
 		
-		FloorsScheduler scheduler = new FloorsScheduler();
+		FloorsScheduler scheduler = new FloorsScheduler(-1);
 		Transport t = scheduler.getTransport();
 		
 		

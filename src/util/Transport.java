@@ -139,7 +139,7 @@ public final class Transport {
 	 * @param destPort e.g. 23
 	 * @throws Exception
 	 */
-	public Object[] send(byte[] data, String destRole, int destPort) {
+	public Object[] send(byte[] data, String destRole, int destPort) throws Exception {
 		// Prepare a DatagramPacket and send it via sendReceiveSocket
 		// to port 5000 on the destination host.
 
@@ -168,7 +168,8 @@ public final class Transport {
 			sendSocket.send(sendPacket);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(1);
+			throw new Exception();
+			//System.exit(1);
 		}
 
 		if (verbose) {
@@ -181,9 +182,9 @@ public final class Transport {
 	 * Waits for data on the Transport's receiveSocket
 	 * 
 	 * @return [byte[] data-received, int port-data-came-from]
-	 * @throws Exception
+	 * @throws Exception 
 	 */
-	public Object[] receive() {
+	public Object[] receive() throws Exception {
 		// Construct a DatagramPacket for receiving packets up
 		// to 100 bytes long (the length of the byte array).
 
@@ -195,7 +196,8 @@ public final class Transport {
 			receiveSocket.receive(receivePacket);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(1);
+			throw new Exception();
+		//	System.exit(1);
 		}
 
 		int len = receivePacket.getLength();

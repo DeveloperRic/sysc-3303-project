@@ -1,8 +1,15 @@
 package test;
 
+import static java.time.temporal.ChronoUnit.MILLIS;
+
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 import elevator.Elevator;
 import elevator.ElevatorSubsystem;
 import main.FloorSubsystem;
+import main.InputParser;
 import scheduler.FloorRequest;
 import scheduler.MainScheduler;
 import scheduler.ElevatorScheduler;
@@ -46,7 +53,7 @@ public class TesterClass {
 		
 		//Active floor scheduler
 		Transport.setVerbose(true);
-		FloorsScheduler floorScheduler = new FloorsScheduler();
+		FloorsScheduler floorScheduler = new FloorsScheduler(-1);
 
 		
 		//Delay
@@ -60,6 +67,33 @@ public class TesterClass {
 		FloorSubsystem floorSS = new FloorSubsystem(floorScheduler);
 		
 		new Thread(floorSS,"FloorSS").start();
+		
+		String inputFileDestination = "\\src\\assets\\Inputs.txt";
+		InputParser ip = new InputParser(inputFileDestination);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+		long strt = System.currentTimeMillis();
+		LocalTime l = null;
+		
+		while(ip.requests.size() > 0) {
+			String[] request = ip.requests.remove(0).split(" ");
+			if(l == null) {
+				l = LocalTime.parse(request[0]);
+			}
+			else {
+				try {
+					Thread.sleep(MILLIS.between(l, LocalTime.parse(request[0])));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			
+			String time = LocalTime.now(ZoneId.systemDefault()).format(formatter);
+			floorSS.parseAdd(time +" "+ request[1] +" "+ request[2]);
+			System.out.println(time +" "+ request[1] +" "+ request[2]);
+			System.out.println((System.currentTimeMillis() - strt)+": "+floorSS.tasks.size());
+		}
 		
 		
 	}

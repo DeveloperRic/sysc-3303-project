@@ -21,13 +21,14 @@ public class InputParser {
 	private String fileDirectory = System.getProperty("user.dir");
 	private HashMap<String,Task> tasks = new HashMap<String,Task>();
 	private ArrayList<LocalTime> timeRequests = null;
+	public ArrayList<String> requests = new ArrayList<>();
 	
 	public InputParser(String inputFileDestination) {
 		fileDirectory += inputFileDestination;
 		
 		try {
 			getInputs();
-			storeTimeRequests();
+			//storeTimeRequests();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -66,8 +67,8 @@ public class InputParser {
 		
 		//Validate Date Type
 		try {
-			LocalTime.parse(inputs[0]);
-		} catch (DateTimeParseException e) {
+            LocalTime.parse(inputs[0]);
+        } catch (DateTimeParseException e) {
 			Printer.print("Input Line " + lineNumber + " has an invalid Date time format. Skipping Input...");
 			return false;
 		}
@@ -123,14 +124,16 @@ public class InputParser {
 	}
 	
 	public void parseAdd(String input) {
-		String[] inputs = input.split(" ");
+		requests.add(input);
+		
+		/*String[] inputs = input.split(" ");
 		
 		try {
 			Task task = new Task(inputs[0], inputs[1], inputs[2]);
 			tasks.put(LocalTime.parse(inputs[0]).toString(),task);
 		} catch (Exception e) {
 			Printer.print("Invalid Input: " + e);
-		}	
+		}	*/
 	}
 	
 	public HashMap<String,Task> getTasks() {

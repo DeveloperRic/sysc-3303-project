@@ -7,6 +7,7 @@ import java.util.List;
 import scheduler.RequestHeader.RequestType;
 import util.BlockingList;
 import util.ByteUtils;
+import util.Printer;
 import util.Transport;
 import util.Printer;
 
@@ -14,7 +15,7 @@ public class MainScheduler {
 
 	public static final int PORT_FOR_FLOOR = 63972;
 	public static final int PORT_FOR_ELEVATOR = 63973;
-	private static final int NUMBER_OF_ELEVATORS = 2;
+	private static final int NUMBER_OF_ELEVATORS = 1;
 //	private static final byte[] DEFAULT_REPLY = "< msg received >".getBytes();
 	private static final byte[] DEFAULT_REPLY = new byte[0];
 
@@ -72,22 +73,11 @@ public class MainScheduler {
 	public static int getNumberOfElevators() {
 		return NUMBER_OF_ELEVATORS;
 	}
-
-	public SchedulerState getState() {
-		return currentState;
-	}
-
-	public List<byte[]> getElevatorMessages() {
-		return elevatorsMessages;
-	}
-
-	public List<byte[]> getFloorMessages() {
-		return floorsMessages;
-	}
-
-	public void setState(SchedulerState state) {
-		currentState = state;
-	};
+	
+	public SchedulerState getState() { return currentState; }
+	public List<byte[]> getElevatorMessages() { return elevatorsMessages;}
+	public List<byte[]> getFloorMessages() {return floorsMessages;}
+	public void setState(SchedulerState state) { currentState = state; };
 
 	public void setVerbose(boolean verbose) {
 		MainScheduler.verbose = verbose;
@@ -152,8 +142,12 @@ public class MainScheduler {
 //							putList.add(receivedBytes);
 //
 							// send reply
-							transport.send(DEFAULT_REPLY, sourceName, requestHeader.getPortToReplyTo());
-
+							try {
+								transport.send(DEFAULT_REPLY, sourceName, requestHeader.getPortToReplyTo());
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 //
 //							// notify waiting threads that something's been added
 //							putList.notifyAll();
@@ -223,7 +217,12 @@ public class MainScheduler {
 									} else {
 										getList.remove(bytesToSend);
 									}
-									transport.send(bytesToSend, sourceName, requestHeader.getPortToReplyTo());
+									try {
+										transport.send(bytesToSend, sourceName, requestHeader.getPortToReplyTo());
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 							}
 						}).start();
@@ -276,7 +275,7 @@ public class MainScheduler {
 //		}
 //
 //	}
-
+	
 	public void closeComms() {
 		floorTransport.close();
 		elevatorTransport.close();

@@ -58,7 +58,6 @@ public class Elevator {
 	}
 
 	public synchronized float timeToStopAtFloor(int floor, int direction) {
-
 		if (ElevatorSubsystem.verbose) {
 			Printer.print("(req = " + floor + " going " + direction + ") (cur = " + currentFloor + " going "
 					+ this.direction + ")");
@@ -104,6 +103,7 @@ public class Elevator {
 //		float distanceToFloor = Math.abs(floor - currentFloor) * FLOOR_HEIGHT;
 //		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / velocity;
 //		return secondsToFloor >= secondsToStop() ? secondsToFloor : -1;
+
 
 		int ticks = 0; // how many ticks (seconds) has it been
 		float accVelocity = velocity; // how fast were we going when we had to stop

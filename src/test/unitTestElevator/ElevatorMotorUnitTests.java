@@ -29,9 +29,9 @@ class ElevatorMotorUnitTests {
 		float acceleratedVelocity = elevator.velocity;
 		schedulerElevator.closeComms();
 		assertTrue(acceleratedVelocity > startVelocity);
-
+		
 	}
-
+	
 	@Test
 	void test_decelerate() {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
@@ -46,9 +46,9 @@ class ElevatorMotorUnitTests {
 		schedulerElevator.closeComms();
 		assertTrue(startVelocity == deceleratedVelocity);
 		assertTrue(acceleratedVelocity > deceleratedVelocity);
-
+		
 	}
-
+	
 	@Test
 	void test_doMovement() {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
@@ -61,10 +61,10 @@ class ElevatorMotorUnitTests {
 		float endTravel = elevator.getMetersTravelled();
 		schedulerElevator.closeComms();
 		assertTrue(endTravel > startTravel);
-		assertEquals(endTravel, startTravel + velocity);
-
+		assertEquals(endTravel, startTravel+velocity);
+		
 	}
-
+	
 	@Test
 	void test_doMovementToFloor() {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
@@ -76,7 +76,6 @@ class ElevatorMotorUnitTests {
 		float endTravel = elevator.getMetersTravelled();
 		schedulerElevator.closeComms();
 		assertEquals(0, endTravel);
-
 	}
 
 }

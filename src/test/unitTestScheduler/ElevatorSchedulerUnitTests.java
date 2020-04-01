@@ -17,7 +17,7 @@ public class ElevatorSchedulerUnitTests {
 		ElevatorScheduler scheduler = new ElevatorScheduler(1);
 		Transport t = scheduler.getTransport();
 		int startFloor = 5;
-
+		
 		Integer[] r = new Integer[] { startFloor, 0 };
 
 		FloorRequest request = new FloorRequest() {
@@ -27,23 +27,23 @@ public class ElevatorSchedulerUnitTests {
 			};
 
 		};
-
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				scheduler.put(new ElevatorMessage() {
-					@Override
-					public FloorRequest getFloorRequest() {
-						return request;
-					}
-				});
-
-				assertTrue(scheduler.get(null).getRequest()[0] == startFloor);
-
+		
+	new Thread(new Runnable() {
+		@Override
+		public void run() {
+			scheduler.put(new ElevatorMessage() {
+				@Override
+				public FloorRequest getFloorRequest() {
+					return request;
+				}
+			});
+			
+			assertTrue(scheduler.get(null).getRequest()[0] == startFloor);
+		
 			}
 		}).start();
-
-		assertTrue(MainScheduler.PORT_FOR_ELEVATOR == t.getDestinationPort());
+	
+	assertTrue(MainScheduler.PORT_FOR_ELEVATOR == t.getDestinationPort());
 //	assertTrue(scheduler.ELEVATOR_PORT == t.getReceivePort());
 	}
 }

@@ -10,7 +10,7 @@ import util.Transport;
  * and get functions
  *
  */
-public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
+public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMessage> {
 //	public static final int ELEVATOR_PORT = 63971;
 
 	// The main scheduler object
@@ -32,7 +32,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	}
 
 	@Override
-	public String get(Selector selector) {
+	public ElevatorMessage get(Selector selector) {
 		synchronized (getLock) {
 //			while (waitingOnData.value) {
 //				try {
@@ -50,9 +50,14 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 				while (receivedBytes.value == null || receivedBytes.value.length == 0) {
 					if (receivedBytes.value == null) {
 						Printer.print("--->[data] Floor receiving\n");
-						receivedBytes.value = (byte[]) t.receive()[0];
-//						Printer.print("CheckDATA: " + t.receive()[0]);
-//						Printer.print("^^ get()");
+						try {
+							receivedBytes.value = (byte[]) t.receive()[0];
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+//						System.out.println("CheckDATA: " + t.receive()[0]);
+//						System.out.println("^^ get()");
 						receivedBytes.notifyAll();
 					}
 
@@ -73,7 +78,9 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 //				waitingOnData.value = false;
 //				waitingOnData.notifyAll();
 
-				return elevatorMessage.getAcknowledgement();
+				Printer.print("floorInt: " + elevatorMessage.getFloorArrivedOn());
+
+				return elevatorMessage;
 			}
 		}
 	}
@@ -108,7 +115,12 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 				while (receivedBytes.value == null || receivedBytes.value.length > 0) {
 					if (receivedBytes.value == null) {
 						System.out.println("--->[conf] Floor receiving\n");
-						receivedBytes.value = (byte[]) t.receive()[0];
+						try {
+							receivedBytes.value = (byte[]) t.receive()[0];
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 //						System.out.println("^^ put()");
 						receivedBytes.notifyAll();
 					}
@@ -147,5 +159,5 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, String> {
 	public Transport getTransport() {
 		return t;
 	}
-	
+
 }

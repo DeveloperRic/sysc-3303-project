@@ -51,10 +51,15 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 				while (receivedBytes.value == null || receivedBytes.value.length == 0) {
 					if (receivedBytes.value == null) {
 						if (ElevatorSubsystem.verbose)
-							Printer.print("--->[data] Elevator receiving\n");
-						receivedBytes.value = (byte[]) t.receive()[0];
-//						Printer.print("CheckDATA: " + t.receive()[0]);
-//						Printer.print("^^ get()");
+							System.out.println("--->[data] Elevator receiving\n");
+						try {
+							receivedBytes.value = (byte[]) t.receive()[0];
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+//						System.out.println("CheckDATA: " + t.receive()[0]);
+//						System.out.println("^^ get()");
 						receivedBytes.notifyAll();
 					}
 
@@ -113,9 +118,14 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 				while (receivedBytes.value == null || receivedBytes.value.length > 0) {
 					if (receivedBytes.value == null) {
 						if (ElevatorSubsystem.verbose)
-							Printer.print("--->[conf] Elevator receiving\n");
-						receivedBytes.value = (byte[]) t.receive()[0];
-//						Printer.print("^^ put()");
+							System.out.println("--->[conf] Elevator receiving\n");
+						try {
+							receivedBytes.value = (byte[]) t.receive()[0];
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+//						System.out.println("^^ put()");
 						receivedBytes.notifyAll();
 					}
 
