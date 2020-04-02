@@ -2,17 +2,20 @@ package test;
 
 import scheduler.MainScheduler;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 import org.junit.Test;
 
 public class SchedulerRuntimeTest {
 
 	@Test
-	public void test() {
+	public void test() throws SocketException, UnknownHostException {
 
 		MainScheduler mainScheduler = new MainScheduler();
-		mainScheduler.setVerbose(false); // code works now, no need for spam
+		mainScheduler.setVerbose(false);
 		mainScheduler.activate();
-		
+
 		while (true) {
 			try {
 				Thread.sleep(100);

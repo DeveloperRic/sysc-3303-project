@@ -1,19 +1,16 @@
 package scheduler;
 
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 import scheduler.RequestHeader.RequestType;
 import util.Communication.Selector;
 import util.Printer;
 import util.Transport;
 
-/**
- * This class limits the access of the MainScheduler to only the elevator put
- * and get functions
- *
- */
 public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMessage> {
-//	public static final int ELEVATOR_PORT = 63971;
 
-	// The main scheduler object
 	private final byte floorNumber;
 	private final Transport t;
 	private final Object getLock = "get lock";
@@ -22,8 +19,11 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 
 	/**
 	 * Instantiates the floor scheduler (lives in floor-subsystem runtime)
+	 * 
+	 * @throws SocketException
+	 * @throws UnknownHostException
 	 */
-	public FloorsScheduler(Integer floorNumber) {
+	public FloorsScheduler(Integer floorNumber) throws UnknownHostException, SocketException {
 		this.floorNumber = floorNumber.byteValue();
 		t = new Transport("Floor");
 		t.setDestinationRole("Scheduler");
@@ -32,32 +32,19 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 	}
 
 	@Override
-	public ElevatorMessage get(Selector selector) {
+	public ElevatorMessage get(Selector selector) throws IOException {
 		synchronized (getLock) {
-//			while (waitingOnData.value) {
-//				try {
-//					waitingOnData.wait();
-//				} catch (InterruptedException e) {
-//				}
-//			}
 
 			t.send(new RequestHeader(RequestType.GET_DATA, t.getReceivePort(), floorNumber).getBytes());
-
-//			waitingOnData.value = true;
 
 			synchronized (receivedBytes) {
 
 				while (receivedBytes.value == null || receivedBytes.value.length == 0) {
+
 					if (receivedBytes.value == null) {
 						Printer.print("--->[data] Floor receiving\n");
-						try {
-							receivedBytes.value = (byte[]) t.receive()[0];
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-//						System.out.println("CheckDATA: " + t.receive()[0]);
-//						System.out.println("^^ get()");
+
+						receivedBytes.value = (byte[]) t.receive()[0];
 						receivedBytes.notifyAll();
 					}
 
@@ -75,9 +62,6 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 
 				receivedBytes.value = null;
 
-//				waitingOnData.value = false;
-//				waitingOnData.notifyAll();
-
 				Printer.print("floorInt: " + elevatorMessage.getFloorArrivedOn());
 
 				return elevatorMessage;
@@ -85,28 +69,14 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 		}
 	}
 
-//	private int putBlocked;
-
 	@Override
-	public void put(FloorRequest request) {
-//		System.out.println("put called " + (++putBlocked) + " potentially blocked");
+	public void put(FloorRequest request) throws IOException {
 		synchronized (putLock) {
-//			System.out.println("got ack lock");
-
-//			while (waitingOnAcknowledgement.value) {
-//				System.out.println("wait on ack");
-//				try {
-//					waitingOnAcknowledgement.wait();
-//				} catch (InterruptedException e) {
-//				}
-//			}
 
 			System.out.println("sending " + request + "\n");
 
 			t.send(new RequestHeader(RequestType.SEND_DATA, t.getReceivePort(), floorNumber)
 					.attachDataBytes(request.serialize()));
-
-//			waitingOnAcknowledgement.value = true;
 
 			// receive confirmation of message received
 
@@ -115,13 +85,8 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 				while (receivedBytes.value == null || receivedBytes.value.length > 0) {
 					if (receivedBytes.value == null) {
 						System.out.println("--->[conf] Floor receiving\n");
-						try {
-							receivedBytes.value = (byte[]) t.receive()[0];
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-//						System.out.println("^^ put()");
+
+						receivedBytes.value = (byte[]) t.receive()[0];
 						receivedBytes.notifyAll();
 					}
 
@@ -136,12 +101,8 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 
 				receivedBytes.value = null;
 				receivedBytes.notifyAll();
-
-//				waitingOnAcknowledgement.value = false;
-//				waitingOnAcknowledgement.notifyAll();
 			}
 		}
-//		Printer.print("released put lock " + (--putBlocked) + " potentially blocked");
 	}
 
 	private static class BytesWrapper {

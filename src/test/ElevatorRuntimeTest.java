@@ -3,6 +3,8 @@ package test;
 import elevator.ElevatorSubsystem;
 import scheduler.ElevatorScheduler;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 import org.junit.Test;
@@ -10,7 +12,7 @@ import org.junit.Test;
 public class ElevatorRuntimeTest {
 
 	@Test
-	public void test() {
+	public void test() throws UnknownHostException, SocketException {
 		System.out.print("Enter this elevator's number : ");
 		Scanner scanner = new Scanner(System.in);
 		int elevNum = Integer.parseInt(scanner.nextLine());
