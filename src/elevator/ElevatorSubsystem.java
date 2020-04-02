@@ -11,7 +11,6 @@ import scheduler.ElevatorScheduler;
 import scheduler.FloorRequest;
 import util.Printer;
 import util.Transport;
-import util.Printer;
 
 public class ElevatorSubsystem {
 
