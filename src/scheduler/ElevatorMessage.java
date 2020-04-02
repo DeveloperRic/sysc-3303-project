@@ -42,6 +42,10 @@ public abstract class ElevatorMessage {
 		return null;
 	}
 
+	public Integer[] getFaultNotice() {
+		return null;
+	}
+
 	/**
 	 * Returns the formatted String message of the FloorRequest and Acknowledgement.
 	 * 
@@ -68,7 +72,8 @@ public abstract class ElevatorMessage {
 		byte[] floorRequest = null;
 		byte[] acknowledgement = null;
 
-		int bufferLength = 2 * 4;
+		int faultNoticeLength = 0;
+		int bufferLength = 3 * 4;
 
 		if (getFloorRequest() != null) {
 			floorRequest = getFloorRequest().serialize();
@@ -80,10 +85,15 @@ public abstract class ElevatorMessage {
 			bufferLength += acknowledgement.length + 4;
 		}
 
+		if (getFaultNotice() != null) {
+			bufferLength += faultNoticeLength = getFaultNotice().length * 4;
+		}
+
 		ByteBuffer buffer = ByteBuffer.allocate(bufferLength);
 
 		buffer.putInt(floorRequest != null ? floorRequest.length : 0);
 		buffer.putInt(acknowledgement != null ? acknowledgement.length : 0);
+		buffer.putInt(faultNoticeLength);
 
 		if (floorRequest != null) {
 			buffer.put(floorRequest);
@@ -91,6 +101,10 @@ public abstract class ElevatorMessage {
 		if (acknowledgement != null) {
 			buffer.put(acknowledgement);
 			buffer.putInt(getFloorArrivedOn());
+		}
+		if (faultNoticeLength > 0) {
+			for (Integer i : getFaultNotice())
+				buffer.putInt(i);
 		}
 
 		byte[] bytes = buffer.array();
@@ -116,6 +130,7 @@ public abstract class ElevatorMessage {
 
 		int floorRequestLength = buffer.getInt();
 		int acknowledgementLength = buffer.getInt();
+		int faultNoticeLength = buffer.getInt();
 
 		FloorRequest floorRequest;
 		if (floorRequestLength > 0) {
@@ -138,6 +153,15 @@ public abstract class ElevatorMessage {
 			arrivalFloor = null;
 		}
 
+		Integer[] faultNotice;
+		if (faultNoticeLength > 0) {
+			faultNotice = new Integer[faultNoticeLength / 4];
+			for (int i = 0; i < faultNotice.length; ++i)
+				faultNotice[i] = buffer.getInt();
+		} else {
+			faultNotice = null;
+		}
+
 		return new ElevatorMessage() {
 			@Override
 			public FloorRequest getFloorRequest() {
@@ -152,6 +176,11 @@ public abstract class ElevatorMessage {
 			@Override
 			public Integer getFloorArrivedOn() {
 				return arrivalFloor;
+			}
+
+			@Override
+			public Integer[] getFaultNotice() {
+				return faultNotice;
 			}
 		};
 	}

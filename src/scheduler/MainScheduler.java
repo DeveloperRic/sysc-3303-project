@@ -25,6 +25,7 @@ public class MainScheduler {
 	private Transport elevatorTransport;
 	List<byte[]> floorsMessages;
 	List<byte[]> elevatorsMessages;
+	List<Integer> decommissionedElevators;
 
 	private boolean active;
 	SchedulerState currentState;
@@ -44,6 +45,7 @@ public class MainScheduler {
 		// initialize message objects
 		floorsMessages = new BlockingList<>(new ArrayList<>());
 		elevatorsMessages = new BlockingList<>(new ArrayList<>());
+		decommissionedElevators = new ArrayList<Integer>();
 	}
 
 	public void activate() {
@@ -81,6 +83,10 @@ public class MainScheduler {
 
 	public List<byte[]> getFloorMessages() {
 		return floorsMessages;
+	}
+	
+	public List<Integer> getDecommissionedElevators() {
+		return decommissionedElevators;
 	}
 
 	public void setState(SchedulerState state) {
