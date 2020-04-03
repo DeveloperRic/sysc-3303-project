@@ -2,6 +2,9 @@ package test.unitTestElevator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +24,7 @@ class ElevatorSubsystemUnitTests {
 	}
 
 	@Test
-	void test_assignTask() {
+	void test_assignTask() throws UnknownHostException, SocketException {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem es = new ElevatorSubsystem(schedulerElevator);
 		int floor = 1;
@@ -31,7 +34,7 @@ class ElevatorSubsystemUnitTests {
 	}
 
 	@Test
-	void test_powerOn() {
+	void test_powerOn() throws UnknownHostException, SocketException {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem es = new ElevatorSubsystem(schedulerElevator);
 		es.powerOn();
@@ -40,7 +43,7 @@ class ElevatorSubsystemUnitTests {
 	}
 
 	@Test
-	void test_powerOff() {
+	void test_powerOff() throws UnknownHostException, SocketException {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem es = new ElevatorSubsystem(schedulerElevator);
 		es.powerOff();
@@ -49,7 +52,7 @@ class ElevatorSubsystemUnitTests {
 	}
 
 	@Test
-	void test_pressButton() {
+	void test_pressButton() throws UnknownHostException, SocketException {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		MainScheduler ms = new MainScheduler();
 		ms.activate();

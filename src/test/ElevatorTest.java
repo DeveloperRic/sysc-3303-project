@@ -2,6 +2,9 @@ package test;
 
 import util.Printer;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 import org.junit.Test;
 
 import elevator.ElevatorSubsystem;
@@ -18,7 +21,7 @@ public class ElevatorTest {
 	private boolean testing;
 
 	@Test
-	public void test() {
+	public void test() throws SocketException, UnknownHostException {
 
 		boolean verbose = false;
 
@@ -51,51 +54,53 @@ public class ElevatorTest {
 		 * 
 		 */
 
-//		List<Integer> workToDo = new ArrayList<>();
-
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				floorsScheduler.put(new FloorRequest() {
-					@Override
-					public Integer[] getRequest() {
-						return new Integer[] { 5, UP };
-					}
-				});
-
 				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
+					floorsScheduler.put(new FloorRequest() {
+						@Override
+						public Integer[] getRequest() {
+							return new Integer[] { 5, UP };
+						}
+					});
 
-				subsystem.pressButton(9);
-
-				floorsScheduler.put(new FloorRequest() {
-					@Override
-					public Integer[] getRequest() {
-						return new Integer[] { 3, UP };
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
 					}
-				});
 
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
+					subsystem.pressButton(9);
 
-				subsystem.pressButton(3);
+					floorsScheduler.put(new FloorRequest() {
+						@Override
+						public Integer[] getRequest() {
+							return new Integer[] { 3, UP };
+						}
+					});
 
-				floorsScheduler.put(new FloorRequest() {
-					@Override
-					public Integer[] getRequest() {
-						return new Integer[] { 10, DOWN };
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
 					}
-				});
 
-				if (verbose) {
-					while (testing) {
-						Printer.print("[Floor] " + floorsScheduler.get(null) + "\n");
+					subsystem.pressButton(3);
+
+					floorsScheduler.put(new FloorRequest() {
+						@Override
+						public Integer[] getRequest() {
+							return new Integer[] { 10, DOWN };
+						}
+					});
+
+					if (verbose) {
+						while (testing) {
+							Printer.print("[Floor] " + floorsScheduler.get(null) + "\n");
+						}
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}).start();
