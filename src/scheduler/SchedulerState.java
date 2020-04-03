@@ -45,6 +45,12 @@ public enum SchedulerState {
 				}
 			} else if (message.getAcknowledgement() != null) {
 				changeTo(m, FORWARD_ACKNOWLEDGEMENT_TO_FLOOR, param);
+			} else if (message.getFaultNotice() != null) {
+				if (message.getFaultNotice()[0] == 1) {
+					changeTo(m, RECOMMISSION_ELEVATOR, message.getFaultNotice()[1]);
+				} else {
+					changeTo(m, DECOMMISSION_ELEVATOR, message.getFaultNotice()[1]);
+				}
 			} else {
 				notifyDone(m);
 			}
@@ -58,30 +64,45 @@ public enum SchedulerState {
 			FloorRequest request = (FloorRequest) param;
 			// increment number of eta responses
 			// wait for responses to come in from all elevators
-			if (request.numResponses == request.responses.length) {
-				List<Float> responses = new ArrayList<Float>(request.responses.length);
+
+			int numOfNeededResponses = request.responses.length - m.decommissionedElevators.size();
+
+			if (request.numResponses == numOfNeededResponses) {
+
+				List<Float> responses = new ArrayList<Float>(numOfNeededResponses);
 				boolean noElevatorCanProcess = true;
+
 				// subtract 2 seconds (for processing delay)
 				for (int i = 0; i < request.responses.length; ++i) {
+					if (m.decommissionedElevators.contains(i + 1))
+						continue;
+
 					if (MainScheduler.verbose) {
 						Printer.print(Arrays.toString(request.responses.clone()));
 					}
+
 					if (request.responses[i] >= 0) {
 						noElevatorCanProcess = false;
 					}
+
 					responses.add(request.responses[i] -= 2);
 				}
+
 				if (!noElevatorCanProcess) {
+
 					// pick the smallest (non-negative) eta
 					for (int i = 0; i < responses.size(); ++i) {
 						if (responses.get(i) < 0) {
 							responses.set(i, Collections.max(responses) - responses.get(i));
 						}
 					}
+
 					int selectedElevator = responses.indexOf(Collections.min(responses)) + 1;
+
 					// message elevator it has been picked
 					changeTo(m, SEND_ACKNOWLEDGEMENT_TO_ELEVATOR, new Object[] { request, selectedElevator });
 				} else {
+
 					changeTo(m, FORWARD_REQUEST_TO_ELEVATOR, request.serialize());
 				}
 			} else {
@@ -115,6 +136,24 @@ public enum SchedulerState {
 		public void doWork(MainScheduler m, Object param) {
 			m.floorsMessages.add((byte[]) param);
 			notifyDone(m, m.floorsMessages);
+		}
+	}),
+
+	DECOMMISSION_ELEVATOR(new State() {
+
+		@Override
+		public void doWork(MainScheduler m, Object param) {
+			m.decommissionedElevators.add((Integer) param);
+			notifyDone(m);
+		}
+	}),
+
+	RECOMMISSION_ELEVATOR(new State() {
+
+		@Override
+		public void doWork(MainScheduler m, Object param) {
+			m.decommissionedElevators.remove((Integer) param);
+			notifyDone(m);
 		}
 	});
 

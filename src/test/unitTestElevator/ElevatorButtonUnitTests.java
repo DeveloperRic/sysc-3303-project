@@ -2,6 +2,9 @@ package test.unitTestElevator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +25,7 @@ class ElevatorButtonUnitTests {
 	}
 
 	@Test
-	void test_pressButton() { 
+	void test_pressButton() throws SocketException, UnknownHostException {
 		MainScheduler ms = new MainScheduler();
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
@@ -35,7 +38,7 @@ class ElevatorButtonUnitTests {
 	}
 
 	@Test
-	void test_unpressButton() {
+	void test_unpressButton() throws SocketException, UnknownHostException {
 		MainScheduler ms = new MainScheduler();
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);

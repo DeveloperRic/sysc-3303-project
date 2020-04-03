@@ -39,27 +39,25 @@ public final class Transport {
 	 *                                   available port)
 	 * @param useReceiveSocketForSending use the same socket for sending and
 	 *                                   receiving?
+	 * @throws SocketException
+	 * @throws UnknownHostException
 	 */
-	public Transport(String role, int receivePort, boolean useReceiveSocketForSending) {
+	public Transport(String role, int receivePort, boolean useReceiveSocketForSending)
+			throws SocketException, UnknownHostException {
 		this.role = role;
-		try {
-			address = InetAddress.getLocalHost();
-			if (useReceiveSocketForSending) {
-				if (receivePort != -1) {
-					receiveSocket = new DatagramSocket(receivePort);
-				} else {
-					receiveSocket = new DatagramSocket();
-				}
-				sendSocket = receiveSocket;
+		address = InetAddress.getLocalHost();
+		if (useReceiveSocketForSending) {
+			if (receivePort != -1) {
+				receiveSocket = new DatagramSocket(receivePort);
 			} else {
-				sendSocket = new DatagramSocket();
-				if (receivePort != -1) {
-					receiveSocket = new DatagramSocket(receivePort);
-				}
+				receiveSocket = new DatagramSocket();
 			}
-		} catch (UnknownHostException | SocketException e) { // Can't create the socket.
-			e.printStackTrace();
-			System.exit(1);
+			sendSocket = receiveSocket;
+		} else {
+			sendSocket = new DatagramSocket();
+			if (receivePort != -1) {
+				receiveSocket = new DatagramSocket(receivePort);
+			}
 		}
 	}
 
@@ -68,33 +66,27 @@ public final class Transport {
 	 * 
 	 * @param role        any of "Client", "Server" or "Host"; or other
 	 * @param receivePort port to listen on (or -1 to use any available port)
+	 * @throws UnknownHostException
+	 * @throws SocketException
 	 */
-	public Transport(String role, int receivePort) {
+	public Transport(String role, int receivePort) throws UnknownHostException, SocketException {
 		this.role = role;
-		try {
-			address = InetAddress.getLocalHost();
-			receiveSocket = new DatagramSocket(receivePort);
-		} catch (UnknownHostException | SocketException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		address = InetAddress.getLocalHost();
+		receiveSocket = new DatagramSocket(receivePort);
 	}
 
 	/**
 	 * Initializes transport class (send & receive) onto any available port
 	 * 
 	 * @param role any of "Client", "Server" or "Host"; or other
+	 * @throws UnknownHostException
+	 * @throws SocketException
 	 */
-	public Transport(String role) {
+	public Transport(String role) throws UnknownHostException, SocketException {
 		this.role = role;
-		try {
-			address = InetAddress.getLocalHost();
-			sendSocket = new DatagramSocket();
-			receiveSocket = new DatagramSocket();
-		} catch (UnknownHostException | SocketException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		address = InetAddress.getLocalHost();
+		sendSocket = new DatagramSocket();
+		receiveSocket = new DatagramSocket();
 	}
 
 	/**
@@ -104,15 +96,10 @@ public final class Transport {
 	 * @param data
 	 * @param destRole e.g. "Host"
 	 * @return
+	 * @throws IOException
 	 */
-	public Object[] send(byte[] data) {
-		try {
-			return send(data, destinationRole, destinationPort);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+	public Object[] send(byte[] data) throws IOException {
+		return send(data, destinationRole, destinationPort);
 	}
 
 	/**
@@ -121,14 +108,10 @@ public final class Transport {
 	 * 
 	 * @param data
 	 * @param destRole e.g. "Host"
+	 * @throws IOException
 	 */
-	public void send(byte[] data, String destRole) {
-		try {
-			send(data, destRole, destinationPort);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void send(byte[] data, String destRole) throws IOException {
+		send(data, destRole, destinationPort);
 	}
 
 	/**
@@ -139,7 +122,7 @@ public final class Transport {
 	 * @param destPort e.g. 23
 	 * @throws Exception
 	 */
-	public Object[] send(byte[] data, String destRole, int destPort) throws Exception {
+	public Object[] send(byte[] data, String destRole, int destPort) throws IOException {
 		// Prepare a DatagramPacket and send it via sendReceiveSocket
 		// to port 5000 on the destination host.
 
@@ -163,14 +146,7 @@ public final class Transport {
 
 		// Send the datagram packet to the server via the send/receive socket.
 
-		try {
-//			Printer.print("null? " + sendSocket + " (" + (sendSocket == null) + ")");
-			sendSocket.send(sendPacket);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new Exception();
-			//System.exit(1);
-		}
+		sendSocket.send(sendPacket);
 
 		if (verbose) {
 			Printer.print("\n" + role + ": Packet sent.\n--------------------------\n");
@@ -182,23 +158,17 @@ public final class Transport {
 	 * Waits for data on the Transport's receiveSocket
 	 * 
 	 * @return [byte[] data-received, int port-data-came-from]
-	 * @throws Exception 
+	 * @throws Exception
 	 */
-	public Object[] receive() throws Exception {
+	public Object[] receive() throws IOException {
 		// Construct a DatagramPacket for receiving packets up
 		// to 100 bytes long (the length of the byte array).
 
 		byte[] longData = new byte[100];
 		DatagramPacket receivePacket = new DatagramPacket(longData, longData.length);
 
-		try {
-			// Block until a datagram is received via sendReceiveSocket.
-			receiveSocket.receive(receivePacket);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new Exception();
-		//	System.exit(1);
-		}
+		// Block until a datagram is received via sendReceiveSocket.
+		receiveSocket.receive(receivePacket);
 
 		int len = receivePacket.getLength();
 
@@ -264,15 +234,11 @@ public final class Transport {
 	 * @param sourceRole e.g. "Client"
 	 * @param destRole   e.g. "Host"
 	 * @param destPort   e.g. 23
+	 * @throws IOException
 	 */
-	public static void SEND(byte[] data, String sourceRole, String destRole, int destPort) {
+	public static void SEND(byte[] data, String sourceRole, String destRole, int destPort) throws IOException {
 		Transport transport = new Transport(sourceRole);
-		try {
-			transport.send(data, destRole, destPort);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		transport.send(data, destRole, destPort);
 		transport.close();
 	}
 

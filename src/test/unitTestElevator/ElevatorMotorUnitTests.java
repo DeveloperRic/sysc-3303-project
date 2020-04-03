@@ -2,6 +2,9 @@ package test.unitTestElevator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +22,7 @@ class ElevatorMotorUnitTests {
 	}
 
 	@Test
-	void test_accelerate() {
+	void test_accelerate() throws UnknownHostException, SocketException {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
@@ -29,11 +32,11 @@ class ElevatorMotorUnitTests {
 		float acceleratedVelocity = elevator.velocity;
 		schedulerElevator.closeComms();
 		assertTrue(acceleratedVelocity > startVelocity);
-		
+
 	}
-	
+
 	@Test
-	void test_decelerate() {
+	void test_decelerate() throws UnknownHostException, SocketException {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
@@ -46,11 +49,11 @@ class ElevatorMotorUnitTests {
 		schedulerElevator.closeComms();
 		assertTrue(startVelocity == deceleratedVelocity);
 		assertTrue(acceleratedVelocity > deceleratedVelocity);
-		
+
 	}
-	
+
 	@Test
-	void test_doMovement() {
+	void test_doMovement() throws UnknownHostException, SocketException {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);
@@ -61,12 +64,12 @@ class ElevatorMotorUnitTests {
 		float endTravel = elevator.getMetersTravelled();
 		schedulerElevator.closeComms();
 		assertTrue(endTravel > startTravel);
-		assertEquals(endTravel, startTravel+velocity);
-		
+		assertEquals(endTravel, startTravel + velocity);
+
 	}
-	
+
 	@Test
-	void test_doMovementToFloor() {
+	void test_doMovementToFloor() throws UnknownHostException, SocketException {
 		ElevatorScheduler schedulerElevator = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(schedulerElevator);
 		Elevator elevator = new Elevator(subsystem);

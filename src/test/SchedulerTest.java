@@ -1,10 +1,11 @@
 package test;
 
-import elevator.Elevator;
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 import elevator.ElevatorSubsystem;
 import junit.framework.TestCase;
-import main.FloorSubsystem;
-import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
 import scheduler.FloorRequest;
 import scheduler.FloorsScheduler;
@@ -22,38 +23,48 @@ public class SchedulerTest extends TestCase {
 	/**
 	 * Tests the main scheduler elevator put and floor get methods with an integer
 	 * 
+	 * @throws SocketException
+	 * @throws UnknownHostException
+	 * 
 	 */
-	public void testMainElevatorPutFloorRequest() {
+	public void testMainElevatorPutFloorRequest() throws UnknownHostException, SocketException {
 		MainScheduler scheduler = new MainScheduler();
+
+		scheduler.activate();
+
 		FloorsScheduler floorScheduler = new FloorsScheduler(-1);
 		ElevatorScheduler elevatorScheduler = new ElevatorScheduler(1);
 		ElevatorSubsystem subsystem = new ElevatorSubsystem(elevatorScheduler);
-		
+
 		subsystem.powerOn();
-		
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				Printer.print("[*Test] Floor 5 request to go UP");
-				//floorScheduler.put(new Integer[] {5, 1});
-				floorScheduler.put(new FloorRequest() {
-					@Override
-					public Integer[] getRequest() {
-						return new Integer[] {5, 1};
-					}
-				});
+				// floorScheduler.put(new Integer[] {5, 1});
+				try {
+					floorScheduler.put(new FloorRequest() {
+						@Override
+						public Integer[] getRequest() {
+							return new Integer[] { 5, 1 };
+						}
+					});
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}).start();
-		
 
 //		assertEquals(true, m.isFloorRequest);
 //		
 //		Printer.print("[*Test] Elevator workDoing = " + subsystem.workDoing.toString());
-		
+
 		while (subsystem.getElevator().isAwake()) {
 			try {
 				Thread.sleep(1000);
-			} catch (InterruptedException e) {}
+			} catch (InterruptedException e) {
+			}
 		}
 
 	}

@@ -1,18 +1,19 @@
 package test;
 
-import scheduler.FloorRequest;
-import util.Printer;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 import org.junit.Test;
 
-import main.FloorSubsystem;
 import scheduler.FloorRequest;
 import scheduler.FloorsScheduler;
+import util.Printer;
 import util.Transport;
 
 public class FloorRuntimeTest {
 
 	@Test
-	public void test() {
+	public void test() throws UnknownHostException, SocketException {
 		Transport.setVerbose(false);
 
 		FloorsScheduler scheduler = new FloorsScheduler(-1); // just one floor for now, later there will be more
@@ -25,36 +26,40 @@ public class FloorRuntimeTest {
 
 			@Override
 			public void run() {
-
 				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-				}
 
-				Integer[] r1 = new Integer[] { 5, 1 };
-				scheduler.put(new FloorRequest() {
-					@Override
-					public Integer[] getRequest() {
-						return r1;
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
 					}
-				});
 
-				System.out.println(scheduler.get(null));
+					Integer[] r1 = new Integer[] { 5, 1 };
+					scheduler.put(new FloorRequest() {
+						@Override
+						public Integer[] getRequest() {
+							return r1;
+						}
+					});
 
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
+					Printer.print(scheduler.get(null));
 
-				Integer[] r2 = new Integer[] { 20, -1 };
-				scheduler.put(new FloorRequest() {
-					@Override
-					public Integer[] getRequest() {
-						return r2;
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
 					}
-				});
 
-				System.out.println(scheduler.get(null));
+					Integer[] r2 = new Integer[] { 20, -1 };
+					scheduler.put(new FloorRequest() {
+						@Override
+						public Integer[] getRequest() {
+							return r2;
+						}
+					});
+
+					Printer.print(scheduler.get(null));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -62,36 +67,40 @@ public class FloorRuntimeTest {
 
 			@Override
 			public void run() {
-
 				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e) {
-				}
 
-				Integer[] r1 = new Integer[] { 3, 1 };
-				scheduler.put(new FloorRequest() {
-					@Override
-					public Integer[] getRequest() {
-						return r1;
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
 					}
-				});
 
-				System.out.println(scheduler.get(null));
-				
-				try {
-					Thread.sleep(13000);
-				} catch (InterruptedException e) {
-				}
+					Integer[] r1 = new Integer[] { 3, 1 };
+					scheduler.put(new FloorRequest() {
+						@Override
+						public Integer[] getRequest() {
+							return r1;
+						}
+					});
 
-				Integer[] r2 = new Integer[] { 6, -1 };
-				scheduler.put(new FloorRequest() {
-					@Override
-					public Integer[] getRequest() {
-						return r2;
+					Printer.print(scheduler.get(null));
+
+					try {
+						Thread.sleep(13000);
+					} catch (InterruptedException e) {
 					}
-				});
 
-				System.out.println(scheduler.get(null));
+					Integer[] r2 = new Integer[] { 6, -1 };
+					scheduler.put(new FloorRequest() {
+						@Override
+						public Integer[] getRequest() {
+							return r2;
+						}
+					});
+
+					Printer.print(scheduler.get(null));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
