@@ -41,7 +41,10 @@ public abstract class ElevatorMessage {
 	public Integer getFloorArrivedOn() {
 		return null;
 	}
-
+	
+	//Integer[] of size 2
+	//Integer[0] indicates if its being recomissioned (1) or decomissioned (0)
+	//Integer[1] indicates the elevator number
 	public Integer[] getFaultNotice() {
 		return null;
 	}

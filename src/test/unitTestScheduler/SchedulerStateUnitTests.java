@@ -105,7 +105,7 @@ public class SchedulerStateUnitTests {
 		ms.switchState(SchedulerState.RECEIVE_MESSAGE_FROM_ELEVATOR, decomMessage.serialize());
 
 		assertTrue(ms.getDecommissionedElevators().size() == 1);
-		assertEquals(7, ms.getDecommissionedElevators().get(0));
+		assertEquals(7,(int) ms.getDecommissionedElevators().get(0));
 		
 		decomMessage = new ElevatorMessage() {
 			@Override
