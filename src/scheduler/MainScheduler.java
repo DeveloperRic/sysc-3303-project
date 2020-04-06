@@ -224,7 +224,8 @@ public class MainScheduler {
 										return;
 
 									if (verbose) {
-										Printer.print(subsystemNumber + ": []---> " + sourceName + " ready to send");
+										Printer.print(subsystemNumber + ": []---> " + sourceName + " ready to send to "
+												+ requestHeader.getPortToReplyTo());
 									}
 									// send message
 									if (bytesToSend == null) {

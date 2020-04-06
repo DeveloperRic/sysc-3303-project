@@ -19,33 +19,57 @@ public class ElevatorSubsystem {
 
 	public static boolean verbose = true;
 
+	public final Watchdog WATCHDOG;
+
 	boolean poweredOn;
 	int elevatorNumber;
 	Elevator elevator;
 	PriorityQueue<Integer> workDoing;
-//	List<Integer> workDoing;
 	ElevatorScheduler scheduler;
 	ElevatorState currentState;
 
 	private ArrayList<Task> tasks = new ArrayList<Task>();
 
 	public ElevatorSubsystem(ElevatorScheduler schedulerElevator) {
-		this.scheduler = schedulerElevator;
+		WATCHDOG = new Watchdog(this);
+
+		scheduler = schedulerElevator;
+		scheduler.setIsPoweredOnSupplier(() -> poweredOn);
+
 		elevatorNumber = schedulerElevator.getElevatorNumber();
 		elevator = new Elevator(this);
-//		workDoing = new ArrayList<Integer>();
+
 		workDoing = new PriorityQueue<Integer>(new Comparator<Integer>() {
 			@Override
 			public int compare(Integer o1, Integer o2) {
 				return Math.abs(o1 - elevator.currentFloor) - Math.abs(o2 - elevator.currentFloor);
 			}
 		});
-//		workToDo = new PriorityQueue<Integer>(new Comparator<Integer>() {
-//			@Override
-//			public int compare(Integer o1, Integer o2) {
-//				return Math.abs(o1 - elevator.currentFloor) - Math.abs(o2 - elevator.currentFloor);
-//			}
-//		});
+		currentState = ElevatorState.IDLE;
+	}
+
+	/**
+	 * copy constructor
+	 * 
+	 * @throws SocketException
+	 * @throws UnknownHostException
+	 */
+	public ElevatorSubsystem(ElevatorSubsystem subsystem) throws UnknownHostException, SocketException {
+		WATCHDOG = subsystem.WATCHDOG;
+		WATCHDOG.clearWorkDoing();
+
+		scheduler = new ElevatorScheduler(subsystem.scheduler);
+		scheduler.setIsPoweredOnSupplier(() -> poweredOn);
+
+		elevatorNumber = subsystem.elevatorNumber;
+		elevator = new Elevator(this);
+
+		workDoing = new PriorityQueue<Integer>(new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				return Math.abs(o1 - elevator.currentFloor) - Math.abs(o2 - elevator.currentFloor);
+			}
+		});
 		currentState = ElevatorState.IDLE;
 	}
 
@@ -58,13 +82,39 @@ public class ElevatorSubsystem {
 	}
 
 	public void powerOn() {
+		powerOn(0);
+	}
+
+	public void powerOn(long delay) {
 		Thread taskGetter = new Thread(new TaskGetter(this));
 		poweredOn = true;
-		taskGetter.start();
+		if (delay > 0) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(delay);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					if (poweredOn) {
+						taskGetter.start();
+					}
+				}
+			}).start();
+		} else {
+			taskGetter.start();
+		}
 	}
 
 	public void powerOff() {
 		poweredOn = false;
+	}
+
+	public void shutDown() {
+		powerOff();
+		scheduler.setIsPoweredOnSupplier(() -> false);
+		scheduler.closeComms();
 	}
 
 	public Elevator getElevator() {
@@ -75,6 +125,8 @@ public class ElevatorSubsystem {
 		synchronized (workDoing) {
 			if (!workDoing.contains(floor)) {
 				workDoing.add(floor);
+
+				WATCHDOG.addToWorkDoing(floor);
 
 				Printer.print("ELEVATOR SUBSYSTEM: Assigned task (floor = " + floor + ")\n");
 
@@ -129,7 +181,7 @@ public class ElevatorSubsystem {
 				public Integer getSourceElevator() {
 					return elevatorNumber;
 				}
-				
+
 				@Override
 				public Task getTask() {
 					return null;
