@@ -9,8 +9,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import main.Task;
 import scheduler.ElevatorMessage;
-import scheduler.FloorRequest;
+import scheduler.FloorMessage;
 import scheduler.MainScheduler;
 import scheduler.SchedulerState;
 
@@ -32,7 +33,7 @@ public class SchedulerStateUnitTests {
 		ms.closeComms();
 		assertTrue(ms.getElevatorMessages().size() == 0);
 
-		FloorRequest request = createFloorRequest(5, UP);
+		FloorMessage request = createFloorRequest(5, UP);
 		int selectedElevator = 1;
 		Object[] object = { request, selectedElevator };
 
@@ -70,7 +71,7 @@ public class SchedulerStateUnitTests {
 		ms.closeComms();
 		assertTrue(ms.getElevatorMessages().size() == 0);
 
-		FloorRequest request = createFloorRequest(5, UP);
+		FloorMessage request = createFloorRequest(5, UP);
 		ms.switchState(SchedulerState.PROCESS_ETA_FROM_ELEVATOR, (Object) request);
 
 		assertTrue(ms.getElevatorMessages().size() == 1);
@@ -82,7 +83,7 @@ public class SchedulerStateUnitTests {
 		ms.closeComms();
 		assertTrue(ms.getElevatorMessages().size() == 0);
 
-		FloorRequest request = createFloorRequest(5, UP);
+		FloorMessage request = createFloorRequest(5, UP);
 		byte[] bytes = request.serialize();
 		ms.switchState(SchedulerState.FORWARD_REQUEST_TO_ELEVATOR, (Object) bytes);
 
@@ -119,12 +120,12 @@ public class SchedulerStateUnitTests {
 		assertTrue(ms.getDecommissionedElevators().isEmpty());
 	}
 
-	public FloorRequest createFloorRequest(int floorDest, int direction) {
+	public FloorMessage createFloorRequest(int floorDest, int direction) {
 
 		// Create the floor request
 		Integer[] r = new Integer[] { floorDest, direction }; // Going to floor 5, Going up
 
-		FloorRequest request = new FloorRequest() {
+		FloorMessage request = new FloorMessage() {
 			@Override
 			public Integer[] getRequest() {
 				return r;
@@ -133,6 +134,11 @@ public class SchedulerStateUnitTests {
 			@Override
 			public Integer getSourceElevator() {
 				return 1;
+			}
+			
+			@Override
+			public Task getTask() {
+				return null;
 			}
 		};
 

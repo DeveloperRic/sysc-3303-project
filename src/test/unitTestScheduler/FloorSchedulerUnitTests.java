@@ -2,7 +2,8 @@ package test.unitTestScheduler;
 
 import org.junit.Test;
 
-import scheduler.FloorRequest;
+import main.Task;
+import scheduler.FloorMessage;
 import scheduler.FloorsScheduler;
 import util.Transport;
 import static org.junit.Assert.assertTrue;
@@ -61,10 +62,15 @@ public class FloorSchedulerUnitTests {
 				// simulates a put from floor scheduler
 
 				// serialize request
-				byte[] data = new FloorRequest() {
+				byte[] data = new FloorMessage() {
 					@Override
 					public Integer[] getRequest() {
 						return r;
+					}
+					
+					@Override
+					public Task getTask() {
+						return null;
 					}
 				}.serialize();
 
