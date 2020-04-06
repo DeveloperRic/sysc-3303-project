@@ -22,11 +22,15 @@ public enum SchedulerState {
 		public void doWork(MainScheduler m, Object param) {
 			// receive the request from floor
 			FloorRequest request = FloorRequest.deserialize((byte[]) param);
-			request.responses = new Float[MainScheduler.getNumberOfElevators()];
-			request.numResponses = 0;
-			// forward request to elevator
-			m.elevatorsMessages.add(request.serialize());
-			notifyDone(m, m.elevatorsMessages);
+			if (request.getSourceElevator() == null) {
+				request.responses = new Float[MainScheduler.getNumberOfElevators()];
+				request.numResponses = 0;
+				// forward request to elevator
+				m.elevatorsMessages.add(request.serialize());
+				notifyDone(m, m.elevatorsMessages);
+			} else {
+				changeTo(m, SEND_ACKNOWLEDGEMENT_TO_ELEVATOR, new Object[] { request, request.getSourceElevator() });
+			}
 		}
 	}),
 
@@ -143,7 +147,9 @@ public enum SchedulerState {
 
 		@Override
 		public void doWork(MainScheduler m, Object param) {
-			m.decommissionedElevators.add((Integer) param);
+			synchronized (m.decommissionedElevators) {
+				m.decommissionedElevators.add((Integer) param);
+			}
 			notifyDone(m);
 		}
 	}),
@@ -152,7 +158,9 @@ public enum SchedulerState {
 
 		@Override
 		public void doWork(MainScheduler m, Object param) {
-			m.decommissionedElevators.remove((Integer) param);
+			synchronized (m.decommissionedElevators) {
+				m.decommissionedElevators.remove((Integer) param);
+			}
 			notifyDone(m);
 		}
 	});
