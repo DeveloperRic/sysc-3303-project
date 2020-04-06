@@ -2,6 +2,7 @@ package elevator;
 
 import java.io.IOException;
 
+import elevator.Watchdog.FaultConfig;
 import scheduler.ElevatorMessage;
 import scheduler.FloorMessage;
 import util.Communication.Selector;
@@ -40,8 +41,22 @@ class TaskGetter implements Runnable {
 				continue;
 			}
 
+			if (!subsystem.poweredOn)
+				return;
+
+			Printer.print(request);
+
+			if (request == null)
+				continue;
+
 			if (ElevatorSubsystem.verbose) {
 				Printer.print("ELEVATOR SUBSYSTEM: Processing request from Scheduler\n");
+			}
+
+			if (request.getTask() != null && request.getTask().isFault()) {
+				subsystem.WATCHDOG.saveConfig(new FaultConfig(request.getTask().getTimeDifference() * 1000,
+						request.getTask().getFaultNumber(), FaultConfig.DEFAULT_IDENTIFIER));
+				return;
 			}
 
 			// deconstruct the floor request

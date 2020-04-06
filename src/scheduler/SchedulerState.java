@@ -39,7 +39,13 @@ public enum SchedulerState {
 		@Override
 		public void doWork(MainScheduler m, Object param) {
 			ElevatorMessage message = ElevatorMessage.deserialize((byte[]) param);
-			if (message.getFloorRequest() != null) {
+			if (message.getFaultNotice() != null) {
+				if (message.getFaultNotice()[0] == 1) {
+					changeTo(m, RECOMMISSION_ELEVATOR, message.getFaultNotice()[1]);
+				} else {
+					changeTo(m, DECOMMISSION_ELEVATOR, message);
+				}
+			} else if (message.getFloorRequest() != null) {
 				FloorMessage request = message.getFloorRequest();
 				if (request.getSourceElevator() == null) {
 					changeTo(m, PROCESS_ETA_FROM_ELEVATOR, request);
@@ -49,12 +55,6 @@ public enum SchedulerState {
 				}
 			} else if (message.getAcknowledgement() != null) {
 				changeTo(m, FORWARD_ACKNOWLEDGEMENT_TO_FLOOR, param);
-			} else if (message.getFaultNotice() != null) {
-				if (message.getFaultNotice()[0] == 1) {
-					changeTo(m, RECOMMISSION_ELEVATOR, message.getFaultNotice()[1]);
-				} else {
-					changeTo(m, DECOMMISSION_ELEVATOR, message.getFaultNotice()[1]);
-				}
 			} else {
 				notifyDone(m);
 			}
@@ -147,10 +147,21 @@ public enum SchedulerState {
 
 		@Override
 		public void doWork(MainScheduler m, Object param) {
+			ElevatorMessage message = (ElevatorMessage) param;
+			Integer elevatorNumber = message.getFaultNotice()[1];
+
+			Printer.print("SCHEDULER SUBSYSTEM: DEcomissioning elevator " + elevatorNumber
+					+ " and redirecting its last task\n" + " Content: " + message.getFloorRequest() + "\n");
+
 			synchronized (m.decommissionedElevators) {
-				m.decommissionedElevators.add((Integer) param);
+				m.decommissionedElevators.add(elevatorNumber);
 			}
-			notifyDone(m);
+
+			if (message.getFloorRequest() != null) {
+				changeTo(m, FORWARD_REQUEST_TO_ELEVATOR, message.getFloorRequest().serialize());
+			} else {
+				notifyDone(m);
+			}
 		}
 	}),
 
@@ -158,6 +169,8 @@ public enum SchedulerState {
 
 		@Override
 		public void doWork(MainScheduler m, Object param) {
+			Printer.print("SCHEDULER SUBSYSTEM: REcomissioning elevator " + param + "\n");
+
 			synchronized (m.decommissionedElevators) {
 				m.decommissionedElevators.remove((Integer) param);
 			}
@@ -193,6 +206,7 @@ public enum SchedulerState {
 			}
 		}
 		m.currentState.working = false;
+		Printer.print("SCHEDULER SUBSYSTEM: state changing to -> " + WAIT_FOR_INPUT + "\n");
 		m.currentState = WAIT_FOR_INPUT;
 		m.currentState.working = false;
 		m.notifyAll();
