@@ -9,7 +9,7 @@ import util.Communication.Selector;
 import util.Printer;
 import util.Transport;
 
-public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMessage> {
+public class FloorsScheduler implements SchedulerType<FloorMessage, ElevatorMessage> {
 
 	private final byte floorNumber;
 	private final Transport t;
@@ -70,7 +70,7 @@ public class FloorsScheduler implements SchedulerType<FloorRequest, ElevatorMess
 	}
 
 	@Override
-	public void put(FloorRequest request) throws IOException {
+	public void put(FloorMessage request) throws IOException {
 		synchronized (putLock) {
 
 			System.out.println("sending " + request + "\n");

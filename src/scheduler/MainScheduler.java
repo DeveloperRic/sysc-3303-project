@@ -186,7 +186,7 @@ public class MainScheduler {
 												// go through all messages to try and find at least 1
 												// request for which action is needed
 												for (byte[] reqBytes : getList) {
-													FloorRequest req = FloorRequest.deserialize(reqBytes);
+													FloorMessage req = FloorMessage.deserialize(reqBytes);
 
 													if (verbose)
 														Printer.print(req);

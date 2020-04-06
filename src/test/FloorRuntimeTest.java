@@ -5,7 +5,8 @@ import java.net.UnknownHostException;
 
 import org.junit.Test;
 
-import scheduler.FloorRequest;
+import main.Task;
+import scheduler.FloorMessage;
 import scheduler.FloorsScheduler;
 import util.Printer;
 import util.Transport;
@@ -34,10 +35,14 @@ public class FloorRuntimeTest {
 					}
 
 					Integer[] r1 = new Integer[] { 5, 1 };
-					scheduler.put(new FloorRequest() {
+					scheduler.put(new FloorMessage() {
 						@Override
 						public Integer[] getRequest() {
 							return r1;
+						}
+						@Override
+						public Task getTask() {
+							return null;
 						}
 					});
 
@@ -49,10 +54,14 @@ public class FloorRuntimeTest {
 					}
 
 					Integer[] r2 = new Integer[] { 20, -1 };
-					scheduler.put(new FloorRequest() {
+					scheduler.put(new FloorMessage() {
 						@Override
 						public Integer[] getRequest() {
 							return r2;
+						}
+						@Override
+						public Task getTask() {
+							return null;
 						}
 					});
 
@@ -75,10 +84,14 @@ public class FloorRuntimeTest {
 					}
 
 					Integer[] r1 = new Integer[] { 3, 1 };
-					scheduler.put(new FloorRequest() {
+					scheduler.put(new FloorMessage() {
 						@Override
 						public Integer[] getRequest() {
 							return r1;
+						}
+						@Override
+						public Task getTask() {
+							return null;
 						}
 					});
 
@@ -90,10 +103,14 @@ public class FloorRuntimeTest {
 					}
 
 					Integer[] r2 = new Integer[] { 6, -1 };
-					scheduler.put(new FloorRequest() {
+					scheduler.put(new FloorMessage() {
 						@Override
 						public Integer[] getRequest() {
 							return r2;
+						}
+						@Override
+						public Task getTask() {
+							return null;
 						}
 					});
 

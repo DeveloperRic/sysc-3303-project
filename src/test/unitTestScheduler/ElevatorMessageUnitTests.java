@@ -6,8 +6,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import main.Task;
 import scheduler.ElevatorMessage;
-import scheduler.FloorRequest;
+import scheduler.FloorMessage;
 
 public class ElevatorMessageUnitTests {
 	
@@ -24,7 +25,7 @@ public class ElevatorMessageUnitTests {
 	@Test
 	void test_getFloorRequest() {
 			
-		FloorRequest request = createFloorRequest(5,UP);
+		FloorMessage request = createFloorRequest(5,UP);
 		ElevatorMessage elevMessage = createElevatorMessage(request,"");
 				
 		//Assert the elevator message
@@ -47,7 +48,7 @@ public class ElevatorMessageUnitTests {
 	@Test
 	void test_toString() {
 		
-		FloorRequest request = createFloorRequest(5,UP);
+		FloorMessage request = createFloorRequest(5,UP);
 		
 		//Create the acknowledgement message
 		String s = "Elevator " + 1 + " arrived at floor " + 5;
@@ -62,7 +63,7 @@ public class ElevatorMessageUnitTests {
 	@Test
 	void test_serialize() {
 		
-		FloorRequest request = createFloorRequest(5,UP);
+		FloorMessage request = createFloorRequest(5,UP);
 		
 		//Create the acknowledgement message
 		String s = "Elevator " + 1 + " arrived at floor " + 5;
@@ -83,7 +84,7 @@ public class ElevatorMessageUnitTests {
 	@Test
 	void test_deserialize() {
 		
-		FloorRequest request = createFloorRequest(5,UP);
+		FloorMessage request = createFloorRequest(5,UP);
 		
 		//Create the acknowledgement message
 		String s = "Elevator " + 1 + " arrived at floor " + 5;
@@ -102,11 +103,11 @@ public class ElevatorMessageUnitTests {
 		assertTrue( (deserializedElevMessage.getAcknowledgement().equals(s)));
 	}
 	
-	public FloorRequest createFloorRequest(int floorDest, int direction) {
+	public FloorMessage createFloorRequest(int floorDest, int direction) {
 		
 		//Create the floor request
 		Integer[] r = new Integer[] {floorDest,direction};	//Going to floor 5, Going up
-		FloorRequest request = new FloorRequest() {
+		FloorMessage request = new FloorMessage() {
 			@Override
 			public Integer[] getRequest() {
 				return r;
@@ -116,17 +117,22 @@ public class ElevatorMessageUnitTests {
 			public Integer getSourceElevator() {
 				return 1;
 			}
+			
+			@Override
+			public Task getTask() {
+				return null;
+			}
 		};
 		
 		return request;
 	}
 	
-	public ElevatorMessage createElevatorMessage(FloorRequest request, String acknowledgement) {
+	public ElevatorMessage createElevatorMessage(FloorMessage request, String acknowledgement) {
 		
 		//Create the elevator message request
 		ElevatorMessage elevMessage = new ElevatorMessage() {
 			@Override
-			public FloorRequest getFloorRequest() {
+			public FloorMessage getFloorRequest() {
 				return request;
 			}
 

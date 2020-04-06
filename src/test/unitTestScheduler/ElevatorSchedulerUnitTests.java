@@ -7,9 +7,10 @@ import java.net.UnknownHostException;
 
 import org.junit.Test;
 
+import main.Task;
 import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
-import scheduler.FloorRequest;
+import scheduler.FloorMessage;
 import scheduler.MainScheduler;
 import util.Transport;
 
@@ -23,11 +24,16 @@ public class ElevatorSchedulerUnitTests {
 
 		Integer[] r = new Integer[] { startFloor, 0 };
 
-		FloorRequest request = new FloorRequest() {
+		FloorMessage request = new FloorMessage() {
 			@Override
 			public Integer[] getRequest() {
 				return r;
 			};
+			
+			@Override
+			public Task getTask() {
+				return null;
+			}
 
 		};
 
@@ -37,7 +43,7 @@ public class ElevatorSchedulerUnitTests {
 				try {
 					scheduler.put(new ElevatorMessage() {
 						@Override
-						public FloorRequest getFloorRequest() {
+						public FloorMessage getFloorRequest() {
 							return request;
 						}
 					});

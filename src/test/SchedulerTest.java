@@ -6,8 +6,9 @@ import java.net.UnknownHostException;
 
 import elevator.ElevatorSubsystem;
 import junit.framework.TestCase;
+import main.Task;
 import scheduler.ElevatorScheduler;
-import scheduler.FloorRequest;
+import scheduler.FloorMessage;
 import scheduler.FloorsScheduler;
 import scheduler.MainScheduler;
 import util.Printer;
@@ -44,10 +45,15 @@ public class SchedulerTest extends TestCase {
 				Printer.print("[*Test] Floor 5 request to go UP");
 				// floorScheduler.put(new Integer[] {5, 1});
 				try {
-					floorScheduler.put(new FloorRequest() {
+					floorScheduler.put(new FloorMessage() {
 						@Override
 						public Integer[] getRequest() {
 							return new Integer[] { 5, 1 };
+						}
+						
+						@Override
+						public Task getTask() {
+							return null;
 						}
 					});
 				} catch (IOException e) {

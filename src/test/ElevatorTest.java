@@ -8,8 +8,9 @@ import java.net.UnknownHostException;
 import org.junit.Test;
 
 import elevator.ElevatorSubsystem;
+import main.Task;
 import scheduler.ElevatorScheduler;
-import scheduler.FloorRequest;
+import scheduler.FloorMessage;
 import scheduler.FloorsScheduler;
 import scheduler.MainScheduler;
 
@@ -59,10 +60,15 @@ public class ElevatorTest {
 			@Override
 			public void run() {
 				try {
-					floorsScheduler.put(new FloorRequest() {
+					floorsScheduler.put(new FloorMessage() {
 						@Override
 						public Integer[] getRequest() {
 							return new Integer[] { 5, UP };
+						}
+						
+						@Override
+						public Task getTask() {
+							return null;
 						}
 					});
 
@@ -73,10 +79,15 @@ public class ElevatorTest {
 
 					subsystem.pressButton(9);
 
-					floorsScheduler.put(new FloorRequest() {
+					floorsScheduler.put(new FloorMessage() {
 						@Override
 						public Integer[] getRequest() {
 							return new Integer[] { 3, UP };
+						}
+						
+						@Override
+						public Task getTask() {
+							return null;
 						}
 					});
 
@@ -87,10 +98,15 @@ public class ElevatorTest {
 
 					subsystem.pressButton(3);
 
-					floorsScheduler.put(new FloorRequest() {
+					floorsScheduler.put(new FloorMessage() {
 						@Override
 						public Integer[] getRequest() {
 							return new Integer[] { 10, DOWN };
+						}
+						
+						@Override
+						public Task getTask() {
+							return null;
 						}
 					});
 
