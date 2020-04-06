@@ -84,7 +84,7 @@ public class MainScheduler {
 	public List<byte[]> getFloorMessages() {
 		return floorsMessages;
 	}
-	
+
 	public List<Integer> getDecommissionedElevators() {
 		return decommissionedElevators;
 	}
@@ -96,6 +96,12 @@ public class MainScheduler {
 	public void setVerbose(boolean verbose) {
 		MainScheduler.verbose = verbose;
 		Transport.setVerbose(verbose);
+	}
+
+	public boolean elevatorIsDecommissioned(Integer elevatorNumber) {
+		synchronized (decommissionedElevators) {
+			return elevatorNumber != null && decommissionedElevators.contains(elevatorNumber);
+		}
 	}
 
 	public synchronized void switchState(SchedulerState state, Object param) {
@@ -170,6 +176,9 @@ public class MainScheduler {
 									int numTimesWaited = 0;
 									while (getList.isEmpty() || (!isForFloor && !actionNeeded)) {
 
+										if (elevatorIsDecommissioned(subsystemNumber))
+											return;
+
 										if (!getList.isEmpty() && subsystemNumber != null) {
 
 											// check if (elevator) action is needed
@@ -211,6 +220,9 @@ public class MainScheduler {
 											}
 										}
 									}
+									if (elevatorIsDecommissioned(subsystemNumber))
+										return;
+
 									if (verbose) {
 										Printer.print(subsystemNumber + ": []---> " + sourceName + " ready to send");
 									}
