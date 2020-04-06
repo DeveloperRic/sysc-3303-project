@@ -3,7 +3,7 @@ package elevator;
 import java.io.IOException;
 
 import scheduler.ElevatorMessage;
-import scheduler.FloorRequest;
+import scheduler.FloorMessage;
 import util.Communication.Selector;
 import util.Printer;
 
@@ -24,12 +24,12 @@ class TaskGetter implements Runnable {
 			// if a request does not benefit us (e.g. assigned to a different elevator)
 			// the communication object will wait() till there exists a request that
 			// benefits us
-			FloorRequest request;
+			FloorMessage request;
 			try {
 				request = subsystem.scheduler.get(new Selector() {
 					@Override
 					public boolean equals(Object obj) {
-						FloorRequest request = (FloorRequest) obj;
+						FloorMessage request = (FloorMessage) obj;
 						// request must either be directed to this elevator or must require our response
 						return request.selectedElevator == subsystem.elevatorNumber
 								|| request.responses[subsystem.elevatorNumber - 1] == null;
@@ -53,7 +53,7 @@ class TaskGetter implements Runnable {
 
 			ElevatorMessage response = new ElevatorMessage() {
 				@Override
-				public FloorRequest getFloorRequest() {
+				public FloorMessage getFloorRequest() {
 					return request;
 				}
 			};

@@ -45,12 +45,13 @@ public class InputParser {
 		while ((ln = in.readLine()) != null) {
 			
 			lineNumber++;
-			if(validateInputFormat(ln,lineNumber) && validateInputLogic(ln,lineNumber)) {
+			parseAdd(ln);
+/*			if(validateInputFormat(ln,lineNumber) && validateInputLogic(ln,lineNumber)) {
 				parseAdd(ln);
 			}
 			else {
 				continue;
-			}
+			}*/
 		}
 		in.close();
 	}

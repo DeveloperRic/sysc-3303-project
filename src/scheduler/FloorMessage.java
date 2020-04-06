@@ -3,6 +3,7 @@ package scheduler;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import main.Task;
 import util.ByteUtils;
 
 /** FloorRequest.java
@@ -10,7 +11,7 @@ import util.ByteUtils;
  * the direct so the elevator can use it.
  *
  */
-public abstract class FloorRequest {
+public abstract class FloorMessage {
 	//Meant to store the ETA of each elevator so the scheduler can decide which elevator to choose.
 	public Float[] responses = new Float[MainScheduler.getNumberOfElevators()];
 	//Keeps track of the valid number of responses in the response[]
@@ -18,6 +19,9 @@ public abstract class FloorRequest {
 	//The elevator chosen to go do this Floor Request
 	public int selectedElevator = -1;
 	public Integer sourceElevator;
+	
+	//
+	public abstract Task getTask();
 
     /**
      * Returns the floor destination and direction message saved at run time.
@@ -63,6 +67,7 @@ public abstract class FloorRequest {
      */
 	public synchronized byte[] serialize() {
 		Integer[] request = getRequest();
+		byte[] taskBytes = null;
 
 //		byte[] bytes = new byte[2 + request.length + (responses.length * 4) + 3];
 //		int i = 0, j;
@@ -99,11 +104,20 @@ public abstract class FloorRequest {
 //		bytes[++i] = getSourceElevator() != null ? getSourceElevator().byteValue() : -1;
 //
 //		return bytes;
+		
+		int bufferLength = (3 + request.length + responses.length + 3) * 4;
+		
+		//Adding Task class to the end of the class
+		if (getTask() != null ) {
+			taskBytes = getTask().serialize();
+			bufferLength += taskBytes.length;
+		}
 
-		ByteBuffer buffer = ByteBuffer.allocate((2 + request.length + responses.length + 3) * 4);
+		ByteBuffer buffer = ByteBuffer.allocate(bufferLength);
 
 		buffer.putInt(request.length);
 		buffer.putInt(responses.length);
+		buffer.putInt(taskBytes != null ? taskBytes.length : 0);
 
 		for (Integer num : request) {
 			buffer.putInt(num);
@@ -111,11 +125,15 @@ public abstract class FloorRequest {
 		for (Float response : responses) {
 			buffer.putFloat(response != null ? response : Float.NEGATIVE_INFINITY);
 		}
+		
+		if(taskBytes != null) {
+			buffer.put(taskBytes);
+		}
 
 		buffer.putInt(numResponses);
 		buffer.putInt(selectedElevator);
 		buffer.putInt(getSourceElevator() != null ? getSourceElevator().byteValue() : -1);
-
+		
 		return buffer.array();
 	}
 	
@@ -129,7 +147,7 @@ public abstract class FloorRequest {
      * 
      * @return FloorRequest object The class that contains the Floor Destination, Direction and ETAs from the elevators.
      */
-	public static FloorRequest deserialize(byte[] bytes) {
+	public static FloorMessage deserialize(byte[] bytes) {
 //		System.out.println("flr deserializing " + ByteUtils.toString(bytes));
 //		final int HEAD_SIZE = 2;
 //		final int requestEnd = HEAD_SIZE + ((Byte) bytes[0]).intValue() - 1;
@@ -173,6 +191,7 @@ public abstract class FloorRequest {
 
 		int requestLength = buffer.getInt();
 		int responsesLength = buffer.getInt();
+		int taskLength = buffer.getInt();
 
 		Integer[] request = new Integer[requestLength];
 		for (int i = 1; i <= requestLength; ++i) {
@@ -184,12 +203,28 @@ public abstract class FloorRequest {
 			Float response = buffer.getFloat();
 			responses[i - 1] = response == Float.NEGATIVE_INFINITY ? null : response;
 		}
+		
+		Task task;
+		if( taskLength > 0 ) {
+			System.out.println("FLOOR MESSAGE TASK LENGTH > 0");
+			byte[] taskBytes = new byte[taskLength];
+			buffer.get(taskBytes,0,taskLength);
+			task = Task.deserialize(taskBytes);
+			System.out.println(task);
+		} else {
+			task = null;
+		}
 
 		// create floor request
-		FloorRequest floorRequest = new FloorRequest() {
+		FloorMessage floorRequest = new FloorMessage() {
 			@Override
 			public Integer[] getRequest() {
 				return request;
+			}
+			
+			@Override
+			public Task getTask() {
+				return task;
 			}
 		};
 

@@ -21,7 +21,7 @@ public enum SchedulerState {
 		@Override
 		public void doWork(MainScheduler m, Object param) {
 			// receive the request from floor
-			FloorRequest request = FloorRequest.deserialize((byte[]) param);
+			FloorMessage request = FloorMessage.deserialize((byte[]) param);
 			request.responses = new Float[MainScheduler.getNumberOfElevators()];
 			request.numResponses = 0;
 			// forward request to elevator
@@ -36,7 +36,7 @@ public enum SchedulerState {
 		public void doWork(MainScheduler m, Object param) {
 			ElevatorMessage message = ElevatorMessage.deserialize((byte[]) param);
 			if (message.getFloorRequest() != null) {
-				FloorRequest request = message.getFloorRequest();
+				FloorMessage request = message.getFloorRequest();
 				if (request.getSourceElevator() == null) {
 					changeTo(m, PROCESS_ETA_FROM_ELEVATOR, request);
 				} else {
@@ -61,7 +61,7 @@ public enum SchedulerState {
 
 		@Override
 		public void doWork(MainScheduler m, Object param) {
-			FloorRequest request = (FloorRequest) param;
+			FloorMessage request = (FloorMessage) param;
 			// increment number of eta responses
 			// wait for responses to come in from all elevators
 
@@ -117,7 +117,7 @@ public enum SchedulerState {
 		@Override
 		public void doWork(MainScheduler m, Object param) {
 			Object[] params = ((Object[]) param);
-			FloorRequest request = (FloorRequest) params[0];
+			FloorMessage request = (FloorMessage) params[0];
 			// prioritize selected elevator
 			request.selectedElevator = (int) params[1];
 			// send acknowledgement to elevator

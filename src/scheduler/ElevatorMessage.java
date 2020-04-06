@@ -23,7 +23,7 @@ public abstract class ElevatorMessage {
 	 *         destination and direction.
 	 * 
 	 */
-	public FloorRequest getFloorRequest() {
+	public FloorMessage getFloorRequest() {
 		return null;
 	}
 
@@ -43,7 +43,7 @@ public abstract class ElevatorMessage {
 	}
 	
 	//Integer[] of size 2
-	//Integer[0] indicates if its being recomissioned (1) or decomissioned (0)
+	//Integer[0] indicates if its being recommissioned (1) or decommissioned (0)
 	//Integer[1] indicates the elevator number
 	public Integer[] getFaultNotice() {
 		return null;
@@ -56,7 +56,7 @@ public abstract class ElevatorMessage {
 	 */
 	@Override
 	public String toString() {
-		FloorRequest req = getFloorRequest();
+		FloorMessage req = getFloorRequest();
 		String ack = getAcknowledgement();
 		return "<ElevMsg: " + (req != null ? "(" + req + ")" : "") + (ack != null ? "(<Ack: " + ack + ")" : "") + ">";
 	}
@@ -135,11 +135,11 @@ public abstract class ElevatorMessage {
 		int acknowledgementLength = buffer.getInt();
 		int faultNoticeLength = buffer.getInt();
 
-		FloorRequest floorRequest;
+		FloorMessage floorRequest;
 		if (floorRequestLength > 0) {
 			byte[] floorRequestBytes = new byte[floorRequestLength];
 			buffer.get(floorRequestBytes, 0, floorRequestLength);
-			floorRequest = FloorRequest.deserialize(floorRequestBytes);
+			floorRequest = FloorMessage.deserialize(floorRequestBytes);
 		} else {
 			floorRequest = null;
 		}
@@ -167,7 +167,7 @@ public abstract class ElevatorMessage {
 
 		return new ElevatorMessage() {
 			@Override
-			public FloorRequest getFloorRequest() {
+			public FloorMessage getFloorRequest() {
 				return floorRequest;
 			}
 

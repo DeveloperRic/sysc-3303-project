@@ -11,7 +11,7 @@ import main.InputParser;
 import main.Task;
 import scheduler.ElevatorMessage;
 import scheduler.ElevatorScheduler;
-import scheduler.FloorRequest;
+import scheduler.FloorMessage;
 import util.Printer;
 import util.Transport;
 
@@ -119,7 +119,7 @@ public class ElevatorSubsystem {
 	void notifyButtonPressed(int destFloor) {
 		synchronized (elevator) {
 			Integer[] r = new Integer[] { destFloor, 0 };
-			FloorRequest request = new FloorRequest() {
+			FloorMessage request = new FloorMessage() {
 				@Override
 				public Integer[] getRequest() {
 					return r;
@@ -129,12 +129,17 @@ public class ElevatorSubsystem {
 				public Integer getSourceElevator() {
 					return elevatorNumber;
 				}
+				
+				@Override
+				public Task getTask() {
+					return null;
+				}
 			};
 			request.sourceElevator = elevatorNumber;
 			try {
 				scheduler.put(new ElevatorMessage() {
 					@Override
-					public FloorRequest getFloorRequest() {
+					public FloorMessage getFloorRequest() {
 						return request;
 					}
 				});

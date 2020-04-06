@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import scheduler.ElevatorMessage;
-import scheduler.FloorRequest;
+import scheduler.FloorMessage;
 import scheduler.FloorsScheduler;
 import util.Printer;
 import util.Transport;
@@ -50,28 +50,33 @@ public class FloorSubsystem implements Runnable {
 				while (true) {
 					Integer[] arr = new Integer[2];
 					Task t = getNextTask();
-					Printer.print("FLOOR SUBSYSTEM: Task " + taskNum
-							+ " being sent to Scheduler : \n Task Information : " + t + "\n");
-					arr[0] = t.getStartFloor();
-					arr[1] = t.getDirection();
-
-					// Store the request in the floor
-					floors.get(t.getStartFloor() - 1).storeRequest(t);
-
+					
+					// Store the request in the floor if it is not a fault
+					if(!t.isFault())
+						floors.get(t.getStartFloor() - 1).storeRequest(t);
+					
 					try {
-						scheduler.put(new FloorRequest() {
+						
+						FloorMessage floorMessage = new FloorMessage() {
 							@Override
 							public Integer[] getRequest() {
-								return arr;
+								return t.getRequest();
 							}
-						});
+							
+							@Override
+							public Task getTask() {
+								return t;
+							}
+						};
+						floorMessage.selectedElevator = floorMessage.sourceElevator = t.getElevatorNumber();
+						
+						scheduler.put(floorMessage);
+						
 					} catch (IOException e) {
 						e.printStackTrace();
 						System.exit(0);
 						return;
 					}
-					// Printer.print("FLOOR SUBSYSTEM: Floor RECEIVING confirmation message from
-					// Scheduler : \n " + (String)scheduler.get(null) + "\n");
 				}
 
 			}
@@ -82,8 +87,6 @@ public class FloorSubsystem implements Runnable {
 			@Override
 			public void run() {
 				while (true) {
-
-					// What type of messages do we receive from the elevator?
 
 					// Receive the message
 					ElevatorMessage elevatorMessage;
@@ -144,10 +147,23 @@ public class FloorSubsystem implements Runnable {
 		String[] inputs = ln.split(" ");
 
 		try {
-			Task task = new Task(inputs[0], inputs[1], inputs[2]);
+			
+			Task task = null;
+			boolean isFault = false;
+			
+			//Check if the input is an injected fault by checking if the start floor is a negative number
+			if( Integer.parseInt(inputs[1]) < 0 )
+				isFault = true;
+			
+			task = new Task(inputs[0],inputs[1],inputs[2],isFault);
+			
+			//Set the time difference
+			if(isFault) {
+				task.setTimeDifference(Integer.parseInt(inputs[3]));
+			}
+			
 			tasks.add(task);
-//			tasks.add(new Task(inputs[0], inputs[3], "", inputs[1]));
-			// taskMatrix.get(task.getStartFloor()-1).get(task.getDirection()).add(task);
+			
 		} catch (Exception e) {
 			Printer.print("Invalid Input: " + e);
 		}
@@ -178,6 +194,7 @@ public class FloorSubsystem implements Runnable {
 
 		while (ip.requests.size() > 0) {
 			String[] request = ip.requests.remove(0).split(" ");
+			System.out.println(request.length);
 			if (l == null) {
 				l = LocalTime.parse(request[0]);
 			} else {
@@ -187,8 +204,10 @@ public class FloorSubsystem implements Runnable {
 				}
 			}
 
-			String time = LocalTime.now(ZoneId.systemDefault()).format(formatter);
-			floorSS.parseAdd(time + " " + request[1] + " " + request[2]);
+			String time = LocalTime.now(ZoneId.systemDefault()).format(formatter);	
+			
+			floorSS.parseAdd(time + " " + request[1] + " " + request[2] + request[3]);
+
 			System.out.println(time + " " + request[1] + " " + request[2]);
 			System.out.println((System.currentTimeMillis() - strt) + ": " + FloorSubsystem.tasks.size());
 		}

@@ -10,7 +10,7 @@ import util.Communication.Selector;
 import util.Printer;
 import util.Transport;
 
-public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRequest> {
+public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorMessage> {
 
 	private final byte elevatorNumber;
 	private final Transport t;
@@ -33,7 +33,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 	}
 
 	@Override
-	public FloorRequest get(Selector selector) throws IOException {
+	public FloorMessage get(Selector selector) throws IOException {
 		synchronized (getLock) {
 
 			t.send(new RequestHeader(RequestType.GET_DATA, t.getReceivePort(), elevatorNumber).getBytes());
@@ -60,7 +60,7 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorRe
 					}
 				}
 
-				FloorRequest floorRequest = FloorRequest.deserialize(receivedBytes.value);
+				FloorMessage floorRequest = FloorMessage.deserialize(receivedBytes.value);
 				if (ElevatorSubsystem.verbose)
 					Printer.print("Received " + floorRequest + "\n");
 
