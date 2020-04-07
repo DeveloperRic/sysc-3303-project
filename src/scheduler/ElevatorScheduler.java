@@ -49,6 +49,13 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorMe
 		System.out.println("Elevator send/receive socket bound on port " + t.getReceivePort() + "\n");
 	}
 
+	/**
+	 * Synchronized retrieval of floorMessages through UDP 
+	 * 
+	 * @param selector Selector interface for information passed between scheduler and subsystems, not used here. 
+	 * 
+	 * @return floorRequest floorMessage a request from the FloorSubsystem.
+	 */
 	@Override
 	public FloorMessage get(Selector selector) throws IOException {
 		if (!elevatorIsPoweredOn())
@@ -127,7 +134,12 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorMe
 			return null;
 		}
 	}
-
+	
+	/**
+	 * Sends ElevatorMessages through UDP and waits for confirmation message (receivedBytes).
+	 * 
+	 * @param message ElevatorMessage A message that the elevator sends. 
+	 */
 	@Override
 	public void put(ElevatorMessage message) throws IOException {
 		synchronized (putLock) {
@@ -173,7 +185,12 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorMe
 			}
 		}
 	}
-
+	
+	/**
+	 * Sleeps thread to delay it before putting the ElevatorMessage.
+	 * 
+	 * @param o ElevatorMessage A message that the elevator sends. 
+	 */
 	public void delay(ElevatorMessage o) {
 		new Thread(new Runnable() {
 			@Override
@@ -200,18 +217,38 @@ public class ElevatorScheduler implements SchedulerType<ElevatorMessage, FloorMe
 		t.close();
 	}
 
+	/**
+	 * Gets elevator number.
+	 * 
+	 * @return elevatorNumber byte number representing an elevator. 
+	 */
 	public byte getElevatorNumber() {
 		return elevatorNumber;
 	}
 
+	/**
+	 * Gets transport.
+	 * 
+	 * @return t Transport. 
+	 */
 	public Transport getTransport() {
 		return t;
 	}
 
+	/**
+	 * Sets the check to see if elevator is powered on to a new passed value.
+	 * 
+	 * @param isPoweredOnSupplier Supplier<Boolean> what is being check for isPoweredOn(). 
+	 */
 	public void setIsPoweredOnSupplier(Supplier<Boolean> isPoweredOnSupplier) {
 		this.isPoweredOnSupplier = isPoweredOnSupplier;
 	}
 
+	/**
+	 * Checks if elevator is powered on.
+	 * 
+	 * @return on boolean true if elevator is turned on. 
+	 */
 	private boolean elevatorIsPoweredOn() {
 		boolean on = isPoweredOnSupplier.get();
 		if (!on) {

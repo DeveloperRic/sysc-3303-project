@@ -48,10 +48,10 @@ public class MainScheduler {
 		decommissionedElevators = new ArrayList<Integer>();
 	}
 
+	/**
+	 * Create 2 threads for both directions in the intermediate host (they do the exact same thing, but with different sources/sinks).
+	 */
 	public void activate() {
-
-		// create 2 threads for both directions in the intermediate host
-		// (they do the exact same thing, but with different sources/sinks)
 
 		Thread floorThread = new Thread(makeRunnable("Floor", floorTransport, elevatorsMessages, floorsMessages,
 				SchedulerState.FORWARD_REQUEST_TO_ELEVATOR, true));

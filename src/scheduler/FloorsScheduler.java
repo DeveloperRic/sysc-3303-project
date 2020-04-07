@@ -31,6 +31,13 @@ public class FloorsScheduler implements SchedulerType<FloorMessage, ElevatorMess
 		Printer.print("Floor send/receive socket bound on port " + t.getReceivePort() + "\n");
 	}
 
+	/**
+	 * Synchronized retrieval of ElevatorMessages through UDP 
+	 * 
+	 * @param selector Selector interface for information passed between scheduler and subsystems, not used here. 
+	 * 
+	 * @return elevatorRequest ElevatorMessage a request from the ElevatorSubsystem.
+	 */
 	@Override
 	public ElevatorMessage get(Selector selector) throws IOException {
 		synchronized (getLock) {
@@ -68,7 +75,12 @@ public class FloorsScheduler implements SchedulerType<FloorMessage, ElevatorMess
 			}
 		}
 	}
-
+	
+	/**
+	 * Sends FloorMessages through UDP and waits for confirmation message (receivedBytes).
+	 * 
+	 * @param request FloorMessage A message that the Floor sends. 
+	 */
 	@Override
 	public void put(FloorMessage request) throws IOException {
 		synchronized (putLock) {
@@ -113,10 +125,20 @@ public class FloorsScheduler implements SchedulerType<FloorMessage, ElevatorMess
 		}
 	}
 
+	/**
+	 * Gets elevator number.
+	 * 
+	 * @return elevatorNumber byte number representing an elevator. 
+	 */
 	public byte getElevatorNumber() {
 		return floorNumber;
 	}
-
+	
+	/**
+	 * Gets transport.
+	 * 
+	 * @return t Transport. 
+	 */
 	public Transport getTransport() {
 		return t;
 	}

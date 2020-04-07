@@ -33,18 +33,39 @@ public class Elevator {
 		metresTravelled = 0;
 	}
 
+	/**
+	 * Returns true if elevator isMoving.
+	 * 
+	 * @return boolean true if elevator has velocity greater than 0.
+	 */
 	public boolean isMoving() {
 		return velocity > 0;
 	}
 	
+	/**
+	 * Calculates how far the elevator has traveled.
+	 * 
+	 * @return metresTravelled float that represents how much far the elevator has traveled in meters.
+	 */
 	public float getMetersTravelled() {
 		return metresTravelled;
 	}
 
+	/**
+	 * Calculates how many seconds it will take for the elevator to stop given its velocity.
+	 * 
+	 * @return float that represents how much longer in seconds the elevator must travel to stop.
+	 */
 	public synchronized float secondsToStop() {
 		return velocity <= ACCELERATION ? 0 : velocity / ACCELERATION;
 	}
 
+	/**
+	 * Calculates the the distance the elevator must travel in order to stop using how many more seconds the 
+	 * elevator must travel for (seconds2Stop).
+	 * 
+	 * @return RemainMeterTraveled float that represents how much further the elevator must travel to stop.
+	 */
 	public synchronized float remainingDistance() {
 		float RemainMeterTraveled = 0;
 
@@ -57,6 +78,15 @@ public class Elevator {
 		return RemainMeterTraveled;
 	}
 
+	/**
+	 * Calculates the time it will take to reach the target floor from the current floor using velocity and acceleration measurements.
+	 * 
+	 * @param floor The floor in which the elevator is headed towards (the request floor).
+	 *        direction The direction the elevator is moving in denoted by an integer. 1 is up, -1 is down.
+	 * 
+	 * @return secondsToFloor float that represents how long it will take to reach the target floor. Will return 0 or -1 if there is
+	 * a problem in the logic of the request.
+	 */
 	public synchronized float timeToStopAtFloor(int floor, int direction) {
 		if (ElevatorSubsystem.verbose) {
 			Printer.print("(req = " + floor + " going " + direction + ") (cur = " + currentFloor + " going "
@@ -95,16 +125,7 @@ public class Elevator {
 			return -1;
 		}
 
-//		if (floor < floorRequestBoundary[0] || floor > floorRequestBoundary[1]) {
-//			return false;
-//		}
-
-		// if velocity is too fast to slow down, return false;
-//		float distanceToFloor = Math.abs(floor - currentFloor) * FLOOR_HEIGHT;
-//		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / velocity;
-//		return secondsToFloor >= secondsToStop() ? secondsToFloor : -1;
-
-
+		//Time calculations
 		int ticks = 0; // how many ticks (seconds) has it been
 		float accVelocity = velocity; // how fast were we going when we had to stop
 		float distanceTraveled = 0; // just a marker for when to exit the loop, not needed for math
@@ -121,10 +142,18 @@ public class Elevator {
 		return secondsToFloor;
 	}
 
+	/**
+	 * Checks if elevator is awake
+	 * @return Boolean true if motor has been instantiated and the motor is running
+	 */
 	public boolean isAwake() {
 		return motor != null && motor.running;
 	}
 
+	/**
+	 * Simulates elevator becoming awake
+	 * Starts and runs new thread (motionThread) to handle elevator movement
+	 */
 	public synchronized void wakeup() {
 		if (isAwake())
 			return;
