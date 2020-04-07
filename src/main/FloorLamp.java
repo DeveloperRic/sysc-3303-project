@@ -1,6 +1,6 @@
 package main;
 
-/** Lamp.java
+/**
  * This class is used to indicate the lamp turned on when a floor requests an elevator.
  *                    to indicate the lamp turned off when a floor is serviced by an elevator.
  *

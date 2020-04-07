@@ -19,16 +19,30 @@ import scheduler.FloorsScheduler;
 import util.Printer;
 import util.Transport;
 
+
+/**
+ * This class represents the floor subsystem for all the floors. It sends and
+ * messages to request an elevator to a certain floor. It receives messages and notifies
+ * a the floors if an elevator has arrived on a certain floor.
+ * 
+ */
 public class FloorSubsystem implements Runnable {
 
 	private static final int MAX_FLOORS = 22;
 
-	// ArrayList to hold the tasks
 	public static ArrayList<Task> tasks = new ArrayList<Task>();
 
 	private ArrayList<Floor> floors = null;
 	public FloorsScheduler scheduler = null;
-
+	
+	/**
+	 * Initializes the floor subsystem by initializing the floors and the
+	 * floor scheduler.
+	 * 
+	 * @param scheduler	The floorScheduler used as an in between communication between the
+	 * 					floor subsystem and the main scheduler.
+	 * 
+	 */
 	public FloorSubsystem(FloorsScheduler scheduler) {
 		this.scheduler = scheduler;
 		this.floors = new ArrayList<Floor>();
@@ -38,28 +52,34 @@ public class FloorSubsystem implements Runnable {
 			floors.add(new Floor(i + 1, MAX_FLOORS));
 		}
 	}
-
+	
+	/**
+	 * Creates two threads called input and output. Input sends messages to the scheduler and
+	 * output receives messages from the scheduler.
+	 * 
+	 */
 	@Override
-	public void run() {
-		int taskNum = 0;
-
+	public void run() {	
+		/**
+		 * A new thread to get a task and store it as a Floor Message to be used by
+		 * the Floor Scheduler.
+		 * 
+		 */
 		Thread input = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 
 				while (true) {
-					Integer[] arr = new Integer[2];
 					Task t = getNextTask();
-					
-					
-					
+
 					// Store the request in the floor if it is not a fault
 					if(!t.isFault())
 						floors.get(t.getStartFloor() - 1).storeRequest(t);
 					
 					try {
 						
+						//Convert the task into a floor message
 						FloorMessage floorMessage = new FloorMessage() {
 							@Override
 							public Integer[] getRequest() {
@@ -95,6 +115,12 @@ public class FloorSubsystem implements Runnable {
 			}
 		});
 
+		/**
+		 * A new thread to listen for an elevator message of an elevator 
+		 * arriving on a certain floor and service the floor which requested 
+		 * this elevator.
+		 * 
+		 */
 		Thread output = new Thread(new Runnable() {
 
 			@Override
@@ -125,14 +151,20 @@ public class FloorSubsystem implements Runnable {
 		output.start();
 	}
 
-	// Once we get an acknowledgement that an elevator has arrived at a certain
-	// floor.
-	// We can clear all Requests stored in this floor.
+	/**
+	 * Services the requests stored within a floor.
+	 * 
+	 * @param floor	Indicates the floor in which the elevator has
+	 * 				arrived on.
+	 */
 	public void serviceFloorRequests(Integer floor) {
 		floors.get(floor - 1).serviceRequest();
 	}
 
-	// reads from the input file and calls parseAdd on each line
+	/**
+	 * Reads the "Inputs.txt" file and converts each line to be stored as a task.
+	 * 
+	 */
 	public void getInputs() throws IOException {
 		String localDir = System.getProperty("user.dir");
 		BufferedReader in = new BufferedReader(new FileReader(localDir + "\\src\\assets\\Inputs.txt"));
@@ -141,7 +173,11 @@ public class FloorSubsystem implements Runnable {
 			parseAdd(ln);
 		in.close();
 	}
-
+	
+	/**
+	 * Retrieves the next task from the tasks list and removes it from the list.
+	 * 
+	 */
 	public synchronized Task getNextTask() {
 		while (tasks.size() <= 0) {
 			try {
@@ -152,8 +188,15 @@ public class FloorSubsystem implements Runnable {
 		return tasks.remove(0);
 	}
 
-	// splits each string by whitespace and creates a Task object and puts it into
-	// the matrix
+	/**
+	 * Splits the input string by whitespace and creates a Task object which is then added
+	 * to the tasks array list.
+	 * 
+	 * @param ln	A string representing a line from the input file.
+	 * 
+	 * @return Task	An Object that represents a line from the input text file.
+	 * 
+	 */
 	public synchronized void parseAdd(String ln) {
 		notifyAll();
 
@@ -183,11 +226,17 @@ public class FloorSubsystem implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Part of the integrated test responsible for starting up the floor subsystem,
+	 * read the input file, convert each line into a task and send messages to the 
+	 * scheduler with a time simulated delay.
+	 * 
+	 */
 	public static void main(String args[]) {
 
 		// Start the FloorScheduler and store it in the FloorSubsystem
-		Transport.setVerbose(true);
+		Transport.setVerbose(true);			//Set this to true if you want more information and false if otherwise.
 		FloorsScheduler scheduler;
 
 		try {
@@ -200,13 +249,16 @@ public class FloorSubsystem implements Runnable {
 		FloorSubsystem floorSS = new FloorSubsystem(scheduler);
 
 		new Thread(floorSS, "FloorSS").start();
-
+		
+		//Read the lines from the "Inputs.txt" file.
 		String inputFileDestination = "\\src\\assets\\Inputs.txt";
 		InputParser ip = new InputParser(inputFileDestination);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 		long strt = System.currentTimeMillis();
 		LocalTime l = null;
-
+		
+		
+		//Creates a time delay based on the time stamp difference between each line
 		while (ip.requests.size() > 0) {
 			String[] request = ip.requests.remove(0).split(" ");
 			System.out.println(request.length);
@@ -222,6 +274,7 @@ public class FloorSubsystem implements Runnable {
 
 			String time = LocalTime.now(ZoneId.systemDefault()).format(formatter);	
 			
+			//Send the input line to the floor subsystem once it's done.
 			floorSS.parseAdd(time + " " + request[1] + " " + request[2] + " " +  request[3]);
 
 			System.out.println(time + " " + request[1] + " " + request[2]);

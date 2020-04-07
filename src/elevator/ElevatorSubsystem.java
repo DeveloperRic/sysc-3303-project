@@ -230,12 +230,6 @@ public class ElevatorSubsystem {
 
 	public static void main(String[] args) {
 
-//		System.out.print("Enter this elevator's number : ");
-//		Scanner scanner = new Scanner(System.in);
-//		int elevNum = Integer.parseInt(scanner.nextLine());
-//
-//		System.out.println("elevatorNumber set to " + elevNum + "\n");
-
 		InputParser ip = new InputParser("\\src\\assets\\Inputs.txt");
 		ArrayList<Task> tasks = new ArrayList<Task>();
 
@@ -266,7 +260,6 @@ public class ElevatorSubsystem {
 		subsystem.setTasks(tasks);
 		ElevatorSubsystem.setVerbose(true);
 		subsystem.powerOn();
-
 	}
 
 }
