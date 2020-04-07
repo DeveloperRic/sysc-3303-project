@@ -22,10 +22,6 @@ public final class ByteUtils {
 	public static String toString(byte[] bytes) {
 		StringBuilder sb = new StringBuilder();
 		for (byte b : bytes) {
-//			for (int pos = 0; pos <= 7; ++pos) {
-//				sb.append((b >> pos) & 1);
-//			}
-//			sb.append(" ");
 			sb.append(((Byte) b).intValue()).append(" ");
 		}
 		return sb.toString().trim();
@@ -48,7 +44,6 @@ public final class ByteUtils {
 	 * @return
 	 */
 	public static float bytesToFloat(byte[] bytes) {
-//		Printer.print("b->f " + toString(bytes) + " | " + Arrays.toString(ByteBuffer.wrap(bytes, 0, 4).array()));
 		return ByteBuffer.wrap(bytes, 0, 4).getFloat();
 	}
 

@@ -31,6 +31,7 @@ public class FloorButton {
 	
 	public boolean isButtonPressed() { return floorLamp.getLamp(); }
 	
+	//Getters
 	public int getDirection() { return direction; }
 	public FloorLamp getFloorLamp() { return floorLamp; }
 

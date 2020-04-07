@@ -2,13 +2,9 @@ package test.unitTestMain;
 
 
 import static org.junit.Assert.assertTrue;
-
-import java.util.HashMap;
-
 import org.junit.Test;
-
 import main.InputParser;
-import main.Task;
+
 
 public class InputParserUnitTests {
 

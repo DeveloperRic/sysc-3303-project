@@ -121,23 +121,6 @@ public class ElevatorTest {
 			}
 		}).start();
 
-//		subsystem.assignTask(5);
-//		subsystem.assignTask(9);
-//		subsystem.assignTask(3);
-//		subsystem.assignTask(10);
-//		subsystem.assignTask(1);
-//		subsystem.assignTask(7);
-//		subsystem.assignTask(9);
-//		subsystem.assignTask(12);
-//		subsystem.assignTask(6);
-//		subsystem.assignTask(5);
-//		subsystem.assignTask(1);
-//		
-//		Printer.print("\n*** Assigned all tasks ***");
-//		
-//		Printer.print(subsystem.getWorkDoing().toString() + "\n");
-//		
-
 		// wait for elevator to return to sleep mode
 		do {
 			try {
@@ -149,22 +132,4 @@ public class ElevatorTest {
 		testing = false;
 
 	}
-
-//	private boolean canStopAtFloor(Elevator elevator, int floor) {
-//		if (elevator.direction == 0)
-//			return true;
-//		if ((elevator.direction == -1 && floor > elevator.currentFloor)
-//				|| (elevator.direction == 1 && floor < elevator.currentFloor)) {
-//			return false;
-//		}
-//		if (floor < elevatorsFloorRequestBoundary[0][0] || floor > elevatorsFloorRequestBoundary[0][1]) {
-//			return false;
-//		}
-//		if (!elevator.isMoving() || elevator.currentFloor == floor)
-//			return true;
-//
-//		float distanceToFloor = Math.abs(floor - elevator.currentFloor) * Elevator.FLOOR_HEIGHT;
-//		float secondsToFloor = distanceToFloor == 0 ? 0 : distanceToFloor / elevator.velocity;
-//		return secondsToFloor >= elevator.secondsToStop();
-//	}
 }
