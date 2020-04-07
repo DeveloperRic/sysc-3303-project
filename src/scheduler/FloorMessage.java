@@ -50,7 +50,7 @@ public abstract class FloorMessage {
 	@Override
 	public String toString() {
 		Integer[] req = getRequest();
-		return "<FlrReq: (fl " + req[0] + (req[1] != 0 ? " going " + (req[1] == 1 ? "up" : "down") : "")
+		return "<FlrReq:" + ( req !=null && req.length > 1 ? "(fl " + req[0] + (req[1] != 0 ? " going " + (req[1] == 1 ? "up" : "down") : "") : "")
 				+ (getSourceElevator() != null ? " (src-elev " + getSourceElevator() + ")" : "") + " (sel-elev "
 				+ selectedElevator + ")" + " (res " + Arrays.toString(responses.clone()) + ")" + ")>";
 	}

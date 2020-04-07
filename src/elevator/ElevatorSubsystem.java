@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.Scanner;
 
 import main.InputParser;
 import main.Task;
@@ -246,7 +247,16 @@ public class ElevatorSubsystem {
 
 		ElevatorSubsystem subsystem;
 		try {
-			subsystem = new ElevatorSubsystem(new ElevatorScheduler(1));
+			
+			System.out.print("Enter this elevator's number : ");
+			Scanner scanner = new Scanner(System.in);
+			int elevNum = Integer.parseInt(scanner.nextLine());
+			scanner.close();
+
+			System.out.println("elevatorNumber set to " + elevNum + "\n");
+
+			subsystem = new ElevatorSubsystem(new ElevatorScheduler(elevNum));
+			
 		} catch (UnknownHostException | SocketException e) {
 			e.printStackTrace();
 			System.exit(0);
@@ -254,7 +264,7 @@ public class ElevatorSubsystem {
 		}
 
 		subsystem.setTasks(tasks);
-		ElevatorSubsystem.setVerbose(false);
+		ElevatorSubsystem.setVerbose(true);
 		subsystem.powerOn();
 
 	}

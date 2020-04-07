@@ -3,7 +3,10 @@ package scheduler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import util.Printer;
 
 public enum SchedulerState {
@@ -73,7 +76,7 @@ public enum SchedulerState {
 
 			if (request.numResponses == numOfNeededResponses) {
 
-				List<Float> responses = new ArrayList<Float>(numOfNeededResponses);
+				List<Float[]> responses = new ArrayList<>(numOfNeededResponses);
 				boolean noElevatorCanProcess = true;
 
 				// subtract 2 seconds (for processing delay)
@@ -89,19 +92,28 @@ public enum SchedulerState {
 						noElevatorCanProcess = false;
 					}
 
-					responses.add(request.responses[i] -= 2);
+					responses.add(new Float[] { request.responses[i] -= 2, (float) (i + 1) });
 				}
 
 				if (!noElevatorCanProcess) {
 
 					// pick the smallest (non-negative) eta
 					for (int i = 0; i < responses.size(); ++i) {
-						if (responses.get(i) < 0) {
-							responses.set(i, Collections.max(responses) - responses.get(i));
+						Float[] response = responses.get(i);
+						if (response[0] < 0) {
+							responses.set(i,
+									new Float[] { Collections
+											.max(responses.stream().map(r -> r[0]).collect(Collectors.toList()))
+											- response[0], response[1] });
 						}
 					}
 
-					int selectedElevator = responses.indexOf(Collections.min(responses)) + 1;
+					int selectedElevator = responses.stream().sorted(new Comparator<Float[]>() {
+						@Override
+						public int compare(Float[] o1, Float[] o2) {
+							return o1[0] < o2[0] ? -1 : 0;
+						}
+					}).findFirst().get()[1].intValue();
 
 					// message elevator it has been picked
 					changeTo(m, SEND_ACKNOWLEDGEMENT_TO_ELEVATOR, new Object[] { request, selectedElevator });

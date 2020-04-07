@@ -16,7 +16,7 @@ public class MainScheduler {
 
 	public static final int PORT_FOR_FLOOR = 63972;
 	public static final int PORT_FOR_ELEVATOR = 63973;
-	private static final int NUMBER_OF_ELEVATORS = 1;
+	private static final int NUMBER_OF_ELEVATORS = 4;
 	private static final byte[] DEFAULT_REPLY = new byte[0];
 
 	static boolean verbose = true;
@@ -262,7 +262,7 @@ public class MainScheduler {
 			return;
 		}
 
-		mainScheduler.setVerbose(false);
+		mainScheduler.setVerbose(true);
 		mainScheduler.activate();
 
 	}

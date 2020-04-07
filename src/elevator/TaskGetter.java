@@ -56,7 +56,7 @@ class TaskGetter implements Runnable {
 			if (request.getTask() != null && request.getTask().isFault()) {
 				subsystem.WATCHDOG.saveConfig(new FaultConfig(request.getTask().getTimeDifference() * 1000,
 						request.getTask().getFaultNumber(), FaultConfig.DEFAULT_IDENTIFIER));
-				return;
+				continue;
 			}
 
 			// deconstruct the floor request

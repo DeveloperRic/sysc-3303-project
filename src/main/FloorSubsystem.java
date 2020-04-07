@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import scheduler.ElevatorMessage;
 import scheduler.FloorMessage;
@@ -51,6 +52,8 @@ public class FloorSubsystem implements Runnable {
 					Integer[] arr = new Integer[2];
 					Task t = getNextTask();
 					
+					
+					
 					// Store the request in the floor if it is not a fault
 					if(!t.isFault())
 						floors.get(t.getStartFloor() - 1).storeRequest(t);
@@ -70,7 +73,17 @@ public class FloorSubsystem implements Runnable {
 						};
 						floorMessage.selectedElevator = floorMessage.sourceElevator = t.getElevatorNumber();
 						
+						if(t.isFault()) {
+							System.out.println("Floor Subsytem : I'M SENDING A FAULT");
+							System.out.println(t);
+						}
+						
 						scheduler.put(floorMessage);
+						
+						if(t.isFault()) {
+						 System.out.println("Floor Subsystem : I'M DONE SENDING A FAULT");
+						}
+						
 						
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -159,13 +172,15 @@ public class FloorSubsystem implements Runnable {
 			
 			//Set the time difference
 			if(isFault) {
+				System.out.println(Arrays.toString(inputs));
 				task.setTimeDifference(Integer.parseInt(inputs[3]));
 			}
 			
 			tasks.add(task);
 			
 		} catch (Exception e) {
-			Printer.print("Invalid Input: " + e);
+			Printer.print("Invalid Input: ");
+			e.printStackTrace();
 		}
 	}
 
@@ -202,11 +217,12 @@ public class FloorSubsystem implements Runnable {
 					Thread.sleep(MILLIS.between(l, LocalTime.parse(request[0])));
 				} catch (InterruptedException e) {
 				}
+				l = LocalTime.parse(request[0]);
 			}
 
 			String time = LocalTime.now(ZoneId.systemDefault()).format(formatter);	
 			
-			floorSS.parseAdd(time + " " + request[1] + " " + request[2] + request[3]);
+			floorSS.parseAdd(time + " " + request[1] + " " + request[2] + " " +  request[3]);
 
 			System.out.println(time + " " + request[1] + " " + request[2]);
 			System.out.println((System.currentTimeMillis() - strt) + ": " + FloorSubsystem.tasks.size());
